@@ -22,17 +22,19 @@ for key in configDict.iterkeys():
 buildname = configDict['buildname']
 Export('buildname')
 
-if buildname == 'win64':    
-    SConscript('buildscripts/SConscript_win64')
-elif buildname == 'linux64':
-	SConscript('buildscripts/SConscript_linux64')
+if buildname == 'win64gl':    
+    SConscript('buildscripts/SConscript_win64gl')
+elif buildname == 'win64dx':
+	SConscript('buildscripts/SConscript_win64dx')
+elif buildname == 'linux64gl':
+	SConscript('buildscripts/SConscript_linux64gl')
 else:
-    print "Warning: No compiler selected!"
+    print "Warning: No valid Build selected! check config.ini"
 
 Import('env')
+
 print("Environment: " + env['PLATFORM']);
 print("TARGET_ARCH: " + env['TARGET_ARCH']);
-
 
 # if cleaning, make sure its cleaning everything that an IDE could generate
 if env.GetOption('clean'):
