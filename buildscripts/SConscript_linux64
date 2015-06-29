@@ -1,0 +1,88 @@
+import os
+#import gch
+
+Import('rootDir')
+
+print "Executing gcc SConscript..."
+
+#Import('env')
+
+# this works, but creates shared lib errors I camt solve
+env = Environment(	ENV = {'PATH' : os.environ['PATH']},			# required to set path otherwise it cant find G++ & linker
+					tools = ['g++', 'gnulink'],						# make sure it uses gnu linker and compiler
+					CXX = 'g++')
+
+env.AppendUnique(CXXFLAGS=Split("-std=c++11"))						# specify c++11 mode is used for stuff like nullptr
+#env.AppendUnique(CXXFLAGS=['-Wl,-rpath, /home/basez/Projects/cross-platform-proof-of-concept/build'])
+
+# specify include folder & libs folder
+libPaths=['libs_linux']			
+additionalIncludes = ['include', './libs_linux/include']
+env.Append(CPPPATH = additionalIncludes)		
+
+#setup PCH	
+#env['GCHSTOP'] = 'pch_cppoc.hpp'
+#env['GCH'] = env.PCH('source/pch_cppoc.cpp')[0]
+#generate(env)
+
+"""
+#install libraries! (when building on posix / linux systems)
+# TODO: figure out how to extract the libraries correctly
+#if (env['PLATFORM'] == "posix") TODO:
+installDir = "/usr/lib/x86_64-linux-gnu"
+env.Install(installDir, rootDir + "/libs_linux/libGLEW.so.1.10")
+env.Install(installDir, rootDir + "/libs_linux/libGLU.so")
+env.Install(installDir, rootDir + "/libs_linux/libSDL2-2.0.so.0")
+env.Install(installDir, rootDir + "/libs_linux/libassimp.so.3")
+env.Alias('install', installDir)
+"""
+
+
+##############################################################################
+# Create release env
+"""
+envRelease = env.Clone()
+#envRelease.AppendUnique(LINKFLAGS=['/DEBUG'])								# add debug flag, comment out if final release?
+envRelease.VariantDir('buildfiles/gen-common-release', 'source/common', duplicate=0)
+envRelease.VariantDir('buildfiles/gen-linux-release', 'source/linux', duplicate=0)
+envRelease.AppendUnique(CXXFLAGS=['-O3'])	 								# Level 3 optimizations (release only)
+
+# Gather all cpp files, excluding the PCH (is compiled seperately)
+releaseObjs = [file for file in envRelease.Glob('buildfiles/gen-common-release/*.cpp') 
+         if not file.name.startswith('pch_cppoc')]
+
+releaseObjsLinux = [file for file in envRelease.Glob('buildfiles/gen-linux-release/*.cpp')]
+"""
+"""
+# debug/test to display files included 
+print "releaseObjs length: %i" % len(releaseObjs)
+for x in range(0, len(releaseObjs)):
+    print "File %i: '%s'" % (x, releaseObjs[x].name)
+"""
+"""
+#specify release libs
+releaseLibNames=['SDL2', 'SDL2main', 'GL', 'GLU', 'GLEW', 'assimp']
+
+# create program
+applicationProgramRelease = envRelease.Program(source = releaseObjs + releaseObjsLinux, target = "build/gcc_release", LIBS = releaseLibNames, LIBPATH = libPaths)
+"""
+##############################################################################
+# Create debug env
+envDebug = env.Clone()
+envDebug.AppendUnique(CXXFLAGS=['-gsplit-dwarf'])							# debug flag in dwarf output (folder is incorrect though)
+envDebug.AppendUnique(CXXFLAGS=['-g'])										# debug flag
+envDebug.VariantDir('buildfiles/gen-common-debug', 'source/common', duplicate=0)
+envDebug.VariantDir('buildfiles/gen-linux-debug', 'source/linux', duplicate=0)
+envDebug.Append(CPPDEFINES = ['_DEBUG'])
+
+## Gather all cpp files, excluding the PCH (is compiled seperately)
+debugObjs = [file for file in envDebug.Glob('buildfiles/gen-common-debug/*.cpp')
+         if not file.name.startswith('pch_cppoc')]
+
+debugObjsLinux = [file for file in envDebug.Glob('buildfiles/gen-linux-debug/*.cpp')]
+
+##specify release libs
+debugLibNames=['SDL2', 'SDL2main', 'GL', 'GLU', 'GLEW', 'assimp']
+
+## create program
+applicationProgramDebug = envDebug.Program(source = debugObjs + debugObjsLinux, target = "build/gcc_debug", LIBS = debugLibNames, LIBPATH = libPaths)

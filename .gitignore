@@ -1,0 +1,15 @@
+*.exe
+*.dblite
+*.ilk
+*.pdb
+buildfiles/
+*.sln
+*.vcxproj
+*.filters
+*.opensdf
+*.sdf
+*.suo
+*.user
+*.manifest
+*.sublime-project
+*.sublime-workspace
