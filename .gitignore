@@ -2,7 +2,6 @@
 *.dblite
 *.ilk
 *.pdb
-buildfiles/
 *.sln
 *.vcxproj
 *.filters
@@ -13,3 +12,4 @@ buildfiles/
 *.manifest
 *.sublime-project
 *.sublime-workspace
+genfiles/

@@ -28,14 +28,14 @@ envRelease.AppendUnique(LINKFLAGS=['/DEBUG'])								# add debug flag, comment o
 envRelease.AppendUnique(CCFLAGS=['/MD'])									
 
 # set variant dirs (temp folders)	
-envRelease.VariantDir('../buildfiles/gen-common-release', '../source/common', duplicate=0)		# specify intermediate folder for generated .obj files
-envRelease.VariantDir('../buildfiles/gen-api_gl-release', '../source/api_gl', duplicate=0)
-envRelease.VariantDir('../buildfiles/gen-os_win-release', '../source/os_win', duplicate=0)
+envRelease.VariantDir('../genfiles/gen-common-release', '../source/common', duplicate=0)		# specify intermediate folder for generated .obj files
+envRelease.VariantDir('../genfiles/gen-api_gl-release', '../source/api_gl', duplicate=0)
+envRelease.VariantDir('../genfiles/gen-os_win-release', '../source/os_win', duplicate=0)
 
 # Gather all cpp files
-objsCommonRelease = [file for file in envRelease.Glob('../buildfiles/gen-common-release/*.cpp')]
-objsAPIRelease = [file for file in envRelease.Glob('../buildfiles/gen-api_gl-release/*.cpp')]
-objsOSRelease = [file for file in envRelease.Glob('../buildfiles/gen-os_win-release/*.cpp')]
+objsCommonRelease = [file for file in envRelease.Glob('../genfiles/gen-common-release/*.cpp')]
+objsAPIRelease = [file for file in envRelease.Glob('../genfiles/gen-api_gl-release/*.cpp')]
+objsOSRelease = [file for file in envRelease.Glob('../genfiles/gen-os_win-release/*.cpp')]
  
 releaseLibNames=['SDL2', 'SDL2main', 'SDL2_ttf', 'glew32', 'OpenGL32', 'glu32', 'assimp']
 #specify release libs
@@ -52,15 +52,15 @@ envDebug.Append(LINKFLAGS=['/DEBUG'])
 envDebug.AppendUnique(CCFLAGS=['/MDd'])													# Dynamically link with the debugging CRT
 envDebug.AppendUnique(CCFLAGS=['/Od'])													# Disable optimizations
 #envDebug['PDB']='${TARGET.base}.pdb'													# not sure what this does or why its required?
-envDebug.VariantDir('../buildfiles/gen-common-debug', '../source/common', duplicate=0)		# specify intermediate folder for generated .obj files
-envDebug.VariantDir('../buildfiles/gen-api_gl-debug', '../source/api_gl', duplicate=0)
-envDebug.VariantDir('../buildfiles/gen-os_win-debug', '../source/os_win', duplicate=0)
+envDebug.VariantDir('../genfiles/gen-common-debug', '../source/common', duplicate=0)		# specify intermediate folder for generated .obj files
+envDebug.VariantDir('../genfiles/gen-api_gl-debug', '../source/api_gl', duplicate=0)
+envDebug.VariantDir('../genfiles/gen-os_win-debug', '../source/os_win', duplicate=0)
 envDebug.Append(CPPDEFINES = ['_DEBUG'])
 
 # Gather all cpp files
-objsCommonDebug = [file for file in envDebug.Glob('../buildfiles/gen-common-debug/*.cpp')]
-objsAPIDebug = [file for file in envDebug.Glob('../buildfiles/gen-api_gl-debug/*.cpp')]
-objsOSDebug = [file for file in envDebug.Glob('../buildfiles/gen-os_win-debug/*.cpp')]
+objsCommonDebug = [file for file in envDebug.Glob('../genfiles/gen-common-debug/*.cpp')]
+objsAPIDebug = [file for file in envDebug.Glob('../genfiles/gen-api_gl-debug/*.cpp')]
+objsOSDebug = [file for file in envDebug.Glob('../genfiles/gen-os_win-debug/*.cpp')]
 		 
 #specify debug libs
 debugLibNames=['SDL2', 'SDL2main', 'SDL2_ttf', 'glew32', 'OpenGL32', 'glu32', 'assimp']
@@ -69,7 +69,7 @@ debugLibNames=['SDL2', 'SDL2main', 'SDL2_ttf', 'glew32', 'OpenGL32', 'glu32', 'a
 applicationProgramDebug = envDebug.Program(source = objsCommonDebug + objsAPIDebug + objsOSDebug, target = "../build/"+buildname+"/agnostik_debug")#, LIBS = debugLibNames, LIBPATH = libPaths)
 
 # generate msvs project  # MSVSProject OR MSVSSolution
-project = env.MSVSProject(target = '../agnostik_' + buildname + env['MSVSPROJECTSUFFIX'],
+project = env.MSVSProject(target = 'agnostik_' + buildname + env['MSVSPROJECTSUFFIX'],
                 srcs = (Glob('../source/common/*.cpp', strings=True) +					## add all cpp files
 						Glob('../source/api_gl/*.cpp', strings=True) +
 						Glob('../source/os_win/*.cpp', strings=True)),			
