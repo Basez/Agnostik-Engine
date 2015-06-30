@@ -9,5 +9,10 @@ namespace AGN
 		virtual void init() = 0;
 		virtual void submitDrawCall() = 0;
 		virtual void renderDrawQueue() = 0;
+
+		virtual class IAWindow& getWindow() = 0;
 	};
+
+
+
 }

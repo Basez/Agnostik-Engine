@@ -12,7 +12,12 @@ namespace AGN
 		void init() override;
 		void submitDrawCall() override;
 		void renderDrawQueue() override;
+		virtual class IAWindow& getWindow() override;
 
 	private:
+		void initOpenGL();
+		void initGlew();
+
+		class AWindowGL* m_window;
 	};
 }

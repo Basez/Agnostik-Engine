@@ -1,6 +1,7 @@
 #include "asharedh.hpp"
 #include "aaplication.hpp"
 #include "iarender_api.hpp"
+#include "iawindow.hpp"
 
 using namespace AGN;
 
@@ -23,6 +24,8 @@ void AAplication::run(class IARenderAPI* a_renderAPI)
 		render();
 
 		m_renderAPI->renderDrawQueue();
+
+		m_renderAPI->getWindow().getDimentions();
 	}
 }
 
