@@ -1,6 +1,6 @@
+#include "asharedh.hpp"
 #include "aaplication.hpp"
 
-#include <iostream>
 
 AGN::AAplication::AAplication()
 {
@@ -14,3 +14,9 @@ AGN::AAplication::~AAplication()
 
 }
 
+void AGN::AAplication::init()
+{
+	printf("AAplication::init()");
+
+	// init scenegraph?
+}

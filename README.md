@@ -2,7 +2,7 @@
 Cross-platform Game Engine
 
 # Licenses
-TODO:
+GLM: http://glm.g-truc.net/copying.txt
 
 # Dependencies
 TODO:
