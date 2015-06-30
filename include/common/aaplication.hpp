@@ -5,20 +5,17 @@ namespace AGN
 	class AAplication
 	{
 	public:
-		AAplication();
-		~AAplication();
-		
-		virtual void init();
-		virtual void run() = 0;
-		virtual void cleanup() = 0;
-
-	protected:
-		class IARenderer* m_renderer;
-		class IAWindow* m_window;
+		void run(class IARenderAPI* a_renderAPI);
+		void cleanup();
 
 	private:
-		AAplication(const AAplication& other);
-		AAplication& operator=(const AAplication& other);
+		void update();
+		void render();
 
+		class IARenderAPI* m_renderAPI;
+
+		bool m_quit;
 	};
+
 }
+extern AGN::AAplication& g_application;

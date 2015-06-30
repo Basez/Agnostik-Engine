@@ -1,22 +1,42 @@
 #include "asharedh.hpp"
 #include "aaplication.hpp"
+#include "iarender_api.hpp"
 
+using namespace AGN;
 
-AGN::AAplication::AAplication()
+AAplication appTemp = AAplication();
+AAplication& g_application = appTemp;
+
+void AAplication::run(class IARenderAPI* a_renderAPI)
 {
-	int* testIntPointer = new int();
+	m_renderAPI = a_renderAPI;
+	m_quit = false;
+
+	int* testIntPointer = nullptr;
 	printf("pointer size: %i \n", sizeof(testIntPointer));
-	delete testIntPointer;
+
+	m_renderAPI->init();
+
+	while (!m_quit)
+	{
+		update();
+		render();
+
+		m_renderAPI->renderDrawQueue();
+	}
 }
 
-AGN::AAplication::~AAplication()
+void AAplication::cleanup()
+{
+	m_renderAPI = nullptr;
+}
+
+void AAplication::update()
 {
 
 }
 
-void AGN::AAplication::init()
+void AAplication::render()
 {
-	printf("AAplication::init()");
 
-	// init scenegraph?
 }

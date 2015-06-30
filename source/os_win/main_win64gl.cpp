@@ -1,15 +1,19 @@
 #include "asharedh.hpp"
-#include "aaplication_gl.hpp"
+#include "aaplication.hpp"
+
+#include "arender_api_gl.hpp"
+
+using namespace AGN;
 
 int main(int argc, char* argv[])
 {
-	AGN::AAplicationGL application;
+	IARenderAPI* renderAPI = new ARenderAPIGL();
 
-	application.init();
-	
-	application.run();
+	g_application.run(renderAPI);
 
-	application.cleanup();
+	g_application.cleanup(); 
+
+	delete renderAPI;
 
 	return 0;
 }
