@@ -12,7 +12,7 @@ namespace AGN
 
 	private:
 		void update();
-		void render();
+		void fetchRender();
 
 		class IARenderAPI* m_renderAPI;
 		bool m_quit;

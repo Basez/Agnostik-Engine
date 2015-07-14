@@ -34,7 +34,7 @@ void AGN::ARenderAPIGL::renderDrawQueue()
 
 AGN::IAWindow& AGN::ARenderAPIGL::getWindow()
 {
-	return dynamic_cast<IAWindow&>(*m_window);;
+	return dynamic_cast<IAWindow&>(*m_window);
 }
 
 void AGN::ARenderAPIGL::initOpenGL()

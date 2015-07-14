@@ -21,7 +21,7 @@ void AAplication::run(class IARenderAPI* a_renderAPI)
 	while (!m_quit)
 	{
 		update();
-		render();
+		fetchRender();
 
 		m_renderAPI->renderDrawQueue();
 
@@ -39,7 +39,7 @@ void AAplication::update()
 
 }
 
-void AAplication::render()
+void AAplication::fetchRender()
 {
-
+	// fetch all draw calls 
 }
