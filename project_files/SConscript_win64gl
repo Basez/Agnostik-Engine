@@ -12,7 +12,7 @@ print "buildname: " + buildname
 # Compiler & Linker commands
 env['MSVC_VERSION'] = '12.0'
 env.AppendUnique(CXXFLAGS=Split("/EHsc"))				# specify compiler unwind semantics
-env.AppendUnique(LINKFLAGS = ['/SUBSYSTEM:CONSOLE'])
+env.AppendUnique(LINKFLAGS = ['/SUBSYSTEM:WINDOWS'])
 env.AppendUnique(LINKFLAGS = ['/MACHINE:X64'])
 env['CCPDBFLAGS'] = '/Z7 /Fd${TARGET}.pdb'				# Generate pdb for code debugging (both release and debug) NOTE: changed to /Z7 instead of Zi because that doesnt work with precompiled headers
 

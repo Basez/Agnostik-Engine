@@ -5,6 +5,7 @@
 #pragma once
 
 #include <iostream>
+#include <string>
 
 // GLM
 #define GLM_FORCE_RADIANS // force use of radians everywhere
@@ -16,3 +17,6 @@
 #include <glm/gtx/rotate_vector.hpp>
 
 #include <stdint.h>
+
+// Logger
+#include "ialogger.hpp"

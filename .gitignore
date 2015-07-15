@@ -13,5 +13,5 @@
 *.sublime-project
 *.sublime-workspace
 genfiles/
-buildscripts/debug/
-buildscripts/release/
+project_files/debug/
+project_files/release/
