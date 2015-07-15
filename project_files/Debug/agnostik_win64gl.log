@@ -1,0 +1,22 @@
+﻿Build started 15-7-2015 12:33:25.
+     1>Project "C:\Repositories\git\agnostik\project_files\agnostik_win64gl.vcxproj" on node 2 (Build target(s)).
+     1>Build:
+         echo Starting SCons && "C:\Python27\python.exe" -c "from os.path import join; import sys; sys.path = [ join(sys.prefix, 'Lib', 'site-packages', 'scons-2.3.4'), join(sys.prefix, 'scons-2.3.4'), join(sys.prefix, 'Lib', 'site-packages', 'scons'), join(sys.prefix, 'scons') ] + sys.path; import SCons.Script; SCons.Script.main()" -C "C:\Repositories\git\agnostik" -f SConstruct "C:\Repositories\git\agnostik\build\win64gl\agnostik_debug.exe"
+         Starting SCons 
+         scons: Entering directory `C:\Repositories\git\agnostik'
+         scons: Reading SConscript files ...
+         configval buildname = win64gl
+         Executing MSVC SConscript...
+         rootDir: C:\Repositories\git\agnostik
+         buildname: win64gl
+         Environment: win32
+         TARGET_ARCH: x86_64
+         scons: done reading SConscript files.
+         scons: Building targets ...
+         scons: `build\win64gl\agnostik_debug.exe' is up to date.
+         scons: done building targets.
+     1>Done Building Project "C:\Repositories\git\agnostik\project_files\agnostik_win64gl.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:12.52

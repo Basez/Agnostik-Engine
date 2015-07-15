@@ -23,11 +23,11 @@ buildname = configDict['buildname']
 Export('buildname')
 
 if buildname == 'win64gl':    
-    SConscript('buildscripts/SConscript_win64gl')
+    SConscript('project_files/SConscript_win64gl')
 elif buildname == 'win64dx':
-	SConscript('buildscripts/SConscript_win64dx')
+	SConscript('project_files/SConscript_win64dx')
 elif buildname == 'linux64gl':
-	SConscript('buildscripts/SConscript_linux64gl')
+	SConscript('project_files/SConscript_linux64gl')
 else:
     print "Warning: No valid Build selected! check config.ini"
 
@@ -41,11 +41,11 @@ if env.GetOption('clean'):
 	#call sconscripts to make sure the cleaner knows about the output files these create, and can clean them
 	#SConscript('SConscript_msvc')
 	#SConscript('SConscript_g++')
-	Execute(Delete('buildscripts/agnostik_' + buildname + '.sdf', must_exist=0))
-	Execute(Delete('buildscripts/agnostik_' + buildname + '.v12.suo', must_exist=0))
-	Execute(Delete('buildscripts/agnostik_' + buildname + '.opensdf', must_exist=0))
-	Execute(Delete('buildscripts/agnostik_' + buildname + '.vcxproj.user', must_exist=0))
-	Execute(Delete('buildscripts/release/', must_exist=0))
-	Execute(Delete('buildscripts/debug/', must_exist=0))
-	Execute(Delete('buildscripts/obj/', must_exist=0))
+	Execute(Delete('project_files/agnostik_' + buildname + '.sdf', must_exist=0))
+	Execute(Delete('project_files/agnostik_' + buildname + '.v12.suo', must_exist=0))
+	Execute(Delete('project_files/agnostik_' + buildname + '.opensdf', must_exist=0))
+	Execute(Delete('project_files/agnostik_' + buildname + '.vcxproj.user', must_exist=0))
+	Execute(Delete('project_files/release/', must_exist=0))
+	Execute(Delete('project_files/debug/', must_exist=0))
+	Execute(Delete('project_files/obj/', must_exist=0))
 	Execute(Delete('genfiles/', must_exist=0))
