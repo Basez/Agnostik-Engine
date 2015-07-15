@@ -16,7 +16,8 @@ namespace AGN
 
 	private:
 		void log(const char *a_log);
-		void getTimeFormatted(char *a_destination, unsigned int a_byteSize);
+		void getTimeFormatted(char *a_destination);
+		float getTickCount();
 
 		uint8_t m_outputTypes;
 		LogTimeType m_timeType;
