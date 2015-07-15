@@ -4,7 +4,7 @@
 
 using namespace AGN;
 
-int main(int argc, char* argv[])
+int main(int /*argc*/, char* /*argv*/[])
 {
 	g_log.init(LogTimeType::RunningTime, LoggerOutputType::Window);
 

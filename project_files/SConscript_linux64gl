@@ -14,19 +14,17 @@ print "buildname: " + buildname
 
 
 env.AppendUnique(CXXFLAGS=Split("-std=c++11"))						# specify c++11 mode is used for stuff like nullptr
-#env.AppendUnique(CXXFLAGS=['-Wl,-rpath, /home/basez/Projects/cross-platform-proof-of-concept/build'])
+env.AppendUnique(CXXFLAGS=Split(""))
 
 # specify include folder & libs folder
 libPaths= ['../libs/linux64']
 additionalIncludes = ['../include/common', '../include/api_gl', '../include/os_linux', '../libs/linux64/include']
 env.Append(CPPPATH = additionalIncludes)					
-	
 
-#setup PCH	
-#env['GCHSTOP'] = 'pch_cppoc.hpp'
-#env['GCH'] = env.PCH('source/pch_cppoc.cpp')[0]
-#generate(env)
-
+# set warnings
+env.AppendUnique(CXXFLAGS=['-Wall'])
+env.AppendUnique(CXXFLAGS=['-Wextra'])
+# env.AppendUnique(CXXFLAGS=['-fms-extensions']) 						# Source: https://gcc.gnu.org/onlinedocs/gcc/Unnamed-Fields.html
 """
 #install libraries! (when building on posix / linux systems)
 # TODO: figure out how to extract the libraries correctly
@@ -68,28 +66,27 @@ releaseLibNames=['SDL2', 'SDL2main', 'GL', 'GLU', 'GLEW', 'assimp']
 applicationProgramRelease = envRelease.Program(source = objsCommonRelease + objsAPIRelease + objsOSRelease, target = "../build/"+buildname+"/agnostik_release", LIBS = releaseLibNames, LIBPATH = libPaths)
 
 
-"""
 ##############################################################################
 # Create debug env
 envDebug = env.Clone()
 envDebug.AppendUnique(CXXFLAGS=['-gsplit-dwarf'])							# debug flag in dwarf output (folder is incorrect though)
 envDebug.AppendUnique(CXXFLAGS=['-g'])										# debug flag
-envDebug.VariantDir('buildfiles/gen-common-debug', 'source/common', duplicate=0)
-envDebug.VariantDir('buildfiles/gen-linux-debug', 'source/linux', duplicate=0)
 envDebug.Append(CPPDEFINES = ['_DEBUG'])
+envDebug.VariantDir('../genfiles/gen-common-debug', '../source/common', duplicate=0)		# specify intermediate folder for generated .obj files
+envDebug.VariantDir('../genfiles/gen-api_gl-debug', '../source/api_gl', duplicate=0)
+envDebug.VariantDir('../genfiles/gen-os_linux-debug', '../source/os_linux', duplicate=0)
 
-## Gather all cpp files, excluding the PCH (is compiled seperately)
-debugObjs = [file for file in envDebug.Glob('buildfiles/gen-common-debug/*.cpp')
-         if not file.name.startswith('pch_cppoc')]
 
-debugObjsLinux = [file for file in envDebug.Glob('buildfiles/gen-linux-debug/*.cpp')]
+## Gather all cpp files
+objsCommonDebug = [file for file in envDebug.Glob('../genfiles/gen-common-debug/*.cpp')]
+objsAPIDebug = [file for file in envDebug.Glob('../genfiles/gen-api_gl-debug/*.cpp')]
+objsOSDebug = [file for file in envDebug.Glob('../genfiles/gen-os_linux-debug/*.cpp')]
 
 ##specify release libs
 debugLibNames=['SDL2', 'SDL2main', 'GL', 'GLU', 'GLEW', 'assimp']
 
 ## create program
-applicationProgramDebug = envDebug.Program(source = debugObjs + debugObjsLinux, target = "build/gcc_debug", LIBS = debugLibNames, LIBPATH = libPaths)
-"""
+applicationProgramDebug = envDebug.Program(source = objsCommonDebug + objsAPIDebug + objsOSDebug, target = "../build/"+buildname+"/agnostik_debug", LIBS = debugLibNames, LIBPATH = libPaths)
 
 ##############################################################################
 Export('env')			# export var to scons main

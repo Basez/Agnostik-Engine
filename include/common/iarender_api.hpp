@@ -11,6 +11,8 @@ namespace AGN
 		virtual void renderDrawQueue() = 0;
 
 		virtual class IAWindow& getWindow() = 0;
+
+		virtual ~IARenderAPI() {}
 	};
 
 

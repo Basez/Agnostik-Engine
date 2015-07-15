@@ -42,7 +42,7 @@ void AGN::ARenderAPIGL::initOpenGL()
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
 	{
 		auto error = SDL_GetError();
-		//Log.error("error: %s \n", error);	// TODO:
+		g_log.error("error: %s", error);
 	}
 	// TODO: implement TTF 
 	//TTF_Init();
@@ -66,7 +66,7 @@ void AGN::ARenderAPIGL::initOpenGL()
 	// create window
 	m_window = new AWindowGL(glm::ivec2(800, 600));
 
-	SDL_GLContext openGL3Context = SDL_GL_CreateContext(m_window->getSDLWindow());
+	SDL_GL_CreateContext(m_window->getSDLWindow());
 	
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClearDepth(1.0f);
