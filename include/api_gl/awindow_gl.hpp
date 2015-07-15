@@ -2,7 +2,7 @@
 
 #include "iawindow.hpp"
 
-class SDL_Window;
+struct SDL_Window;
 
 namespace AGN
 {
