@@ -33,9 +33,7 @@ void AGN::ALoggerLinux::info(const char *a_info, ...)
 	char messageLog[512];
 	char timeLog[256];
 	getTimeFormatted(timeLog);
-	sprintf(messageLog, "%s| %s \n", timeLog, message);
-
-	// TODO: Change console text color
+	sprintf(messageLog, "\033[36m%s| %s\033[0m\n", timeLog, message); // blue-aquaish
 	
 	log(messageLog);
 }
@@ -53,7 +51,7 @@ void AGN::ALoggerLinux::debug(const char *a_info, ...)
 	char messageLog[512];
 	char timeLog[256];
 	getTimeFormatted(timeLog);
-	sprintf(messageLog, "%s| %s \n", timeLog, message);
+	sprintf(messageLog, "\033[32m%s| %s\033[0m\n", timeLog, message); // green
 
 	// TODO: Change console text color
 	
@@ -73,7 +71,7 @@ void AGN::ALoggerLinux::warning(const char *a_info, ...)
 	char messageLog[512];
 	char timeLog[256];
 	getTimeFormatted(timeLog);
-	sprintf(messageLog, "%s| %s \n", timeLog, message);
+	sprintf(messageLog, "\033[1;93m%s| %s\033[0m\n", timeLog, message); // bold & yellow
 
 	// TODO: Change console text color
 	
@@ -93,10 +91,8 @@ void AGN::ALoggerLinux::error(const char *a_info, ...)
 	char messageLog[512];
 	char timeLog[256];
 	getTimeFormatted(timeLog);
-	sprintf(messageLog, "%s| %s \n", timeLog, message);
+	sprintf(messageLog, "\033[1;31m%s| %s\033[0m\n", timeLog, message); // bold & red
 
-	// TODO: Change console text color
-	
 	log(messageLog);
 }
 
