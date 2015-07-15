@@ -37,8 +37,8 @@ objsCommonRelease = [file for file in envRelease.Glob('../genfiles/gen-common-re
 objsAPIRelease = [file for file in envRelease.Glob('../genfiles/gen-api_gl-release/*.cpp')]
 objsOSRelease = [file for file in envRelease.Glob('../genfiles/gen-os_win-release/*.cpp')]
  
+ specify release libs
 releaseLibNames=['SDL2', 'SDL2main', 'glew32', 'OpenGL32', 'glu32', 'assimp']
-#specify release libs
 
 # create program
 applicationProgramRelease = envRelease.Program(source = objsCommonRelease + objsAPIRelease + objsOSRelease, target = "../build/"+buildname+"/agnostik_release", LIBS = releaseLibNames, LIBPATH = libPaths)
@@ -68,6 +68,7 @@ debugLibNames=['SDL2', 'SDL2main', 'glew32', 'OpenGL32', 'glu32', 'assimp']
 # create debug program
 applicationProgramDebug = envDebug.Program(source = objsCommonDebug + objsAPIDebug + objsOSDebug, target = "../build/"+buildname+"/agnostik_debug", LIBS = debugLibNames, LIBPATH = libPaths)
 
+##############################################################################
 # generate msvs project  # MSVSProject OR MSVSSolution
 project = env.MSVSProject(target = 'agnostik_' + buildname + env['MSVSPROJECTSUFFIX'],
                 srcs = (Glob('../source/common/*.cpp', strings=True) +					## add all cpp files

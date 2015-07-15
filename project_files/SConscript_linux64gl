@@ -1,24 +1,26 @@
 import os
-#import gch
 
 Import('rootDir')
+Import('buildname')
 
-print "Executing gcc SConscript..."
-
-#Import('env')
-
-# this works, but creates shared lib errors I camt solve
-env = Environment(	ENV = {'PATH' : os.environ['PATH']},			# required to set path otherwise it cant find G++ & linker
+env = Environment(	TARGET_ARCH='x86_64',
+					ENV = {'PATH' : os.environ['PATH']},			# required to set path otherwise it cant find G++ & linker
 					tools = ['g++', 'gnulink'],						# make sure it uses gnu linker and compiler
 					CXX = 'g++')
+
+print "Executing gcc SConscript..."
+print "rootDir: " + rootDir
+print "buildname: " + buildname
+
 
 env.AppendUnique(CXXFLAGS=Split("-std=c++11"))						# specify c++11 mode is used for stuff like nullptr
 #env.AppendUnique(CXXFLAGS=['-Wl,-rpath, /home/basez/Projects/cross-platform-proof-of-concept/build'])
 
 # specify include folder & libs folder
-libPaths=['libs_linux']			
-additionalIncludes = ['include', './libs_linux/include']
-env.Append(CPPPATH = additionalIncludes)		
+libPaths= ['../libs/linux64']
+additionalIncludes = ['../include/common', '../include/api_gl', '../include/os_linux', '../libs/linux64/include']
+env.Append(CPPPATH = additionalIncludes)					
+	
 
 #setup PCH	
 #env['GCHSTOP'] = 'pch_cppoc.hpp'
@@ -37,34 +39,35 @@ env.Install(installDir, rootDir + "/libs_linux/libassimp.so.3")
 env.Alias('install', installDir)
 """
 
-
 ##############################################################################
 # Create release env
-"""
 envRelease = env.Clone()
 #envRelease.AppendUnique(LINKFLAGS=['/DEBUG'])								# add debug flag, comment out if final release?
-envRelease.VariantDir('buildfiles/gen-common-release', 'source/common', duplicate=0)
-envRelease.VariantDir('buildfiles/gen-linux-release', 'source/linux', duplicate=0)
+envRelease.VariantDir('../genfiles/gen-common-release', '../source/common', duplicate=0)		# specify intermediate folder for generated .obj files
+envRelease.VariantDir('../genfiles/gen-api_gl-release', '../source/api_gl', duplicate=0)
+envRelease.VariantDir('../genfiles/gen-os_linux-release', '../source/os_linux', duplicate=0)
+
 envRelease.AppendUnique(CXXFLAGS=['-O3'])	 								# Level 3 optimizations (release only)
 
-# Gather all cpp files, excluding the PCH (is compiled seperately)
-releaseObjs = [file for file in envRelease.Glob('buildfiles/gen-common-release/*.cpp') 
-         if not file.name.startswith('pch_cppoc')]
+# Gather all cpp files
+objsCommonRelease = [file for file in envRelease.Glob('../genfiles/gen-common-release/*.cpp')]
+objsAPIRelease = [file for file in envRelease.Glob('../genfiles/gen-api_gl-release/*.cpp')]
+objsOSRelease = [file for file in envRelease.Glob('../genfiles/gen-os_linux-release/*.cpp')]
 
-releaseObjsLinux = [file for file in envRelease.Glob('buildfiles/gen-linux-release/*.cpp')]
-"""
 """
 # debug/test to display files included 
-print "releaseObjs length: %i" % len(releaseObjs)
-for x in range(0, len(releaseObjs)):
-    print "File %i: '%s'" % (x, releaseObjs[x].name)
+print "objsCommonRelease length: %i" % len(objsCommonRelease)
+for x in range(0, len(objsCommonRelease)):
+    print "File %i: '%s'" % (x, objsCommonRelease[x].name)
 """
-"""
+
 #specify release libs
 releaseLibNames=['SDL2', 'SDL2main', 'GL', 'GLU', 'GLEW', 'assimp']
 
 # create program
-applicationProgramRelease = envRelease.Program(source = releaseObjs + releaseObjsLinux, target = "build/gcc_release", LIBS = releaseLibNames, LIBPATH = libPaths)
+applicationProgramRelease = envRelease.Program(source = objsCommonRelease + objsAPIRelease + objsOSRelease, target = "../build/"+buildname+"/agnostik_release", LIBS = releaseLibNames, LIBPATH = libPaths)
+
+
 """
 ##############################################################################
 # Create debug env
@@ -86,3 +89,7 @@ debugLibNames=['SDL2', 'SDL2main', 'GL', 'GLU', 'GLEW', 'assimp']
 
 ## create program
 applicationProgramDebug = envDebug.Program(source = debugObjs + debugObjsLinux, target = "build/gcc_debug", LIBS = debugLibNames, LIBPATH = libPaths)
+"""
+
+##############################################################################
+Export('env')			# export var to scons main
