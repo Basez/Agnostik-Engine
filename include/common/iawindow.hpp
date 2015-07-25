@@ -11,5 +11,7 @@ namespace AGN
 		virtual void showMessageBox(const char* a_title, const char* a_message) = 0;
 
 		virtual glm::ivec2 getDimentions() = 0;
+
+		virtual ~IAWindow() {}
 	};
 }

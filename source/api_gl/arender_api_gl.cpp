@@ -20,6 +20,11 @@ void AGN::ARenderAPIGL::init()
 {
 	initOpenGL();
 	initGlew();
+
+	// TODO: create device; class that initializes resources
+	// 
+	// TODO: create renderer (class that parses the renderqueue and renders them)
+	
 }
 
 void AGN::ARenderAPIGL::submitDrawCall()
