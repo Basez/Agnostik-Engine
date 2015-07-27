@@ -10,9 +10,11 @@ configDict = {}
 with open('config.ini', 'r') as configFile:
         for line in configFile:
             splitLine = line.split('=')
-            if len(splitLine) != 2 or splitLine[0].startswith('#'):
+            if len(splitLine) != 2 or splitLine[0].startswith('#') or splitLine[0].startswith(';'):
 			    continue
-            configDict[splitLine[0]] = splitLine[1].rstrip()
+            key = splitLine[0]
+            value = splitLine[1][splitLine[1].index('[')+1:splitLine[1].index(']')] # store as variable, the content is stripped of its first and last character (the [ and ])
+            configDict[key] = value
 
 # display config variables
 for key in configDict.iterkeys():

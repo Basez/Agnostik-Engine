@@ -6,7 +6,7 @@ namespace AGN
 	{
 		Window = 1,
 		Internal = 2, // TODO: create internal console (shown inside the main render window)
-		OutputDebug = 4, // windows only
+		OutputDebug = 4, // windows only, shows logs in visual studio console
 	};
 
 	enum class LogTimeType

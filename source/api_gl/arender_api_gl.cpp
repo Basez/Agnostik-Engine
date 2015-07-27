@@ -15,6 +15,9 @@
 
 AGN::ARenderAPIGL::ARenderAPIGL()
 	: m_window(nullptr)
+	, m_device(nullptr)
+	, m_assetManager(nullptr)
+	, m_renderer(nullptr)
 {
 }
 
