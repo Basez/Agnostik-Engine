@@ -1,7 +1,9 @@
 #include "asharedh.hpp"
 #include "arender_api_gl.hpp"
-#include "iawindow.hpp"
 #include "awindow_gl.hpp"
+#include "adevice_gl.hpp"
+#include "aassetmanager_gl.hpp"
+#include "arenderer_gl.hpp"
 
 // glew
 #include <GL/glew.h>
@@ -21,10 +23,17 @@ void AGN::ARenderAPIGL::init()
 	initOpenGL();
 	initGlew();
 
-	// TODO: create device; class that initializes resources
-	// 
-	// TODO: create renderer (class that parses the renderqueue and renders them)
-	
+	// create device; class that initializes resources
+	m_device = new ADeviceGL();
+	m_device->init();
+
+	// create asset manager
+	m_assetManager = new AAssetManagerGL();
+	m_assetManager->init();
+
+	//  create renderer (class that parses the renderqueue and renders them)
+	m_renderer = new ARendererGL();
+	m_renderer->init();
 }
 
 void AGN::ARenderAPIGL::submitDrawCall()
@@ -35,11 +44,6 @@ void AGN::ARenderAPIGL::submitDrawCall()
 void AGN::ARenderAPIGL::renderDrawQueue()
 {
 
-}
-
-AGN::IAWindow& AGN::ARenderAPIGL::getWindow()
-{
-	return dynamic_cast<IAWindow&>(*m_window);
 }
 
 void AGN::ARenderAPIGL::initOpenGL()
@@ -108,3 +112,23 @@ void AGN::ARenderAPIGL::initGlew()
 	}
 }
 
+AGN::IAWindow& AGN::ARenderAPIGL::getWindow()
+{
+	return dynamic_cast<IAWindow&>(*m_window);
+}
+
+AGN::IADevice& AGN::ARenderAPIGL::getDevice()
+{
+	return dynamic_cast<IADevice&>(*m_device);
+	//return *m_device;
+}
+
+AGN::IAAssetManager& AGN::ARenderAPIGL::getAssetManager()
+{
+	return dynamic_cast<IAAssetManager&>(*m_assetManager);
+}
+
+AGN::IARenderer& AGN::ARenderAPIGL::getRenderer()
+{
+	return dynamic_cast<IARenderer&>(*m_renderer);
+}

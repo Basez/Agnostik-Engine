@@ -1,6 +1,5 @@
 #pragma once
 
-// TODO:
 namespace AGN
 {
 	class IARenderAPI
@@ -11,10 +10,11 @@ namespace AGN
 		virtual void renderDrawQueue() = 0;
 
 		virtual class IAWindow& getWindow() = 0;
+		virtual class IADevice& getDevice() = 0;
+		virtual class IAAssetManager& getAssetManager() = 0;
+		virtual class IARenderer& getRenderer() = 0;
 
 		virtual ~IARenderAPI() {}
 	};
-
-
 
 }
