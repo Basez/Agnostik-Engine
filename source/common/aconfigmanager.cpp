@@ -54,7 +54,7 @@ std::string AGN::AConfigManager::getConfigProperty(std::string a_key)
 {
 	if (m_configProperties.find(a_key) == m_configProperties.end())
 	{
-		g_log.error("Config property with key: %s was not found!", a_key);
+		g_log.error("Config property with key: %s was not found!", a_key.c_str());
 		return "error";
 	}
 

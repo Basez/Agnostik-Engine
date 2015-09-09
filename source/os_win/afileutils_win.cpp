@@ -8,10 +8,10 @@
 
 using namespace std;
 
-int AGN::AFileUtils::getLastlowFileChangeTime(char* a_filename)
+int AGN::AFileUtils::getLastlowFileChangeTime(std::string a_filename)
 {
 	WIN32_FIND_DATA findData;
-	HANDLE hHandle = FindFirstFile((LPCSTR)a_filename, &findData);
+	HANDLE hHandle = FindFirstFile((LPCSTR)a_filename.c_str(), &findData);
 	int success = GetFileTime(hHandle, NULL, NULL, NULL);
 
 	return findData.ftLastWriteTime.dwLowDateTime;
@@ -81,12 +81,12 @@ std::string AGN::AFileUtils::getPathRelativeToPath(std::string a_originPath, std
 	return relativePath;
 }
 
-std::string AGN::AFileUtils::findFile(const char* a_file, const char* a_startFolder, int a_deepLevel, int a_upLevel)
+std::string AGN::AFileUtils::findFile(std::string a_file, std::string a_startFolder, int a_deepLevel, int a_upLevel)
 {
 	DIR *dir;
 	struct dirent *ent;
 
-	if ((dir = opendir(a_startFolder)) != NULL)
+	if ((dir = opendir(a_startFolder.c_str())) != NULL)
 	{
 		/* print all the files and directories within directory */
 		while ((ent = readdir(dir)) != NULL)
@@ -103,8 +103,8 @@ std::string AGN::AFileUtils::findFile(const char* a_file, const char* a_startFol
 				if (a_deepLevel > 0)
 				{
 					// append string
-					string folderFullPath = string(string(a_startFolder) + string("\\") + string(ent->d_name)).c_str();
-					string fileABitDeeper = AGN::AFileUtils::findFile(a_file, folderFullPath.c_str(), a_deepLevel - 1, 0); // from this point can only go deeper (not up)
+					string folderFullPath = string(string(a_startFolder.c_str()) + string("\\") + string(ent->d_name)).c_str();
+					string fileABitDeeper = AGN::AFileUtils::findFile(a_file.c_str(), folderFullPath.c_str(), a_deepLevel - 1, 0); // from this point can only go deeper (not up)
 					if (fileABitDeeper.size() > 0)
 					{
 						// FOUND IT IN A DEEPER FOLDER
@@ -112,13 +112,13 @@ std::string AGN::AFileUtils::findFile(const char* a_file, const char* a_startFol
 					}
 				}
 			}
-			else if (strcmp(ent->d_name, a_file) == 0)
+			else if (strcmp(ent->d_name, a_file.c_str()) == 0)
 			{
 				//Log.debug("FOUND THE FILE");
 				std::string foundFile = ent->d_name;
 				closedir(dir);
 
-				string fileLocation = string(a_startFolder) + string("\\") + foundFile;
+				string fileLocation = string(a_startFolder.c_str()) + string("\\") + foundFile;
 				return fileLocation;
 			}
 			else
@@ -130,15 +130,15 @@ std::string AGN::AFileUtils::findFile(const char* a_file, const char* a_startFol
 	}
 	else
 	{
-		g_log.error("error opening folder: %s", a_startFolder);
+		g_log.error("error opening folder: %s", a_startFolder.c_str());
 		return "";
 	}
 
 	// not yet found, lets go up (if we can)
 	if (a_upLevel > 0)
 	{
-		string upFolderPath = getUpDirectory(a_startFolder);
-		string fileAbitUp = AGN::AFileUtils::findFile(a_file, upFolderPath.c_str(), 0, a_upLevel - 1); // from this point can only go upper (not deeper)
+		string upFolderPath = getUpDirectory(a_startFolder.c_str());
+		string fileAbitUp = AGN::AFileUtils::findFile(a_file.c_str(), upFolderPath.c_str(), 0, a_upLevel - 1); // from this point can only go upper (not deeper)
 
 		if (fileAbitUp.size() > 0)
 		{
