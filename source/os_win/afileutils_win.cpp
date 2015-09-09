@@ -38,7 +38,7 @@ int AGN::AFileUtils::getFileSizeBytes(std::string a_filename)
 /************************************************************************/
 std::string AGN::AFileUtils::getDirectoryOfPath(std::string a_path)
 {
-	string pathAsString = a_path;
+	std::string pathAsString = a_path;
 
 	// check if its a / or \\ path!
 	int rsIndex = (int)pathAsString.find_last_of('/');
@@ -47,7 +47,7 @@ std::string AGN::AFileUtils::getDirectoryOfPath(std::string a_path)
 	int lsIndex = (int)pathAsString.find_last_of("\\\\");
 	if (lsIndex != -1) return pathAsString.substr(0, lsIndex).c_str();
 
-	g_log.error("cant get directory of path: %s --> weird format", a_path);
+	g_log.error("cant get directory of path: %s --> weird format", a_path.c_str());
 
 	return "";
 }
