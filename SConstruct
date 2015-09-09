@@ -47,6 +47,7 @@ if env.GetOption('clean'):
 	Execute(Delete('project_files/agnostik_' + buildname + '.v12.suo', must_exist=0))
 	Execute(Delete('project_files/agnostik_' + buildname + '.opensdf', must_exist=0))
 	Execute(Delete('project_files/agnostik_' + buildname + '.vcxproj.user', must_exist=0))
+	Execute(Delete('project_files/.vs/', must_exist=0))
 	Execute(Delete('project_files/release/', must_exist=0))
 	Execute(Delete('project_files/debug/', must_exist=0))
 	Execute(Delete('project_files/obj/', must_exist=0))

@@ -15,6 +15,11 @@ HANDLE g_hConsole = nullptr;
 AGN::ALoggerWin LoggerWin = AGN::ALoggerWin();
 AGN::IALogger& g_log = LoggerWin;
 
+AGN::ALoggerWin::~ALoggerWin()
+{
+	if (g_hConsole != nullptr) CloseHandle(g_hConsole);
+}
+
 void AGN::ALoggerWin::init(LogTimeType a_timeType, uint8_t a_outputTypes)
 {
 	m_outputTypes = a_outputTypes;
@@ -27,46 +32,15 @@ void AGN::ALoggerWin::init(LogTimeType a_timeType, uint8_t a_outputTypes)
 
 void AGN::ALoggerWin::createConsole()
 {
-	int hConHandle;
-	long lStdHandle;
-	CONSOLE_SCREEN_BUFFER_INFO coninfo;
-	FILE *fp;
-
-	// allocate a console for ths app
+	// allocate a console for this app
 	AllocConsole();
 
-	// set the screen buffer to be big enough to let us scroll text
-	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &coninfo);
-	coninfo.dwSize.Y = 75;//MAX_CONSOLE_LINES;
-	coninfo.dwSize.X = 75;
-	//coninfo.dwMaximumWindowSize.Y = ;
-	//coninfo.dwMaximumWindowSize.X = ;
-	SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coninfo.dwSize);
+	// connect stdin/out/err
+	freopen("conin$", "r", stdin);
+	freopen("conout$", "w", stdout);
+	freopen("conout$", "w", stderr);
 
-	// redirect unbuffered STDOUT to the console
-	lStdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
-	hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
-	fp = _fdopen(hConHandle, "w");
-	*stdout = *fp;
-	setvbuf(stdout, NULL, _IONBF, 0);
-
-	// redirect unbuffered STDIN to the console
-	lStdHandle = (long)GetStdHandle(STD_INPUT_HANDLE);
-	hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
-	fp = _fdopen(hConHandle, "r");
-	*stdin = *fp;
-	setvbuf(stdin, NULL, _IONBF, 0);
-
-	// redirect unbuffered STDERR to the console
-	lStdHandle = (long)GetStdHandle(STD_ERROR_HANDLE);
-	hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
-	fp = _fdopen(hConHandle, "w");
-	*stderr = *fp;
-	setvbuf(stderr, NULL, _IONBF, 0);
-
-	// make cout, wcout, cin, wcin, wcerr, cerr, wclog and clog
-	// point to console as well
-	std::ios::sync_with_stdio();
+	g_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 }
 
 void AGN::ALoggerWin::info(const char *a_info, ...)

@@ -3,14 +3,13 @@ import os
 Import('rootDir')
 Import('buildname')
 
-env = Environment(TARGET_ARCH='x86_64')
+env = Environment(TARGET_ARCH='x86_64', platform = 'win32', MSVC_VERSION='12.0')
 
 print "Executing MSVC SConscript..."
 print "rootDir: " + rootDir
 print "buildname: " + buildname
 
 # Compiler & Linker commands
-env['MSVC_VERSION'] = '12.0'
 env.AppendUnique(CXXFLAGS=Split("/EHsc"))				# specify compiler unwind semantics
 env.AppendUnique(CXXFLAGS = ['/W3'])					# warning level
 env.AppendUnique(LINKFLAGS = ['/SUBSYSTEM:WINDOWS'])
@@ -69,6 +68,7 @@ debugLibNames=['SDL2', 'SDL2main', 'glew32', 'OpenGL32', 'glu32', 'assimp']
 # create debug program
 applicationProgramDebug = envDebug.Program(source = objsCommonDebug + objsAPIDebug + objsOSDebug, target = "../build/"+buildname+"/agnostik_debug", LIBS = debugLibNames, LIBPATH = libPaths)
 
+
 ##############################################################################
 # generate msvs project  # MSVSProject OR MSVSSolution
 project = env.MSVSProject(target = 'agnostik_' + buildname + env['MSVSPROJECTSUFFIX'],
@@ -83,4 +83,5 @@ project = env.MSVSProject(target = 'agnostik_' + buildname + env['MSVSPROJECTSUF
 				runfile = ['../build/'+buildname+'/agnostik_debug', '../build/'+buildname+'/agnostik_release'])
 				
 ##############################################################################
+
 Export('env')			# export var to scons main

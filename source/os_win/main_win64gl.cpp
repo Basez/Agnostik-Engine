@@ -12,16 +12,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
 	g_log.init(LogTimeType::RunningTime, LoggerOutputType::Window | LoggerOutputType::OutputDebug);
 
+	
 	// load configurations
 	std::string currentFolder = AFileUtils::getCurrentFolder();
 	std::string configFile = AFileUtils::findFile("config.ini", currentFolder.c_str(), 3, 3);
 	std::string rootFolder = AFileUtils::getDirectoryOfPath(configFile);
 	g_configManager.parseConfigFile(configFile);
 
+
 	IARenderAPI* renderAPI = new ARenderAPIGL();
 
 	g_application.run(renderAPI);
-
+	
 	g_application.cleanup(); 
 
 	delete renderAPI;
