@@ -4,6 +4,7 @@
 #include "adevice_gl.hpp"
 #include "aassetmanager_gl.hpp"
 #include "arenderer_gl.hpp"
+#include "aconfigmanager.hpp"
 
 // glew
 #include <GL/glew.h>
@@ -76,7 +77,10 @@ void AGN::ARenderAPIGL::initOpenGL()
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
 
 	// create window
-	m_window = new AWindowGL(glm::ivec2(800, 600));
+	glm::ivec2 resolution;
+	resolution.x = g_configManager.getConfigPropertyAsInt32("start_resolution_x");
+	resolution.y = g_configManager.getConfigPropertyAsInt32("start_resolution_y");
+	m_window = new AWindowGL(resolution);
 
 	SDL_GL_CreateContext(m_window->getSDLWindow());
 	

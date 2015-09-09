@@ -15,14 +15,6 @@ void AAplication::run(class IARenderAPI* a_renderAPI)
 	m_renderAPI = a_renderAPI;
 	m_quit = false;
 
-	int* testIntPointer = nullptr;
-
-	g_log.debug("pointer size: %i", sizeof(testIntPointer));
-	g_log.info("info test");
-	g_log.debug("debug test");
-	g_log.warning("warning test");
-	g_log.error("error test");
-
 	m_renderAPI->init();
 	
 	m_sceneManager = new ASceneManager();

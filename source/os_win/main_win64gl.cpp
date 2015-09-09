@@ -12,6 +12,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
 	g_log.init(LogTimeType::RunningTime, LoggerOutputType::Window | LoggerOutputType::OutputDebug);
 
+	int* testIntPointer = nullptr;
+
+	g_log.debug("pointer size: %i", sizeof(testIntPointer));
+	g_log.info("info test");
+	g_log.debug("debug test");
+	g_log.warning("warning test");
+	g_log.error("error test");
 	
 	// load configurations
 	std::string currentFolder = AFileUtils::getCurrentFolder();

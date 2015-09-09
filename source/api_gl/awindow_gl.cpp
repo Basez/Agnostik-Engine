@@ -24,7 +24,7 @@ AGN::AWindowGL::AWindowGL(glm::ivec2 a_dimentions)
 	//	windowName = appName + string(" - DEBUG");
 	//#endif
 
-	m_sdlWindow = SDL_CreateWindow("SDL window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, flags);
+	m_sdlWindow = SDL_CreateWindow("SDL window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, a_dimentions.x, a_dimentions.y, flags);
 
 	if (m_sdlWindow == nullptr)
 		SDL_ShowSimpleMessageBox(0, "Window init error", SDL_GetError(), m_sdlWindow);

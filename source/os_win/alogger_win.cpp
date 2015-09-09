@@ -11,6 +11,8 @@
 #include <iomanip>
 
 HANDLE g_hConsole = nullptr;
+FILE* g_pCout = nullptr;
+FILE* g_pCin = nullptr;
 
 AGN::ALoggerWin LoggerWin = AGN::ALoggerWin();
 AGN::IALogger& g_log = LoggerWin;
@@ -18,6 +20,8 @@ AGN::IALogger& g_log = LoggerWin;
 AGN::ALoggerWin::~ALoggerWin()
 {
 	if (g_hConsole != nullptr) CloseHandle(g_hConsole);
+	if (g_pCout != nullptr) fclose(g_pCout);
+	if (g_pCin != nullptr) fclose(g_pCin);
 }
 
 void AGN::ALoggerWin::init(LogTimeType a_timeType, uint8_t a_outputTypes)
@@ -35,10 +39,14 @@ void AGN::ALoggerWin::createConsole()
 	// allocate a console for this app
 	AllocConsole();
 
+	freopen_s(&g_pCin, "conin$", "r", stdin);
+	freopen_s(&g_pCout, "conout$", "w", stdout);
+	freopen_s(&g_pCout, "conout$", "w", stderr);
+
 	// connect stdin/out/err
-	freopen("conin$", "r", stdin);
-	freopen("conout$", "w", stdout);
-	freopen("conout$", "w", stderr);
+	//freopen("conin$", "r", stdin);
+	//freopen("conout$", "w", stdout);
+	//freopen("conout$", "w", stderr);
 
 	g_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 }
