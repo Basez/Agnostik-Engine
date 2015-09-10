@@ -1,5 +1,6 @@
 #include "asharedh.hpp"
 #include "adevice_gl.hpp"
+#include "iamesh.hpp"
 
 // glew
 #include <GL/glew.h>
@@ -17,5 +18,11 @@ AGN::ADeviceGL::ADeviceGL()
 void AGN::ADeviceGL::init()
 {
 	
+}
+
+
+AGN::IAMesh* AGN::ADeviceGL::createMesh(AGN::MeshData& a_meshData)
+{
+	return nullptr;
 }
 

@@ -1,5 +1,6 @@
 #include "asharedh.hpp"
 #include "aconfigmanager.hpp"
+#include "afileutils.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -22,6 +23,8 @@ bool AGN::AConfigManager::parseConfigFile(std::string a_configFile)
 {
 	g_log.info("parsing config file..");
 
+	string configFileFolder = AFileUtils::getDirectoryOfPath(a_configFile); // (aka root folder)
+
 	std::ifstream file;
 	file.open(a_configFile, std::ifstream::in);
 	if (!file.is_open())
@@ -40,6 +43,13 @@ bool AGN::AConfigManager::parseConfigFile(std::string a_configFile)
 		string key, value;
 
 		AGN::AConfigManager::getPropertiesOfLine(line, key, value);
+
+		// check if value needs certain processing (eg: if its a relative path)
+		if (value.substr(0, 1).compare("/") == 0)
+		{
+			// value is a relative path, lets make it a full path
+			value = configFileFolder.append(value);
+		}
 
 		m_configProperties[key] = value;
 
@@ -85,4 +95,3 @@ int32_t AGN::AConfigManager::getConfigPropertyAsInt32(std::string a_key)
 
 	return atoi(propertyAsString.c_str());
 }
-

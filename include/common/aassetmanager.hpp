@@ -10,7 +10,7 @@ namespace AGN
 		AAssetManager();
 
 		void init();
-		class IAMesh& loadModel(std::string a_relativePath);
+		class IAMesh& loadMesh(std::string a_relativePath, uint32_t additional_assimp_flags = 0);
 
 	private:
 		std::vector<class IAMesh*> m_meshList;

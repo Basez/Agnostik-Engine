@@ -9,5 +9,7 @@ namespace AGN
 	public:
 		ADeviceGL();
 		void init() override;
+		class AGN::IAMesh* createMesh(struct AGN::MeshData& a_meshData) override;
+
 	};
 }

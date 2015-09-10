@@ -173,3 +173,4 @@ std::string AGN::AFileUtils::getExecutableName(bool a_includeType)
 
 	return nameWithoutType.c_str();
 }
+

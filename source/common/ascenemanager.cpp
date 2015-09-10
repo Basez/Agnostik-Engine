@@ -22,7 +22,7 @@ void AGN::ASceneManager::init()
 
 void AGN::ASceneManager::loadTestScene01()
 {
-	IAMesh& suzanneMesh = g_application.getAssetManager().loadModel("models/suzanne.obj");
+	IAMesh& suzanneMesh = g_application.getAssetManager().loadMesh("suzanne.obj");
 }
 
 void AGN::ASceneManager::addNode()
