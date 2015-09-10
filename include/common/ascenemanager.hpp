@@ -7,8 +7,10 @@ namespace AGN
 	public:
 		ASceneManager();
 		~ASceneManager();
-		
 		void init();
+		void loadTestScene01();
+
+	private:
 		void addNode();
 	};
 }

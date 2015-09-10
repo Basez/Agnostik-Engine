@@ -2,7 +2,6 @@
 #include "arender_api_gl.hpp"
 #include "awindow_gl.hpp"
 #include "adevice_gl.hpp"
-#include "aassetmanager_gl.hpp"
 #include "arenderer_gl.hpp"
 #include "aconfigmanager.hpp"
 
@@ -17,7 +16,6 @@
 AGN::ARenderAPIGL::ARenderAPIGL()
 	: m_window(nullptr)
 	, m_device(nullptr)
-	, m_assetManager(nullptr)
 	, m_renderer(nullptr)
 {
 }
@@ -30,10 +28,6 @@ void AGN::ARenderAPIGL::init()
 	// create device; class that initializes resources
 	m_device = new ADeviceGL();
 	m_device->init();
-
-	// create asset manager
-	m_assetManager = new AAssetManagerGL();
-	m_assetManager->init();
 
 	//  create renderer (class that parses the renderqueue and renders them)
 	m_renderer = new ARendererGL();
@@ -127,12 +121,6 @@ AGN::IAWindow& AGN::ARenderAPIGL::getWindow()
 AGN::IADevice& AGN::ARenderAPIGL::getDevice()
 {
 	return dynamic_cast<IADevice&>(*m_device);
-	//return *m_device;
-}
-
-AGN::IAAssetManager& AGN::ARenderAPIGL::getAssetManager()
-{
-	return dynamic_cast<IAAssetManager&>(*m_assetManager);
 }
 
 AGN::IARenderer& AGN::ARenderAPIGL::getRenderer()

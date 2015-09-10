@@ -15,7 +15,6 @@ namespace AGN
 
 		virtual class IAWindow& getWindow() override;
 		virtual class IADevice& getDevice() override;
-		virtual class IAAssetManager& getAssetManager() override;
 		virtual class IARenderer& getRenderer() override;
 
 	private:
@@ -24,7 +23,6 @@ namespace AGN
 
 		class AWindowGL* m_window;
 		class ADeviceGL* m_device;
-		class AAssetManagerGL* m_assetManager;
 		class ARendererGL* m_renderer;
 	};
 }

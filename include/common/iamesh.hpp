@@ -6,5 +6,6 @@ namespace AGN
 	{
 	public:
 		virtual ~IAMesh() {}
+		virtual std::string getRelativePath() = 0;
 	};
 }

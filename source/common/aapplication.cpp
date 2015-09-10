@@ -4,23 +4,24 @@
 #include "iawindow.hpp"
 #include "ascenemanager.hpp"
 #include "aconfigmanager.hpp"
+#include "aassetmanager.hpp"
 
-using namespace AGN;
+AGN::AAplication appTemp = AGN::AAplication();
+AGN::AAplication& g_application = appTemp;
 
-AAplication appTemp = AAplication();
-AAplication& g_application = appTemp;
-
-void AAplication::run(class IARenderAPI* a_renderAPI)
+void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 {
 	m_renderAPI = a_renderAPI;
 	m_quit = false;
 
 	m_renderAPI->init();
 	
+	m_assetManager = new AAssetManager();
+	m_assetManager->init();
+
 	m_sceneManager = new ASceneManager();
 	m_sceneManager->init();
-
-	m_sceneManager->addNode(); // Add model somehow?
+	m_sceneManager->loadTestScene01();
 
 	while (!m_quit)
 	{
@@ -31,25 +32,31 @@ void AAplication::run(class IARenderAPI* a_renderAPI)
 
 		m_renderAPI->getWindow().getDimentions();
 	}
+
 }
 
-void AAplication::cleanup()
+void AGN::AAplication::cleanup()
 {
 	m_renderAPI = nullptr;
 }
 
-void AAplication::update()
+void AGN::AAplication::update()
 {
 
 }
 
-void AAplication::fetchRender()
+void AGN::AAplication::fetchRender()
 {
 	// fetch all draw calls 
 }
 
 
-IARenderAPI& AAplication::getRenderAPI()
+AGN::IARenderAPI& AGN::AAplication::getRenderAPI()
 {
-	return dynamic_cast<IARenderAPI&>(*m_renderAPI);
+	return dynamic_cast<AGN::IARenderAPI&>(*m_renderAPI);
+}
+
+AGN::AAssetManager& AGN::AAplication::getAssetManager()
+{
+	return *m_assetManager;
 }

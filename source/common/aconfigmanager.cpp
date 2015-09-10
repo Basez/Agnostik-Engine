@@ -64,7 +64,7 @@ std::string AGN::AConfigManager::getConfigProperty(std::string a_key)
 // LobbyIP=[127.0.0.1] --> Key: "LobbyIP" --> Value: "127.0.0.1"
 void AGN::AConfigManager::getPropertiesOfLine(string a_line, string &out_key, string &out_value)
 {
-	int foundIndex = a_line.find_first_of("=[");
+	int foundIndex = (int)a_line.find_first_of("=[");
 
 	if (foundIndex == string::npos)
 	{
@@ -73,7 +73,7 @@ void AGN::AConfigManager::getPropertiesOfLine(string a_line, string &out_key, st
 	}
 
 	int beginOfProperty = foundIndex + 2;
-	int propertyLength = a_line.find_last_of("]") - beginOfProperty;
+	int propertyLength = (int)a_line.find_last_of("]") - beginOfProperty;
 
 	out_key = a_line.substr(0, foundIndex);
 	out_value = a_line.substr(beginOfProperty, propertyLength);

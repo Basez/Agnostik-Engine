@@ -1,5 +1,5 @@
 #include "asharedh.hpp"
-#include "aassetmanager_gl.hpp"
+#include "amesh_gl.hpp"
 
 // glew
 #include <GL/glew.h>
@@ -9,13 +9,14 @@
 #include <SDL/SDL_opengl.h>
 
 
-AGN::AAssetManagerGL::AAssetManagerGL()
+AGN::AMeshGL::AMeshGL()
 {
 
 }
 
-void AGN::AAssetManagerGL::init()
+std::string AGN::AMeshGL::getRelativePath()
 {
-	
+	return "TODO:";
 }
+
 
