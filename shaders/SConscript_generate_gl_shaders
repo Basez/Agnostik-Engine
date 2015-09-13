@@ -1,0 +1,92 @@
+import os
+import filecmp
+import md5
+
+Import('rootDir')
+Import('buildname')
+Import('env')
+
+print "Executing gl shader generation SConscript..."
+#print "rootDir: " + rootDir
+#print "buildname: " + buildname
+
+# setup vars
+shaderSourceFolder = rootDir + '/shaders/source_gl'
+shaderOutputFolder = rootDir + '/shaders/output_gl'
+signaturesFilePath = shaderOutputFolder + "/" + "signatures"
+
+# function that loads signatures out of the signatures file
+def loadSignatures():
+	if os.path.isfile(signaturesFilePath):
+		print "found signatures file"
+		return [line.rstrip('\n') for line in open(signaturesFilePath)]
+	else:
+		print "did not find signatures file"
+		return []
+
+# function that writes signatures into file
+def writeSignatures(signatureList):
+	signatureFile = open(signaturesFilePath,'w')
+	signatureFile.truncate() # clean the file
+	for signature in signatureList:
+		signatureFile.write(signature + '\n')
+	signatureFile.close()
+
+# function that creates an actual shader cpp header using a shader file as source
+def createShaderHeader(sourceFile):
+	# create variable name for shader
+	shaderName = "shader_" + sourceFile[:sourceFile.index('.')] + '_' + sourceFile[sourceFile.index('.')+1:]
+	shaderInputPath = shaderSourceFolder + "/" + sourceFile
+	shaderOutputPath = shaderOutputFolder + "/" + shaderName + ".hpp"
+		
+	# read input into list
+	with open(shaderInputPath) as f:
+		shaderInputLines = f.readlines()
+		
+	# write list into output
+	shaderOutput = open(shaderOutputPath,'w')
+	shaderOutput.write('static const char* g_' + shaderName + '= "" \n')	
+	for inputLine in shaderInputLines:
+		shaderOutput.write('\t"' + inputLine.rstrip('\n') + '" \n')
+	shaderOutput.write(";")
+	shaderOutput.close()
+	
+################################################################################################################
+
+# get list of shaders
+shaderList = [f for f in os.listdir(shaderSourceFolder) if os.path.isfile(os.path.join(shaderSourceFolder, f))]
+
+print "number of shaders found: %i" % len(shaderList)
+
+oldSignatureDB = loadSignatures()
+newSignatureDB = []
+
+# make shaders into full paths
+#for i,path in enumerate(shaderList):
+#    shaderList[i] = shaderSourceFolder + "/" + shaderList[i]
+
+# append full path behind it
+#for file in shaderList:
+#	file = shaderSourceFolder + file
+
+# loop through shaders and compare agains their generated MD5 sums to see if the file has changed
+for shaderFileName in shaderList:
+	with open (shaderSourceFolder + "/" + shaderFileName, "r") as shaderFile:
+		shaderAsString=shaderFile.read().replace('\n', '')	
+		#print "shaderAsString: " + shaderAsString
+	hash = md5.new()
+	hash.update(shaderAsString)
+	shaderSignature = hash.hexdigest() # this generates the checksum
+	
+	if shaderSignature in oldSignatureDB:
+		# already updated to latest version
+		newSignatureDB.append(shaderSignature)
+	else:
+		# not in list (file is changed or new)
+		print "New / changed shader found: " + shaderFileName
+		createShaderHeader(shaderFileName)
+		newSignatureDB.append(shaderSignature)
+
+
+# now store the new updated Signature DB
+writeSignatures(newSignatureDB)

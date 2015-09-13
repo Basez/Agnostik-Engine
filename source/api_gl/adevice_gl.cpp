@@ -4,7 +4,6 @@
 #include "amesh_gl.hpp"
 #include "atexture_gl.hpp"
 
-
 // glew
 #include <GL/glew.h>
 
