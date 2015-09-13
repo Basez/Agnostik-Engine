@@ -29,6 +29,7 @@ env.AppendUnique(CXXFLAGS=['-Wall'])
 env.AppendUnique(CXXFLAGS=['-Wextra'])
 env.AppendUnique(CXXFLAGS=['-Wno-comment']) # disable the "/*" warning
 # env.AppendUnique(CXXFLAGS=['-fms-extensions']) 						# Source: https://gcc.gnu.org/onlinedocs/gcc/Unnamed-Fields.html
+
 """
 #install libraries! (when building on posix / linux systems)
 # TODO: figure out how to extract the libraries correctly
@@ -79,16 +80,15 @@ envDebug.VariantDir('../genfiles/gen-common-debug', '../source/common', duplicat
 envDebug.VariantDir('../genfiles/gen-api_gl-debug', '../source/api_gl', duplicate=0)
 envDebug.VariantDir('../genfiles/gen-os_linux-debug', '../source/os_linux', duplicate=0)
 
-
-## Gather all cpp files
+# Gather all cpp files
 objsCommonDebug = [file for file in envDebug.Glob('../genfiles/gen-common-debug/*.cpp')]
 objsAPIDebug = [file for file in envDebug.Glob('../genfiles/gen-api_gl-debug/*.cpp')]
 objsOSDebug = [file for file in envDebug.Glob('../genfiles/gen-os_linux-debug/*.cpp')]
 
-##specify release libs
+#specify release libs
 debugLibNames=['SDL2', 'SDL2main', 'GL', 'GLU', 'GLEW', 'assimp']
 
-## create program
+# create program
 applicationProgramDebug = envDebug.Program(source = objsCommonDebug + objsAPIDebug + objsOSDebug, target = "../build/"+buildname+"/agnostik_debug", LIBS = debugLibNames, LIBPATH = libPaths)
 
 ##############################################################################

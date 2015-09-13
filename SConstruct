@@ -52,3 +52,6 @@ if env.GetOption('clean'):
 	Execute(Delete('project_files/debug/', must_exist=0))
 	Execute(Delete('project_files/obj/', must_exist=0))
 	Execute(Delete('genfiles/', must_exist=0))
+	Execute(Delete('shaders/output_dx', must_exist=0))
+	Execute(Delete('shaders/output_gl/', must_exist=0))
+
