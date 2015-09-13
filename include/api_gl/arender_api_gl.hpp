@@ -17,10 +17,13 @@ namespace AGN
 		virtual class IADevice& getDevice() override;
 		virtual class IARenderer& getRenderer() override;
 
+		void logAvailableGLExtensions();
+
 	private:
 		void initOpenGL();
 		void initGlew();
 
+		bool m_initialized;
 		class AWindowGL* m_window;
 		class ADeviceGL* m_device;
 		class ARendererGL* m_renderer;

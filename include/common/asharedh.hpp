@@ -6,6 +6,8 @@
 
 #include <iostream>
 #include <string>
+#include <ios>
+#include <stdint.h>
 
 // GLM
 #define GLM_FORCE_RADIANS // force use of radians everywhere
@@ -16,7 +18,10 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
-#include <stdint.h>
-
-// Logger
+// Agnostik shared classes
 #include "ialogger.hpp"
+#include "aconversionutils.hpp"
+
+// TODO: DOCUMENT, used for openGL's VBO initializations
+#define BUFFER_OFFSET(i) ((char*)NULL + (i))
+#define MEMBER_OFFSET(s,m) ((char*)NULL + (offsetof(s,m)))

@@ -9,7 +9,10 @@
 #include <SDL/SDL_opengl.h>
 
 
-AGN::AMeshGL::AMeshGL()
+AGN::AMeshGL::AMeshGL(uint32_t a_vao, uint32_t *a_vbos, uint8_t a_vboCount)
+	: m_vao(a_vao),
+	m_vbos(a_vbos),
+	m_vboCount(a_vboCount)
 {
 
 }

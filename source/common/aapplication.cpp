@@ -50,7 +50,6 @@ void AGN::AAplication::fetchRender()
 	// fetch all draw calls 
 }
 
-
 AGN::IARenderAPI& AGN::AAplication::getRenderAPI()
 {
 	return dynamic_cast<AGN::IARenderAPI&>(*m_renderAPI);
