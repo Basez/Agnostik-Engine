@@ -1,5 +1,5 @@
-# Agnostik-Engine
-Cross-platform Game Engine created as a specialization project by Bas van Zutphen.
+# About Agnostik-Engine
+Agnostik is a Cross-platform Game Engine created as a specialization project by Bas van Zutphen.
 It is currently still in development but you can follow my progress here :)
 
 # Third-party Licenses / References
@@ -30,16 +30,11 @@ TODO:
 - add 'exec scons.bat "$@"' to it to be able to run scons from cygwin. check this link: http://www.scons.org/wiki/SConsAndCygwin. Also make sure scons.bat is inside the Python27 folder!
 - now try the scons -v command, it should display the scons version if it was installed successfully 
 
-#######################################
-Setup Agnostik build chain Linux:
-
-TODO:
-
 # How to build
-After following the installation guide, navigate to the repository, where the config.ini file is located.
-Inside the config.ini, you can change certain properties of the build process and of the application itself. 
-Change the top property called 'buildname' to whichever build you wish to peform (choices are win64gl/linux64gl/win64dx)
+After following the installation guide, navigate to the repository where the config.ini file is located.
+Inside the config.ini file you can change certain properties of the build process and of the application itself. 
+Change the top property called 'buildname' to whichever build you wish to peform (choices are win64gl/linux64gl/win64dx, the names speak for themself)
 After this is setup, simply navigate to the folder inside Cygwin64, and type "scons".
-This will generate the debug & release build and if you are on windows (win64gl/win64dx) it will generate vx2013 project files.
-If you have a different Visual Studio version, you can change those in the build scripts (located under /project_files)
+This will generate the debug & release build and if you are on windows (win64gl/win64dx) it will generate vs2013 project files.
+If you have a different Visual Studio version you can change those in the build scripts (located under /project_files).
 If you want to clean all the build output files, use the command scons -c to cleanup everything.
