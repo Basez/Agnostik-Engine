@@ -2,14 +2,14 @@
 
 namespace AGN
 {
-	enum LoggerOutputType
+	enum class EALoggerOutputType
 	{
 		Window = 1,
 		Internal = 2, // TODO: create internal console (shown inside the main render window)
 		OutputDebug = 4, // windows only, shows logs in visual studio console
 	};
 
-	enum class LogTimeType
+	enum class EALogTimeType
 	{
 		RunningTime,
 		SystemTime
@@ -18,7 +18,7 @@ namespace AGN
 	class IALogger
 	{
 	public:
-		virtual void init(LogTimeType a_timeType, uint8_t a_outputTypes) = 0;
+		virtual void init(EALogTimeType a_timeType, uint8_t a_outputTypes) = 0;
 
 		virtual void info(const char *a_info, ...) = 0;
 		virtual void debug(const char *a_debugInfo, ...) = 0;

@@ -48,7 +48,7 @@ bool AGN::AConfigManager::parseConfigFile(std::string a_configFile)
 		if (value.substr(0, 1).compare("/") == 0)
 		{
 			// value is a relative path, lets make it a full path
-			value = configFileFolder.append(value);
+			value = configFileFolder + value;
 		}
 
 		m_configProperties[key] = value;

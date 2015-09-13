@@ -1,12 +1,13 @@
 #include "asharedh.hpp"
 #include "aassetmanager.hpp"
-#include "amesh_gl.hpp"
 #include "asharedh.hpp"
 #include "aaplication.hpp"
 #include "iarender_api.hpp"
 #include "iadevice.hpp"
 #include "aconfigmanager.hpp"
 #include "afileutils.hpp"
+#include "iatexture.hpp"
+#include "iamesh.hpp"
 
 // glew
 #include <GL/glew.h>
@@ -19,6 +20,10 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+
+// stb_image
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 
 using namespace std;
 using namespace glm;
@@ -48,7 +53,8 @@ AGN::IAMesh& AGN::AAssetManager::loadMesh(std::string a_relativePath, uint32_t a
 	Assimp::Importer importer;
 
 	// create object that defines everything the model consists of
-	MeshData* meshData = new MeshData(); // TODO: delete object after we're done with it (no need to store meshdata on CPU)
+	AMeshData* meshData = new AMeshData();
+	meshData->relativePath = a_relativePath;
 
 	unsigned int flags = additional_assimp_flags | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices; // aiProcess_Triangulate | aiProcess_CalcTangentSpace |
 
@@ -103,7 +109,7 @@ AGN::IAMesh& AGN::AAssetManager::loadMesh(std::string a_relativePath, uint32_t a
 	// TODO: Confirm this code works
 	for (unsigned int i = 0; i < scene->mNumMaterials; i++)
 	{
-		// TODO: TEXTURE LOADING
+		// TODO: TEXTURE LOADING, add to a queue?
 
 		/*
 		const aiMaterial* material = scene->mMaterials[i];
@@ -131,90 +137,41 @@ AGN::IAMesh& AGN::AAssetManager::loadMesh(std::string a_relativePath, uint32_t a
 		}
 		*/
 	}
-
-
 	
-	return *g_application.getRenderAPI().getDevice().createMesh(*meshData);
-
-	//
+	return *g_application.getRenderAPI().getDevice().createMesh(meshData);
 }
 
-/*
-void Mesh::loadModel(const char* a_path, unsigned int additional_assimp_flags)
+AGN::IATexture& AGN::AAssetManager::loadTexture(std::string a_relativePath, EATextureType a_textureType)
 {
-	// Create an instance of the Importer class
-	Assimp::Importer importer;
-
-	unsigned int flags = additional_assimp_flags | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices; // aiProcess_Triangulate | aiProcess_CalcTangentSpace |
-
-	//if (!a_rightHandCoordinates)
-	//{
-	//	flags |= aiProcess_FlipWindingOrder;
-	//}
-
-	string fullPath = BPATH(a_path);
-
-	const aiScene* scene = importer.ReadFile(fullPath.c_str(), flags);
-
-	// If the import failed, report it
-	if (!scene)
+	// check if it exists
+	for (int i = 0; i < m_textureList.size(); i++)
 	{
-		Log.error("Error loading model! %s", importer.GetErrorString());
-		return;
+		if (m_textureList[i]->getRelativePath().compare(a_relativePath) == 0)
+		{
+			return dynamic_cast<AGN::IATexture&>(*m_textureList[i]);
+		}
 	}
 
-	const aiVector3D zeroVector(0.0f, 0.0f, 0.0f);
-	unsigned int vertexOffset = 0;
-	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
+	// Load Texture Data
+	ATextureData* textureData = new ATextureData();
+	textureData->relativePath = a_relativePath;
+	textureData->type = a_textureType;
+
+	// get full path
+	string fullPath = g_configManager.getConfigProperty("path_textures").append(a_relativePath);
+
+	unsigned char* loadedData = stbi_load(fullPath.c_str(), &textureData->width, &textureData->height, &textureData->components, 4);
+
+	if (loadedData == nullptr)
 	{
-		const aiMesh* loadedMesh = scene->mMeshes[i];
-		for (unsigned int j = 0; j < loadedMesh->mNumVertices; j++)
-		{
-			const aiVector3D* pPos = &(loadedMesh->mVertices[j]);
-			const aiVector3D* pNormal = &(loadedMesh->mNormals[j]);
-			const aiVector3D* pTexCoord = loadedMesh->HasTextureCoords(0) ? &(loadedMesh->mTextureCoords[0][j]) : &zeroVector;
-			//const aiVector3D* pTangents = &(loadedMesh->mTangents[j]);
-			//const aiVector3D* pBitangents = &(loadedMesh->mBitangents[j]);
-
-			m_positions.push_back(vec3(pPos->x, pPos->y, pPos->z));
-			m_normals.push_back(vec3(pNormal->x, pNormal->y, pNormal->z));
-			//m_tagents.push_back(vec3(pTangents->x, pTangents->y, pTangents->z));
-			//m_bitangent.push_back(vec3(pBitangents->x, pBitangents->y, pBitangents->z));
-			m_textureCoords.push_back(vec2(pTexCoord->x, pTexCoord->y));
-		}
-
-		for (unsigned int j = 0; j < loadedMesh->mNumFaces; j++)
-		{
-			const aiFace& face = loadedMesh->mFaces[j];
-			m_indicies.push_back(face.mIndices[0] + vertexOffset);
-			m_indicies.push_back(face.mIndices[1] + vertexOffset);
-			m_indicies.push_back(face.mIndices[2] + vertexOffset);
-		}
-		vertexOffset += loadedMesh->mNumVertices;
+		g_log.error("Error loading image: %s", fullPath.c_str());
 	}
+	
+	textureData->buffer = new unsigned int[textureData->width*textureData->height];
 
-	// load textures/materials into openGL via ShaderManager
-	for (unsigned int i = 0; i < scene->mNumMaterials; i++)
-	{
-		const aiMaterial* material = scene->mMaterials[i];
-		int texIndex = 0;
-		aiString relativePath;  // filename
+	memcpy(textureData->buffer, loadedData, textureData->width*textureData->height*sizeof(uint32_t));
 
-		string finalPath = FileUtils::getPathRelativeToPath(a_path, relativePath.C_Str());
+	stbi_image_free(loadedData);
 
-		if (material->GetTexture(aiTextureType_DIFFUSE, texIndex, &relativePath) == AI_SUCCESS)
-		{
-			m_textureDiffuse = new BTexture(BTextureType::TEXTURE_2D, finalPath.c_str());
-		}
-
-		if (material->GetTexture(aiTextureType_NORMALS, texIndex, &relativePath) == AI_SUCCESS)
-		{
-			m_textureNormal = new BTexture(BTextureType::TEXTURE_2D, finalPath.c_str());
-		}
-
-		if (material->GetTexture(aiTextureType_SPECULAR, texIndex, &relativePath) == AI_SUCCESS)
-		{
-			m_textureSpecular = new BTexture(BTextureType::TEXTURE_2D, finalPath.c_str());
-		}
-	}
-}*/
+	return *g_application.getRenderAPI().getDevice().createTexture(textureData);
+}

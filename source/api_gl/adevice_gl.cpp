@@ -2,6 +2,7 @@
 #include "adevice_gl.hpp"
 #include "iamesh.hpp"
 #include "amesh_gl.hpp"
+#include "atexture_gl.hpp"
 
 
 // glew
@@ -23,7 +24,7 @@ void AGN::ADeviceGL::init()
 	
 }
 
-AGN::IAMesh* AGN::ADeviceGL::createMesh(AGN::MeshData& a_meshData)
+AGN::IAMesh* AGN::ADeviceGL::createMesh(AGN::AMeshData* a_meshData)
 {
 	// upload the data to the GL Driver and GFX card
 	uint32_t vao = -1;
@@ -36,38 +37,62 @@ AGN::IAMesh* AGN::ADeviceGL::createMesh(AGN::MeshData& a_meshData)
 	glGenBuffers(vboCount, vbos);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
-	glBufferData(GL_ARRAY_BUFFER, a_meshData.positions.size() * sizeof(vec3), a_meshData.positions.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(AMeshGL::AMeshGLAttribute::MESH_POSITION_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-	glEnableVertexAttribArray(AMeshGL::AMeshGLAttribute::MESH_POSITION_ATTRIBUTE);
+	glBufferData(GL_ARRAY_BUFFER, a_meshData->positions.size() * sizeof(vec3), a_meshData->positions.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(AMeshGL::EAMeshGLAttribute::MESH_POSITION_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+	glEnableVertexAttribArray(AMeshGL::EAMeshGLAttribute::MESH_POSITION_ATTRIBUTE);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[1]);
-	glBufferData(GL_ARRAY_BUFFER, a_meshData.normals.size() * sizeof(vec3), a_meshData.normals.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(AMeshGL::AMeshGLAttribute::MESH_NORMAL_ATTRIBUTE, 3, GL_FLOAT, GL_TRUE, 0, BUFFER_OFFSET(0));
-	glEnableVertexAttribArray(AMeshGL::AMeshGLAttribute::MESH_NORMAL_ATTRIBUTE);
+	glBufferData(GL_ARRAY_BUFFER, a_meshData->normals.size() * sizeof(vec3), a_meshData->normals.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(AMeshGL::EAMeshGLAttribute::MESH_NORMAL_ATTRIBUTE, 3, GL_FLOAT, GL_TRUE, 0, BUFFER_OFFSET(0));
+	glEnableVertexAttribArray(AMeshGL::EAMeshGLAttribute::MESH_NORMAL_ATTRIBUTE);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[2]);
-	glBufferData(GL_ARRAY_BUFFER, a_meshData.textureCoords.size() * sizeof(vec2), a_meshData.textureCoords.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(AMeshGL::AMeshGLAttribute::MESH_TEXCOORD_ATTRIBUTE, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-	glEnableVertexAttribArray(AMeshGL::AMeshGLAttribute::MESH_TEXCOORD_ATTRIBUTE);
+	glBufferData(GL_ARRAY_BUFFER, a_meshData->textureCoords.size() * sizeof(vec2), a_meshData->textureCoords.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(AMeshGL::EAMeshGLAttribute::MESH_TEXCOORD_ATTRIBUTE, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+	glEnableVertexAttribArray(AMeshGL::EAMeshGLAttribute::MESH_TEXCOORD_ATTRIBUTE);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[3]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, a_meshData.indicies.size() * sizeof(GLuint), a_meshData.indicies.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, a_meshData->indicies.size() * sizeof(GLuint), a_meshData->indicies.data(), GL_STATIC_DRAW);
 
 	// unbind because we are done
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	// Check if everything went allright
+	// Check if everything went all right
 	while ((errorType = glGetError()) != GL_NO_ERROR)
 	{
 		g_log.error("An error occurred during AMeshGL initialization: %u", errorType);
 	}
 
 	// instantiate Mesh Object with pointers to the uploaded data
-	AMeshGL* mesh = new AMeshGL(vao, vbos, vboCount);
+	AMeshGL* mesh = new AMeshGL(a_meshData, vao, vbos, vboCount);
 
 	return dynamic_cast<IAMesh*>(mesh);
+}
+
+AGN::IATexture* AGN::ADeviceGL::createTexture(AGN::ATextureData* a_textureData)
+{
+	GLenum glType = ATextureGL::getGlType(a_textureData->type);
+
+	GLuint textureID = -1;
+
+	// generate GL texture
+	glGenTextures(1, &textureID);    // get new texture ID
+	glBindTexture(glType, textureID);
+	glTexImage2D(glType, 0, GL_RGBA, a_textureData->width, a_textureData->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, a_textureData->buffer);
+	glBindTexture(glType, 0);
+
+	GLenum errorType = GL_NO_ERROR;
+	while ((errorType = glGetError()) != GL_NO_ERROR)
+	{
+		g_log.error("An OpenGL error occurred in ADeviceGL::createTexture(): %s ", AConversionUtils::getAsHexString(errorType).c_str());
+	}
+
+	// create actual texture.
+	ATextureGL* texture = new ATextureGL(a_textureData, textureID);
+
+	return dynamic_cast<IATexture*>(texture);
 }
 
 /*

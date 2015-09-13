@@ -24,14 +24,14 @@ AGN::ALoggerWin::~ALoggerWin()
 	if (g_pCin != nullptr) fclose(g_pCin);
 }
 
-void AGN::ALoggerWin::init(LogTimeType a_timeType, uint8_t a_outputTypes)
+void AGN::ALoggerWin::init(EALogTimeType a_timeType, uint8_t a_outputTypes)
 {
 	m_outputTypes = a_outputTypes;
 	m_timeType = a_timeType;
 
 	m_startTickCount = (float)GetTickCount();
 
-	if (m_outputTypes & LoggerOutputType::Window) createConsole();
+	if (m_outputTypes & (int)EALoggerOutputType::Window) createConsole();
 }
 
 void AGN::ALoggerWin::createConsole()
@@ -67,7 +67,7 @@ void AGN::ALoggerWin::info(const char *a_info, ...)
 	sprintf_s(messageLog, sizeof(messageLog), "%s| %s \n", timeLog, message);
 
 	// Change console text color
-	if (m_outputTypes & LoggerOutputType::Window)
+	if (m_outputTypes & (int)EALoggerOutputType::Window)
 	{
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_BLUE | FOREGROUND_GREEN);
 	}
@@ -91,7 +91,7 @@ void AGN::ALoggerWin::debug(const char *a_info, ...)
 	sprintf_s(messageLog, sizeof(messageLog), "%s| %s \n", timeLog, message);
 
 	// Change console text color
-	if (m_outputTypes & LoggerOutputType::Window)
+	if (m_outputTypes & (int)EALoggerOutputType::Window)
 	{
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
 	}
@@ -115,7 +115,7 @@ void AGN::ALoggerWin::warning(const char *a_info, ...)
 	sprintf_s(messageLog, sizeof(messageLog), "%s| %s \n", timeLog, message);
 
 	// Change console text color
-	if (m_outputTypes & LoggerOutputType::Window)
+	if (m_outputTypes & (int)EALoggerOutputType::Window)
 	{
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY | BACKGROUND_RED | BACKGROUND_GREEN);
 	}
@@ -140,7 +140,7 @@ void AGN::ALoggerWin::error(const char *a_info, ...)
 	sprintf_s(messageLog, sizeof(messageLog), "%s| %s \n", timeLog, message);
 
 	// Change console text color
-	if (m_outputTypes & LoggerOutputType::Window)
+	if (m_outputTypes & (int)EALoggerOutputType::Window)
 	{
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_INTENSITY | BACKGROUND_RED);
 	}
@@ -152,12 +152,12 @@ void AGN::ALoggerWin::error(const char *a_info, ...)
 void AGN::ALoggerWin::log(const char *a_log)
 {
 
-	if (m_outputTypes & LoggerOutputType::Window)
+	if (m_outputTypes & (int)EALoggerOutputType::Window)
 	{
 		printf("%s", a_log);
 	}
 
-	if (m_outputTypes & LoggerOutputType::OutputDebug)
+	if (m_outputTypes & (int)EALoggerOutputType::OutputDebug)
 	{
 		OutputDebugString((LPCSTR)a_log);
 	}
@@ -165,7 +165,7 @@ void AGN::ALoggerWin::log(const char *a_log)
 
 void AGN::ALoggerWin::getTimeFormatted(char *a_destination, unsigned int a_byteSize)
 {
-	if (m_timeType == LogTimeType::RunningTime)
+	if (m_timeType == EALogTimeType::RunningTime)
 	{
 		const float timeElapsed = (float)GetTickCount() - m_startTickCount;
 		const float totalHours = ((timeElapsed / 1000.0f) / 60.0f) / 60.0f;
@@ -186,7 +186,7 @@ void AGN::ALoggerWin::getTimeFormatted(char *a_destination, unsigned int a_byteS
 
 		sprintf_s(a_destination, a_byteSize, "%s", time.c_str());
 	}
-	else if (m_timeType == LogTimeType::SystemTime)
+	else if (m_timeType == EALogTimeType::SystemTime)
 	{
 		std::time_t rawtime;
 		//std::tm* timeinfo;
