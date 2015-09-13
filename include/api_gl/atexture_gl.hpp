@@ -18,9 +18,10 @@ namespace AGN
 	private:
 		void setTextureParams(unsigned int a_flags);
 
+		ATextureData* m_textureData;
 		const GLenum m_textureID;
 		GLenum m_glType;
-		ATextureData* m_textureData;
+		
 
 	};
 }

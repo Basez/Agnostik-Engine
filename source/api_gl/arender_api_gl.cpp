@@ -13,11 +13,12 @@
 #include <SDL/SDL_opengl.h>
 
 
+
 AGN::ARenderAPIGL::ARenderAPIGL()
-	: m_window(nullptr)
+	: m_initialized(false)
+	, m_window(nullptr)
 	, m_device(nullptr)
 	, m_renderer(nullptr)
-	, m_initialized(false)
 {
 }
 

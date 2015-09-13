@@ -45,13 +45,20 @@ def createShaderHeader(sourceFile):
 		
 	# write list into output
 	shaderOutput = open(shaderOutputPath,'w')
+	shaderOutput.truncate() # clean the file
 	shaderOutput.write('static const char* g_' + shaderName + '= "" \n')	
 	for inputLine in shaderInputLines:
 		shaderOutput.write('\t"' + inputLine.rstrip('\n') + '" \n')
 	shaderOutput.write(";")
 	shaderOutput.close()
-	
+
+def createFolder(path):
+	if not os.path.exists(path):
+		os.makedirs(path)
 ################################################################################################################
+
+# create output folder (if doesnt exist yet)
+createFolder(shaderOutputFolder)
 
 # get list of shaders
 shaderList = [f for f in os.listdir(shaderSourceFolder) if os.path.isfile(os.path.join(shaderSourceFolder, f))]

@@ -41,7 +41,7 @@ void AGN::AAssetManager::init()
 AGN::IAMesh& AGN::AAssetManager::loadMesh(std::string a_relativePath, uint32_t additional_assimp_flags)
 {
 	// check if it exists
-	for (int i = 0; i < m_meshList.size(); i++)
+	for (unsigned int i = 0; i < m_meshList.size(); i++)
 	{
 		if (m_meshList[i]->getRelativePath().compare(a_relativePath) == 0)
 		{
@@ -144,7 +144,7 @@ AGN::IAMesh& AGN::AAssetManager::loadMesh(std::string a_relativePath, uint32_t a
 AGN::IATexture& AGN::AAssetManager::loadTexture(std::string a_relativePath, EATextureType a_textureType)
 {
 	// check if it exists
-	for (int i = 0; i < m_textureList.size(); i++)
+	for (unsigned int i = 0; i < m_textureList.size(); i++)
 	{
 		if (m_textureList[i]->getRelativePath().compare(a_relativePath) == 0)
 		{

@@ -7,11 +7,14 @@ env = Environment(	TARGET_ARCH='x86_64',
 					ENV = {'PATH' : os.environ['PATH']},			# required to set path otherwise it cant find G++ & linker
 					tools = ['g++', 'gnulink'],						# make sure it uses gnu linker and compiler
 					CXX = 'g++')
+Export('env')
 
 print "Executing gcc SConscript..."
 print "rootDir: " + rootDir
 print "buildname: " + buildname
 
+#execute shader generation script for OpenGL
+SConscript('../shaders/SConscript_generate_gl_shaders')
 
 env.AppendUnique(CXXFLAGS=Split("-std=c++11"))						# specify c++11 mode is used for stuff like nullptr
 env.AppendUnique(CXXFLAGS=Split(""))
@@ -24,6 +27,7 @@ env.Append(CPPPATH = additionalIncludes)
 # set warnings
 env.AppendUnique(CXXFLAGS=['-Wall'])
 env.AppendUnique(CXXFLAGS=['-Wextra'])
+env.AppendUnique(CXXFLAGS=['-Wno-comment']) # disable the "/*" warning
 # env.AppendUnique(CXXFLAGS=['-fms-extensions']) 						# Source: https://gcc.gnu.org/onlinedocs/gcc/Unnamed-Fields.html
 """
 #install libraries! (when building on posix / linux systems)
@@ -64,7 +68,6 @@ releaseLibNames=['SDL2', 'SDL2main', 'GL', 'GLU', 'GLEW', 'assimp']
 
 # create program
 applicationProgramRelease = envRelease.Program(source = objsCommonRelease + objsAPIRelease + objsOSRelease, target = "../build/"+buildname+"/agnostik_release", LIBS = releaseLibNames, LIBPATH = libPaths)
-
 
 ##############################################################################
 # Create debug env

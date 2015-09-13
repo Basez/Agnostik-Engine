@@ -12,7 +12,7 @@
 AGN::ALoggerLinux loggerLinux = AGN::ALoggerLinux();
 AGN::IALogger& g_log = loggerLinux;
 
-void AGN::ALoggerLinux::init(LogTimeType a_timeType, uint8_t a_outputTypes)
+void AGN::ALoggerLinux::init(EALogTimeType a_timeType, uint8_t a_outputTypes)
 {
 	m_outputTypes = a_outputTypes;
 	m_timeType = a_timeType;
@@ -99,7 +99,7 @@ void AGN::ALoggerLinux::error(const char *a_info, ...)
 void AGN::ALoggerLinux::log(const char *a_log)
 {
 	
-	if (m_outputTypes & LoggerOutputType::Window)
+	if (m_outputTypes & (int)EALoggerOutputType::Window)
 	{
 		printf("%s", a_log);
 	}
@@ -107,7 +107,7 @@ void AGN::ALoggerLinux::log(const char *a_log)
 
 void AGN::ALoggerLinux::getTimeFormatted(char *a_destination)
 {
-	if (m_timeType == LogTimeType::RunningTime)
+	if (m_timeType == EALogTimeType::RunningTime)
 	{
 		const float timeElapsed = (float)getTickCount() - m_startTickCount;
 		const float totalHours = ((timeElapsed/1000.0f)/60.0f)/60.0f;
@@ -128,7 +128,7 @@ void AGN::ALoggerLinux::getTimeFormatted(char *a_destination)
 	
 		sprintf(a_destination, "%s", time.c_str());
 	}
-	else if (m_timeType == LogTimeType::SystemTime)
+	else if (m_timeType == EALogTimeType::SystemTime)
 	{
 		// TODO: implement for linux
 

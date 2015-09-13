@@ -7,14 +7,10 @@ using namespace AGN;
 
 int main(int /*argc*/, char* /*argv*/[])
 {
-	g_log.init(LogTimeType::RunningTime, LoggerOutputType::Window);
+	g_log.init(EALogTimeType::RunningTime, (int)EALoggerOutputType::Window);
 
 	int* testIntPointer = nullptr;
 	g_log.debug("pointer size: %i", sizeof(testIntPointer));
-	g_log.info("info test");
-	g_log.debug("debug test");
-	g_log.warning("warning test");
-	g_log.error("error test");
 	
 	// load configurations
 	std::string currentFolder = AFileUtils::getCurrentFolder();

@@ -34,11 +34,11 @@ AGN::AWindowGL::AWindowGL(glm::ivec2 a_dimentions)
 
 void AGN::AWindowGL::setTitle(const char* a_title)
 {
-	// TODO:
+	SDL_SetWindowTitle(m_sdlWindow, a_title);	
 }
 
 void AGN::AWindowGL::showMessageBox(const char* a_title, const char* a_message)
 {
-	// TODO:
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, a_title, a_message, m_sdlWindow);
 }
 

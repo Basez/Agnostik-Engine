@@ -7,7 +7,7 @@ namespace AGN
 	class ALoggerLinux : public IALogger
 	{
 	public:
-		void init(LogTimeType a_timeType, uint8_t a_outputTypes) override;
+		void init(EALogTimeType a_timeType, uint8_t a_outputTypes) override;
 
 		void info(const char *a_info, ...) override;
 		void debug(const char *a_debugInfo, ...) override;
@@ -20,7 +20,7 @@ namespace AGN
 		float getTickCount();
 
 		uint8_t m_outputTypes;
-		LogTimeType m_timeType;
+		EALogTimeType m_timeType;
 		float m_startTickCount;
 
 	};
