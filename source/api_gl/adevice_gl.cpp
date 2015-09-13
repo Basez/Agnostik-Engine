@@ -3,6 +3,7 @@
 #include "iamesh.hpp"
 #include "amesh_gl.hpp"
 #include "atexture_gl.hpp"
+#include "ashader_gl.hpp"
 
 // glew
 #include <GL/glew.h>
@@ -94,7 +95,80 @@ AGN::IATexture* AGN::ADeviceGL::createTexture(AGN::ATextureData* a_textureData)
 	return dynamic_cast<IATexture*>(texture);
 }
 
+AGN::IAShader* AGN::ADeviceGL::createShader(const char* a_shaderSource, AGN::EAShaderType a_type)
+{
+	// generate gl shader
+	GLuint shaderID = glCreateShader(AShaderGL::getGlShaderType(a_type));
+
+	// Load the shader source for each shader object.
+	const GLchar* sources[] = { a_shaderSource };
+	glShaderSource(shaderID, 1, sources, NULL);
+	glCompileShader(shaderID);
+
+	// Check for errors
+	GLint compileStatus;
+	glGetShaderiv(shaderID, GL_COMPILE_STATUS, &compileStatus);
+	if (compileStatus != GL_TRUE)
+	{
+		GLint logLength;
+		glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &logLength);
+		GLchar* infoLog = new GLchar[logLength];
+		glGetShaderInfoLog(shaderID, logLength, NULL, infoLog);
+
+		g_log.error(infoLog);
+
+		delete infoLog;
+
+		g_log.error("something went wrong with loading / compiling shader");
+
+		return nullptr;
+	}
+	AShaderGL *shader = new AShaderGL(a_type, shaderID);
+
+	return dynamic_cast<IAShader*>(shader);
+}
+
 /*
+
+// If the shader source file could not be opened or compiling the 
+// shader fails, then this function returns -1.
+GLuint ShaderManager::loadShaderFromString(GLenum a_shaderType, const std::string& a_shaderString)
+{
+	// TODO: build in check to see if you accidentally loaded a path! this happened to me :(
+
+	// Create a shader object.
+	GLuint shader = glCreateShader(a_shaderType);
+
+	// Load the shader source for each shader object.
+	const GLchar* sources[] = { a_shaderString.c_str() };
+	glShaderSource(shader, 1, sources, NULL);
+	glCompileShader(shader);
+
+	// Check for errors
+	GLint compileStatus;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
+	if (compileStatus != GL_TRUE)
+	{
+		GLint logLength;
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
+		GLchar* infoLog = new GLchar[logLength];
+		glGetShaderInfoLog(shader, logLength, NULL, infoLog);
+
+		Log.error(infoLog);
+
+		delete infoLog;
+
+		printf("something went wrong with loading / compiling shader");
+
+		return 0;
+	}
+
+
+	m_loadedShaders.push_back(shader);
+
+	return shader;
+}
+
 void Mesh::generateShaders()
 {
 	GLuint vertexShader = g_shaderManager.loadShaderFromString(GL_VERTEX_SHADER, g_shader_mesh_vert);

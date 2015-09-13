@@ -8,9 +8,25 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_opengl.h>
 
-
-AGN::AShaderGL::AShaderGL()
+AGN::AShaderGL::AShaderGL(EAShaderType a_type, GLuint a_id)
+	: m_type(a_type)
+	, m_id(a_id)
 {
 
+}
+
+GLenum AGN::AShaderGL::getGlShaderType(EAShaderType a_type)
+{
+	switch (a_type)
+	{
+	case EAShaderType::VertexShader:
+		return GL_VERTEX_SHADER;
+
+	case EAShaderType::PixelShader:
+		return GL_FRAGMENT_SHADER;
+	}
+
+	g_log.error("Unsupported Shadertype");
+	return -1;
 }
 
