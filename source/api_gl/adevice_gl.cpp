@@ -126,7 +126,7 @@ AGN::IAShaderProgram* AGN::ADeviceGL::createShaderProgram(std::vector<AGN::IASha
 	// create the GL program
 	GLuint program = glCreateProgram();
 
-	for (int i = 0; i < a_shaders.size(); i++)
+	for (unsigned int i = 0; i < a_shaders.size(); i++)
 	{
 		AShaderGL* shaderGL = dynamic_cast<AShaderGL*>(a_shaders[i]);
 		glAttachShader(program, shaderGL->getGlID());
@@ -152,7 +152,7 @@ AGN::IAShaderProgram* AGN::ADeviceGL::createShaderProgram(std::vector<AGN::IASha
 		return nullptr;
 	}
 
-	if (program == -1) 
+	if (program == (GLuint)-1) 
 	{
 		g_log.error("something went wrong with loading / compiling shader");
 		return nullptr;

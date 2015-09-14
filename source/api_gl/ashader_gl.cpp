@@ -17,9 +17,12 @@ GLenum AGN::AShaderGL::getGlShaderType(EAShaderType a_type)
 
 	case EAShaderType::PixelShader:
 		return GL_FRAGMENT_SHADER;
-	}
 
-	g_log.error("Unsupported Shadertype");
+	default:
+		g_log.error("Unsupported Shadertype");
+		break;			
+	}
+	
 	return -1;
 }
 
