@@ -9,7 +9,7 @@ namespace AGN
 		void cleanup();
 
 		class IARenderAPI& getRenderAPI();
-		class AAssetManager& getAssetManager();
+		class AResourceManager& getResourceManager();
 
 	private:
 		void update();
@@ -17,7 +17,7 @@ namespace AGN
 
 		class IARenderAPI* m_renderAPI;
 		class ASceneManager* m_sceneManager;
-		class AAssetManager* m_assetManager;
+		class AResourceManager* m_resourceManager;
 
 		bool m_quit;
 	};

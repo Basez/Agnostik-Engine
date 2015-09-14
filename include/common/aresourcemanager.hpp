@@ -6,10 +6,10 @@ namespace AGN
 {
 	enum class EATextureType;
 
-	class AAssetManager
+	class AResourceManager
 	{
 	public:
-		AAssetManager();
+		AResourceManager();
 
 		void init();
 		class IAMesh& loadMesh(std::string a_relativePath, uint32_t additional_assimp_flags = 0);

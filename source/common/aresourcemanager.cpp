@@ -1,5 +1,5 @@
 #include "asharedh.hpp"
-#include "aassetmanager.hpp"
+#include "aresourcemanager.hpp"
 #include "asharedh.hpp"
 #include "aaplication.hpp"
 #include "iarender_api.hpp"
@@ -28,17 +28,17 @@
 using namespace std;
 using namespace glm;
 
-AGN::AAssetManager::AAssetManager()
+AGN::AResourceManager::AResourceManager()
 {
 
 }
 
-void AGN::AAssetManager::init()
+void AGN::AResourceManager::init()
 {
 	
 }
 
-AGN::IAMesh& AGN::AAssetManager::loadMesh(std::string a_relativePath, uint32_t additional_assimp_flags)
+AGN::IAMesh& AGN::AResourceManager::loadMesh(std::string a_relativePath, uint32_t additional_assimp_flags)
 {
 	// check if it exists
 	for (unsigned int i = 0; i < m_meshList.size(); i++)
@@ -141,7 +141,7 @@ AGN::IAMesh& AGN::AAssetManager::loadMesh(std::string a_relativePath, uint32_t a
 	return *g_application.getRenderAPI().getDevice().createMesh(meshData);
 }
 
-AGN::IATexture& AGN::AAssetManager::loadTexture(std::string a_relativePath, EATextureType a_textureType)
+AGN::IATexture& AGN::AResourceManager::loadTexture(std::string a_relativePath, EATextureType a_textureType)
 {
 	// check if it exists
 	for (unsigned int i = 0; i < m_textureList.size(); i++)

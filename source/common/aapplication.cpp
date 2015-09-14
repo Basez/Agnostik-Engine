@@ -4,7 +4,7 @@
 #include "iawindow.hpp"
 #include "ascenemanager.hpp"
 #include "aconfigmanager.hpp"
-#include "aassetmanager.hpp"
+#include "aresourcemanager.hpp"
 
 AGN::AAplication appTemp = AGN::AAplication();
 AGN::AAplication& g_application = appTemp;
@@ -16,8 +16,8 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 
 	m_renderAPI->init();
 	
-	m_assetManager = new AAssetManager();
-	m_assetManager->init();
+	m_resourceManager = new AResourceManager();
+	m_resourceManager->init();
 
 	m_sceneManager = new ASceneManager();
 	m_sceneManager->init();
@@ -55,7 +55,7 @@ AGN::IARenderAPI& AGN::AAplication::getRenderAPI()
 	return dynamic_cast<AGN::IARenderAPI&>(*m_renderAPI);
 }
 
-AGN::AAssetManager& AGN::AAplication::getAssetManager()
+AGN::AResourceManager& AGN::AAplication::getResourceManager()
 {
-	return *m_assetManager;
+	return *m_resourceManager;
 }
