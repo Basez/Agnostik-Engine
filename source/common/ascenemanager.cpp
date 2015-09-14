@@ -6,6 +6,8 @@
 #include "iamesh.hpp"
 #include "iatexture.hpp"
 #include "iashaderprogram.hpp"
+#include "aentity.hpp"
+#include "acamera.hpp"
 
 // shaders
 #include "shader_mesh_pix.hpp"
@@ -23,7 +25,9 @@ AGN::ASceneManager::~ASceneManager()
 
 void AGN::ASceneManager::init()
 {
-	
+	m_camera = new ACamera();
+	m_camera->setPosition(glm::vec3(0, 10, 0));
+	m_camera->setProjectionRH(60.0f, 0.1f, 10000.0f);
 }
 
 void AGN::ASceneManager::loadTestScene01()
@@ -36,9 +40,12 @@ void AGN::ASceneManager::loadTestScene01()
 	shaderData.vertexShader = g_shader_mesh_vert;
 	shaderData.pixelShader = g_shader_mesh_pix;
 	IAShaderProgram& myShaderProgram = g_application.getResourceManager().loadShaderProgram(shaderData);
+
+	// create the suzanna entity;
+	AEntity* newEntity = new AEntity();
+	newEntity->setMesh(&suzanneMesh);
+	newEntity->setShaderProgram(&myShaderProgram);
+	newEntity->addTexture(&myTexture);
+	newEntity->setPosition(glm::vec3(0, 0, -10));
 }
 
-void AGN::ASceneManager::addNode()
-{
-
-}

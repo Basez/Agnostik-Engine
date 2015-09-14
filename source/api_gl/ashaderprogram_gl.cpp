@@ -5,7 +5,7 @@
 AGN::AShaderProgramGL::AShaderProgramGL(GLuint a_programID, std::vector<IAShader*> a_shaders)
 	: m_programID(a_programID)
 {
-	for (int i = 0; a_shaders.size(); i++)
+	for (int i = 0; i < a_shaders.size(); i++)
 	{
 		m_shaders.push_back(dynamic_cast<AShaderGL*>(a_shaders[i]));
 	}

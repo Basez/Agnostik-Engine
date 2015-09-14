@@ -11,6 +11,8 @@ namespace AGN
 		void loadTestScene01();
 
 	private:
-		void addNode();
+		std::vector<class AEntity*> m_entities; 
+		class ACamera* m_camera;
+		
 	};
 }
