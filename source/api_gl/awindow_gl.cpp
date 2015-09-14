@@ -1,13 +1,6 @@
 #include "asharedh.hpp"
 #include "awindow_gl.hpp"
 
-// glew
-#include <GL/glew.h>
-
-// SDL
-#include <SDL/SDL.h>
-#include <SDL/SDL_opengl.h>
-
 AGN::AWindowGL::AWindowGL(glm::ivec2 a_dimentions)
 	: m_dimentions(a_dimentions)
 {

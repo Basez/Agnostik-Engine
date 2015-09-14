@@ -5,15 +5,6 @@
 #include "arenderer_gl.hpp"
 #include "aconfigmanager.hpp"
 
-// glew
-#include <GL/glew.h>
-
-// SDL
-#include <SDL/SDL.h>
-#include <SDL/SDL_opengl.h>
-
-
-
 AGN::ARenderAPIGL::ARenderAPIGL()
 	: m_initialized(false)
 	, m_window(nullptr)

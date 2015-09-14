@@ -1,13 +1,6 @@
 #include "asharedh.hpp"
 #include "ashader_gl.hpp"
 
-// glew
-#include <GL/glew.h>
-
-// SDL
-#include <SDL/SDL.h>
-#include <SDL/SDL_opengl.h>
-
 AGN::AShaderGL::AShaderGL(EAShaderType a_type, GLuint a_id)
 	: m_type(a_type)
 	, m_id(a_id)

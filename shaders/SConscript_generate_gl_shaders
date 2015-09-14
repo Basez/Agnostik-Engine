@@ -48,7 +48,7 @@ def createShaderHeader(sourceFile):
 	shaderOutput.truncate() # clean the file
 	shaderOutput.write('static const char* g_' + shaderName + '= "" \n')	
 	for inputLine in shaderInputLines:
-		shaderOutput.write('\t"' + inputLine.rstrip('\n') + '" \n')
+		shaderOutput.write('\t"' + inputLine.rstrip('\n') + '\\n" \n')
 	shaderOutput.write(";")
 	shaderOutput.close()
 

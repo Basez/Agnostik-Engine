@@ -8,13 +8,8 @@
 #include "afileutils.hpp"
 #include "iatexture.hpp"
 #include "iamesh.hpp"
-
-// glew
-#include <GL/glew.h>
-
-// SDL
-#include <SDL/SDL.h>
-#include <SDL/SDL_opengl.h>
+#include "iashaderprogram.hpp"
+#include "iashader.hpp"
 
 // assimp
 #include <assimp/Importer.hpp>
@@ -174,4 +169,22 @@ AGN::IATexture& AGN::AResourceManager::loadTexture(std::string a_relativePath, E
 	stbi_image_free(loadedData);
 
 	return *g_application.getRenderAPI().getDevice().createTexture(textureData);
+}
+
+AGN::IAShaderProgram& AGN::AResourceManager::loadShaderProgram(AGN::AShaderProgramData& a_data)
+{
+	vector<IAShader*> m_shaders;
+
+	if (a_data.pixelShader.length() > 0)
+	{
+		m_shaders.push_back(g_application.getRenderAPI().getDevice().createShader(a_data.pixelShader.c_str(), AGN::EAShaderType::PixelShader));
+	}
+
+	if (a_data.vertexShader.length() > 0)
+	{
+		m_shaders.push_back(g_application.getRenderAPI().getDevice().createShader(a_data.vertexShader.c_str(), AGN::EAShaderType::VertexShader));
+	}
+
+
+	return *g_application.getRenderAPI().getDevice().createShaderProgram(m_shaders);
 }

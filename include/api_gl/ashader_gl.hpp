@@ -8,8 +8,9 @@ namespace AGN
 	{
 	public:
 		AShaderGL(EAShaderType a_type, GLuint a_id);
+		const GLuint getGlID() const { return m_id; }
 		static GLenum getGlShaderType(EAShaderType a_type);
-
+		
 	private:
 		EAShaderType m_type;
 		GLuint m_id;

@@ -1,16 +1,9 @@
 #include "asharedh.hpp"
 #include "adevice_gl.hpp"
-#include "iamesh.hpp"
 #include "amesh_gl.hpp"
 #include "atexture_gl.hpp"
 #include "ashader_gl.hpp"
-
-// glew
-#include <GL/glew.h>
-
-// SDL
-#include <SDL/SDL.h>
-#include <SDL/SDL_opengl.h>
+#include "ashaderprogram_gl.hpp"
 
 using namespace glm;
 
@@ -128,75 +121,44 @@ AGN::IAShader* AGN::ADeviceGL::createShader(const char* a_shaderSource, AGN::EAS
 	return dynamic_cast<IAShader*>(shader);
 }
 
-/*
-
-// If the shader source file could not be opened or compiling the 
-// shader fails, then this function returns -1.
-GLuint ShaderManager::loadShaderFromString(GLenum a_shaderType, const std::string& a_shaderString)
+AGN::IAShaderProgram* AGN::ADeviceGL::createShaderProgram(std::vector<AGN::IAShader*> a_shaders)
 {
-	// TODO: build in check to see if you accidentally loaded a path! this happened to me :(
+	// create the GL program
+	GLuint program = glCreateProgram();
 
-	// Create a shader object.
-	GLuint shader = glCreateShader(a_shaderType);
-
-	// Load the shader source for each shader object.
-	const GLchar* sources[] = { a_shaderString.c_str() };
-	glShaderSource(shader, 1, sources, NULL);
-	glCompileShader(shader);
-
-	// Check for errors
-	GLint compileStatus;
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
-	if (compileStatus != GL_TRUE)
+	for (int i = 0; i < a_shaders.size(); i++)
 	{
-		GLint logLength;
-		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
-		GLchar* infoLog = new GLchar[logLength];
-		glGetShaderInfoLog(shader, logLength, NULL, infoLog);
-
-		Log.error(infoLog);
-
-		delete infoLog;
-
-		printf("something went wrong with loading / compiling shader");
-
-		return 0;
+		AShaderGL* shaderGL = dynamic_cast<AShaderGL*>(a_shaders[i]);
+		glAttachShader(program, shaderGL->getGlID());
 	}
 
+	// Link the program
+	glLinkProgram(program);
+ 
+	// Check the link status.
+	GLint linkStatus;
+	glGetProgramiv(program, GL_LINK_STATUS, &linkStatus );
+	if ( linkStatus != GL_TRUE )
+	{
+		GLint logLength;
+		glGetProgramiv( program, GL_INFO_LOG_LENGTH, &logLength );
+		GLchar* infoLog = new GLchar[logLength];
+ 
+		glGetProgramInfoLog( program, logLength, NULL, infoLog );
+ 
+		g_log.error(infoLog);
 
-	m_loadedShaders.push_back(shader);
+		delete infoLog;
+		return nullptr;
+	}
 
-	return shader;
+	if (program == -1) 
+	{
+		g_log.error("something went wrong with loading / compiling shader");
+		return nullptr;
+	}
+
+	AShaderProgramGL* shaderProgram = new AShaderProgramGL(program, a_shaders);
+
+	return dynamic_cast<IAShaderProgram*>(shaderProgram);
 }
-
-void Mesh::generateShaders()
-{
-	GLuint vertexShader = g_shaderManager.loadShaderFromString(GL_VERTEX_SHADER, g_shader_mesh_vert);
-	GLuint fragmentShader = g_shaderManager.loadShaderFromString(GL_FRAGMENT_SHADER, g_shader_mesh_frag);
-
-	std::vector<GLuint> shaders;
-	shaders.push_back(vertexShader);
-	shaders.push_back(fragmentShader);
-
-	m_shaderProgram = g_shaderManager.createShaderProgram(shaders);
-	assert(m_shaderProgram);
-
-	m_uniformMVP = ShaderManager::getUniformLocation(m_shaderProgram, "uModelViewProjectionMatrix");
-	m_uniformModelMatrix = ShaderManager::getUniformLocation(m_shaderProgram, "uModelMatrix");
-	m_uniformClipPlane = ShaderManager::getUniformLocation(m_shaderProgram, "uClipPlane");
-	m_uniformClipOffset = ShaderManager::getUniformLocation(m_shaderProgram, "uClipOffset");
-
-	// Light properties.
-	m_uniformLightDirection = ShaderManager::getUniformLocation(m_shaderProgram, "uLightDirection");
-	m_uniformLightColor = ShaderManager::getUniformLocation(m_shaderProgram, "uLightColor");
-
-	// Global ambient.
-	m_uniformAmbient = ShaderManager::getUniformLocation(m_shaderProgram, "uLightAmbient");
-
-	// Material properties.
-	m_uniformMaterialEmissive = ShaderManager::getUniformLocation(m_shaderProgram, "uMaterialEmissive");
-	m_uniformMaterialDiffuse = ShaderManager::getUniformLocation(m_shaderProgram, "uMaterialDiffuse");
-	//m_uniformMaterialSpecular = ShaderManager::getUniformLocation(m_shaderProgram, "uMaterialSpecular");
-	//m_uniformMaterialShininess = ShaderManager::getUniformLocation(m_shaderProgram, "uMaterialShininess");
-}
-*/
