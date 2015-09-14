@@ -10,6 +10,7 @@ namespace AGN
 		bool parseConfigFile(std::string a_configFilePath);
 		std::string getConfigProperty(std::string a_key);
 		int32_t getConfigPropertyAsInt32(std::string a_key);
+		bool getConfigPropertyAsBool(std::string a_key);
 
 	private:
 		std::map<std::string, std::string> m_configProperties;

@@ -45,6 +45,8 @@ void AGN::ARenderAPIGL::init()
 	m_renderer = new ARendererGL();
 	m_renderer->init();
 
+	enableVSync(g_configManager.getConfigPropertyAsBool("vsync"));
+
 	m_initialized = true;
 
 	GLenum errorType = GL_NO_ERROR;
@@ -170,5 +172,40 @@ void AGN::ARenderAPIGL::logAvailableGLExtensions()
 	for (GLint i = 1; i < numExtensions; i++)
 	{
 		g_log.debug("Extension Enabled: %s", glGetStringi(GL_EXTENSIONS, i));
+	}
+}
+
+void AGN::ARenderAPIGL::enableVSync(bool a_value)
+{
+	/*
+	#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(_WIN64)
+	// Function pointer for the wgl extention function we need to enable/disable
+	// vsync
+	typedef BOOL(APIENTRY *PFNWGLSWAPINTERVALPROC)(int);
+	PFNWGLSWAPINTERVALPROC wglSwapIntervalEXT = 0;
+
+	const char *extensions = (char*)glGetString(GL_EXTENSIONS);
+
+	if (strstr(extensions, "WGL_EXT_swap_control") == 0)
+	{
+	Log.error("Extension not found?");
+	return;
+	}
+	else
+	{
+	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALPROC)wglGetProcAddress("wglSwapIntervalEXT");
+	if (wglSwapIntervalEXT)	wglSwapIntervalEXT(a_value);
+	}
+	#else
+	Log.error("Vsync is not supported for current platform!");
+	#endif
+	*/
+	if (a_value)
+	{
+		SDL_GL_SetSwapInterval(1);
+	}
+	else
+	{
+		SDL_GL_SetSwapInterval(0);
 	}
 }

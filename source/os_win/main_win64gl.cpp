@@ -21,7 +21,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	std::string rootFolder = AFileUtils::getDirectoryOfPath(configFile);
 	g_configManager.parseConfigFile(configFile);
 
-
 	IARenderAPI* renderAPI = new ARenderAPIGL();
 
 	g_application.run(renderAPI);

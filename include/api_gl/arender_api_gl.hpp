@@ -12,6 +12,7 @@ namespace AGN
 		void init() override;
 		void submitDrawCall() override;
 		void renderDrawQueue() override;
+		void enableVSync(bool a_value) override;
 
 		virtual class IAWindow& getWindow() override;
 		virtual class IADevice& getDevice() override;

@@ -95,3 +95,10 @@ int32_t AGN::AConfigManager::getConfigPropertyAsInt32(std::string a_key)
 
 	return atoi(propertyAsString.c_str());
 }
+
+bool AGN::AConfigManager::getConfigPropertyAsBool(std::string a_key)
+{
+	std::string propertyAsString = getConfigProperty(a_key);
+
+	return propertyAsString.compare("true") == 0;
+}

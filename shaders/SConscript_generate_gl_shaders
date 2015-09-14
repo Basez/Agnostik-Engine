@@ -63,7 +63,7 @@ createFolder(shaderOutputFolder)
 # get list of shaders
 shaderList = [f for f in os.listdir(shaderSourceFolder) if os.path.isfile(os.path.join(shaderSourceFolder, f))]
 
-print "number of shaders found: %i" % len(shaderList)
+#print "number of shaders found: %i" % len(shaderList)
 
 oldSignatureDB = loadSignatures()
 newSignatureDB = []
@@ -95,5 +95,5 @@ for shaderFileName in shaderList:
 		newSignatureDB.append(shaderSignature)
 
 
-# now store the new updated Signature DB
+# finally store the new updated Signature DB
 writeSignatures(newSignatureDB)
