@@ -12,9 +12,9 @@ namespace AGN
 	{
 		VertexShader,
 		PixelShader,
-		HullShader,			// TODO: implement later
-		DomainShader,		// TODO: implement later
-		GeometryShader,		// TODO: implement later
-		ComputeShader		// TODO: implement later
+		HullShader,			// TODO: implement later?
+		DomainShader,		// TODO: implement later?
+		GeometryShader,		// TODO: implement later?
+		ComputeShader		// TODO: implement later?
 	};
 }

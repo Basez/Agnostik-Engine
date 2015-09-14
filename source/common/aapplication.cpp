@@ -26,7 +26,8 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 	while (!m_quit)
 	{
 		update();
-		fetchRender();
+		createDrawQueue();
+		sortDrawQueue();
 
 		m_renderAPI->renderDrawQueue();
 
@@ -42,12 +43,17 @@ void AGN::AAplication::cleanup()
 
 void AGN::AAplication::update()
 {
-
+	// logic
 }
 
-void AGN::AAplication::fetchRender()
+void AGN::AAplication::createDrawQueue()
 {
 	// fetch all draw calls 
+}
+
+void AGN::AAplication::sortDrawQueue()
+{
+	// sort draw queue
 }
 
 AGN::IARenderAPI& AGN::AAplication::getRenderAPI()

@@ -11,9 +11,9 @@ namespace AGN
 
 	enum class EATextureType
 	{
-		TEXTURE_1D, // TODO: implement
+		TEXTURE_1D,		// TODO: implement
 		TEXTURE_2D,
-		CUBEMAP	// TODO: implement
+		CUBEMAP			// TODO: implement
 	};
 
 	enum class EATextureRenderFlags

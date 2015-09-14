@@ -10,15 +10,6 @@ using namespace std;
 AGN::AConfigManager configTemp = AGN::AConfigManager();
 AGN::AConfigManager& g_configManager = configTemp;
 
-//std::string AConfigManager::s_rootFolder = "";
-
-/*
-std::string AConfigManager::getFullPathFromRoot(std::string a_relativePath)
-{
-	return s_rootFolder + string("\\") + a_relativePath;
-}
-*/
-
 bool AGN::AConfigManager::parseConfigFile(std::string a_configFile)
 {
 	g_log.info("parsing config file..");

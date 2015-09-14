@@ -7,8 +7,11 @@ namespace AGN
 	public:
 		ASceneManager();
 		~ASceneManager();
+
 		void init();
 		void loadTestScene01();
+
+		const std::vector<class AEntity*> getEntities() const { return m_entities; }
 
 	private:
 		std::vector<class AEntity*> m_entities; 

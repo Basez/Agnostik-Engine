@@ -5,6 +5,8 @@ namespace AGN
 	class IARenderAPI
 	{
 	public:
+		virtual ~IARenderAPI() {}
+
 		virtual void init() = 0;
 		virtual void submitDrawCall() = 0;
 		virtual void renderDrawQueue() = 0;
@@ -13,8 +15,5 @@ namespace AGN
 		virtual class IAWindow& getWindow() = 0;
 		virtual class IADevice& getDevice() = 0;
 		virtual class IARenderer& getRenderer() = 0;
-
-		virtual ~IARenderAPI() {}
 	};
-
 }

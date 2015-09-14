@@ -13,7 +13,8 @@ namespace AGN
 
 	private:
 		void update();
-		void fetchRender();
+		void createDrawQueue();
+		void sortDrawQueue();
 
 		class IARenderAPI* m_renderAPI;
 		class ASceneManager* m_sceneManager;

@@ -6,7 +6,6 @@ namespace AGN
 	{
 	public:
 		virtual ~IAShaderProgram() {}
-
 	};
 
 	struct AShaderProgramData

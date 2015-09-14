@@ -42,10 +42,10 @@ void AGN::ASceneManager::loadTestScene01()
 	IAShaderProgram& myShaderProgram = g_application.getResourceManager().loadShaderProgram(shaderData);
 
 	// create the suzanna entity;
-	AEntity* newEntity = new AEntity();
-	newEntity->setMesh(&suzanneMesh);
-	newEntity->setShaderProgram(&myShaderProgram);
-	newEntity->addTexture(&myTexture);
-	newEntity->setPosition(glm::vec3(0, 0, -10));
+	AEntity* suzanneEntity = new AEntity();
+	suzanneEntity->setMesh(&suzanneMesh);
+	suzanneEntity->setShaderProgram(&myShaderProgram);
+	suzanneEntity->addTexture(&myTexture);
+	suzanneEntity->setPosition(glm::vec3(0, 0, -10));
+	m_entities.push_back(suzanneEntity);
 }
-

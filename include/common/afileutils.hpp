@@ -4,9 +4,8 @@
 
 namespace AGN
 {
-	class AFileUtils
+	struct AFileUtils
 	{
-	public:
 		static int getLastlowFileChangeTime(std::string a_filename);
 		static int getFileSizeBytes(std::string a_filename);
 		static std::string getDirectoryOfPath(std::string a_path);
