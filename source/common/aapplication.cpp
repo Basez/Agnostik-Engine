@@ -1,10 +1,18 @@
 #include "asharedh.hpp"
 #include "aaplication.hpp"
+
 #include "iarender_api.hpp"
 #include "iawindow.hpp"
+#include "iarenderer.hpp"
+#include "iamesh.hpp"
+#include "iashaderprogram.hpp"
+
+#include "aentity.hpp"
 #include "ascenemanager.hpp"
 #include "aconfigmanager.hpp"
 #include "aresourcemanager.hpp"
+#include "adrawcommander.hpp"
+#include "adrawcommand.hpp"
 
 AGN::AAplication appTemp = AGN::AAplication();
 AGN::AAplication& g_application = appTemp;
@@ -19,6 +27,8 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 	m_resourceManager = new AResourceManager();
 	m_resourceManager->init();
 
+	m_drawCommander = new ADrawCommander();
+
 	m_sceneManager = new ASceneManager();
 	m_sceneManager->init();
 	m_sceneManager->loadTestScene01();
@@ -29,9 +39,10 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 		createDrawQueue();
 		sortDrawQueue();
 
-		m_renderAPI->renderDrawQueue();
+		m_renderAPI->getRenderer().render(*m_drawCommander);
 
-		m_renderAPI->getWindow().getDimentions();
+		// clear render buckets at the end of the frame (after data is uploaded to the GPU)
+		m_drawCommander->clearBuckets();
 	}
 
 }
@@ -48,12 +59,21 @@ void AGN::AAplication::update()
 
 void AGN::AAplication::createDrawQueue()
 {
-	// fetch all draw calls 
+	const std::vector<AEntity*> entities = m_sceneManager->getEntities();
+
+	// fill commander with mesh draw commands
+	for (unsigned int i = 0; i < entities.size(); i++)
+	{
+		ADrawCommandMesh& meshdrawCommand = m_drawCommander->addMeshDrawCommand();
+		meshdrawCommand.mesh = entities[i]->getMesh();
+		meshdrawCommand.shaderProgram = entities[i]->getShaderProgram();
+	}
 }
 
 void AGN::AAplication::sortDrawQueue()
 {
-	// sort draw queue
+	// TODO: sort draw queue
+	m_drawCommander->sortBuckets();
 }
 
 AGN::IARenderAPI& AGN::AAplication::getRenderAPI()

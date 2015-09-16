@@ -37,9 +37,3 @@ void AGN::AEntity::setShaderProgram(AGN::IAShaderProgram* a_shaderProgram)
 
 	m_shaderProgram = a_shaderProgram;
 }
-
-void AGN::AEntity::addTexture(AGN::IATexture* a_texture)
-{
-	// TODO: add checking if texture was added twice
-	m_textures.push_back(a_texture);
-}

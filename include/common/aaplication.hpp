@@ -19,6 +19,7 @@ namespace AGN
 		class IARenderAPI* m_renderAPI;
 		class ASceneManager* m_sceneManager;
 		class AResourceManager* m_resourceManager;
+		class ADrawCommander* m_drawCommander;
 
 		bool m_quit;
 	};

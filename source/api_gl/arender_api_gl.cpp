@@ -47,16 +47,6 @@ void AGN::ARenderAPIGL::init()
 	}
 }
 
-void AGN::ARenderAPIGL::submitDrawCall()
-{
-
-}
-
-void AGN::ARenderAPIGL::renderDrawQueue()
-{
-
-}
-
 void AGN::ARenderAPIGL::initOpenGL()
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)

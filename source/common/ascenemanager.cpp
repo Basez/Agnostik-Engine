@@ -41,11 +41,12 @@ void AGN::ASceneManager::loadTestScene01()
 	shaderData.pixelShader = g_shader_mesh_pix;
 	IAShaderProgram& myShaderProgram = g_application.getResourceManager().loadShaderProgram(shaderData);
 
+	// TODO: bind textures to shader?
+
 	// create the suzanna entity;
 	AEntity* suzanneEntity = new AEntity();
 	suzanneEntity->setMesh(&suzanneMesh);
 	suzanneEntity->setShaderProgram(&myShaderProgram);
-	suzanneEntity->addTexture(&myTexture);
 	suzanneEntity->setPosition(glm::vec3(0, 0, -10));
 	m_entities.push_back(suzanneEntity);
 }

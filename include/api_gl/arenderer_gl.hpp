@@ -9,5 +9,6 @@ namespace AGN
 	public:
 		ARendererGL();
 		void init() override;
+		void render(class ADrawCommander& a_drawCommander) override;
 	};
 }
