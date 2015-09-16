@@ -52,6 +52,13 @@ if env.GetOption('clean'):
 	Execute(Delete('project_files/debug/', must_exist=0))
 	Execute(Delete('project_files/obj/', must_exist=0))
 	Execute(Delete('genfiles/', must_exist=0))
+	# delete shaders
 	Execute(Delete('shaders/output_dx', must_exist=0))
 	Execute(Delete('shaders/output_gl/', must_exist=0))
+	# delete visual studio output files
+	Execute(Delete('build/' + buildname + '/agnostik_debug.ilk', must_exist=0))
+	Execute(Delete('build/' + buildname + '/agnostik_debug.pdb', must_exist=0))
+	Execute(Delete('build/' + buildname + '/agnostik_release.ilk', must_exist=0))
+	Execute(Delete('build/' + buildname + '/agnostik_release.pdb', must_exist=0))
+	
 
