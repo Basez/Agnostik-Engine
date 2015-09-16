@@ -7,6 +7,7 @@ namespace AGN
 	public:
 		virtual ~IATexture() {}
 		virtual std::string getRelativePath() = 0;
+		virtual uint16_t getId() = 0;
 	};
 
 	enum class EATextureType

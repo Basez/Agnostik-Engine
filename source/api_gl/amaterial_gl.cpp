@@ -2,8 +2,9 @@
 #include "amaterial_gl.hpp"
 #include "ashader_gl.hpp"
 
-AGN::AMaterialGL::AMaterialGL(std::string a_name, GLuint a_programID, std::vector<IAShader*> a_shaders)
-	: m_name(a_name)
+AGN::AMaterialGL::AMaterialGL(uint16_t a_id, std::string a_name, GLuint a_programID, std::vector<IAShader*> a_shaders)
+	: m_id(a_id)
+	, m_name(a_name)
 	, m_programID(a_programID)
 {
 	for (unsigned int i = 0; i < a_shaders.size(); i++)

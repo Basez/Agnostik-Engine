@@ -1,9 +1,10 @@
 #include "asharedh.hpp"
 #include "atexture_gl.hpp"
 
-AGN::ATextureGL::ATextureGL(ATextureData* a_textureData, GLenum a_textureID) 
-	: m_textureData(a_textureData),
-	m_textureID(a_textureID)
+AGN::ATextureGL::ATextureGL(const uint16_t a_id, ATextureData* a_textureData, GLenum a_textureID)
+	: m_id(a_id)
+	, m_textureData(a_textureData)
+	, m_textureID(a_textureID)
 {
 	m_glType = ATextureGL::getGlType(a_textureData->type);
 	setTextureParams(a_textureData->flags);

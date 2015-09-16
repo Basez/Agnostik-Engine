@@ -7,10 +7,12 @@ namespace AGN
 	class AMeshGL : public IAMesh
 	{
 	public:
-		AMeshGL(AMeshData* a_meshData, uint32_t a_vao, uint32_t *a_vbos, uint8_t a_vboCount);
+		AMeshGL(const uint16_t a_id, const uint32_t a_vao, const uint32_t *a_vbos, const uint8_t a_vboCount, AMeshData* a_meshData);
+		
 		std::string getRelativePath() override;
+		uint16_t getId() override { return m_id; }
 
-		enum EAMeshGLAttribute
+		enum class EAMeshGLAttribute
 		{
 			MESH_POSITION_ATTRIBUTE = 0,
 			MESH_NORMAL_ATTRIBUTE = 2,
@@ -20,10 +22,12 @@ namespace AGN
 		};
 	
 	private:
+		const uint16_t m_id;
+		const uint32_t m_vao;
+		const uint32_t *m_vbos;
+		const uint8_t m_vboCount;
+
 		AMeshData* m_meshData;
-		uint32_t m_vao;
-		uint32_t *m_vbos;
-		uint8_t m_vboCount;
 
 		//class Texture* m_textureDiffuse;
 		//class Texture* m_textureNormal;

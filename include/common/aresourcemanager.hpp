@@ -14,11 +14,15 @@ namespace AGN
 		void init();
 		class IAMesh& loadMesh(std::string a_relativePath, uint32_t additional_assimp_flags = 0);
 		class IATexture& loadTexture(std::string a_relativePath, EATextureType a_textureType);
-		class IAMaterial& createMaterial(struct AMaterialData& a_data);
+		class IAMaterial& loadMaterial(struct AMaterialData& a_data);
 
 	private:
 		std::vector<class IAMesh*> m_meshList;
 		std::vector<class IAMaterial*> m_materialList;
 		std::vector<class IATexture*> m_textureList;
+
+		uint16_t m_meshIdCount;
+		uint16_t m_materialIdCount;
+		uint16_t m_textureIdCount;
 	};
 }

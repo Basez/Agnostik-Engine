@@ -17,12 +17,13 @@ void AGN::ADeviceGL::init()
 	
 }
 
-AGN::IAMesh* AGN::ADeviceGL::createMesh(AGN::AMeshData* a_meshData)
+AGN::IAMesh* AGN::ADeviceGL::createMesh(const uint16_t a_id, AGN::AMeshData* a_meshData)
 {
 	// upload the data to the GL Driver and GFX card
 	uint32_t vao = -1;
 	uint8_t vboCount = 4;
 	uint32_t *vbos = new uint32_t[4]();
+	
 	GLenum errorType = GL_NO_ERROR;
 
 	glGenVertexArrays(1, &vao);
@@ -31,18 +32,18 @@ AGN::IAMesh* AGN::ADeviceGL::createMesh(AGN::AMeshData* a_meshData)
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
 	glBufferData(GL_ARRAY_BUFFER, a_meshData->positions.size() * sizeof(vec3), a_meshData->positions.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(AMeshGL::EAMeshGLAttribute::MESH_POSITION_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-	glEnableVertexAttribArray(AMeshGL::EAMeshGLAttribute::MESH_POSITION_ATTRIBUTE);
+	glVertexAttribPointer((int)AMeshGL::EAMeshGLAttribute::MESH_POSITION_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+	glEnableVertexAttribArray((int)AMeshGL::EAMeshGLAttribute::MESH_POSITION_ATTRIBUTE);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[1]);
 	glBufferData(GL_ARRAY_BUFFER, a_meshData->normals.size() * sizeof(vec3), a_meshData->normals.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(AMeshGL::EAMeshGLAttribute::MESH_NORMAL_ATTRIBUTE, 3, GL_FLOAT, GL_TRUE, 0, BUFFER_OFFSET(0));
-	glEnableVertexAttribArray(AMeshGL::EAMeshGLAttribute::MESH_NORMAL_ATTRIBUTE);
+	glVertexAttribPointer((int)AMeshGL::EAMeshGLAttribute::MESH_NORMAL_ATTRIBUTE, 3, GL_FLOAT, GL_TRUE, 0, BUFFER_OFFSET(0));
+	glEnableVertexAttribArray((int)AMeshGL::EAMeshGLAttribute::MESH_NORMAL_ATTRIBUTE);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[2]);
 	glBufferData(GL_ARRAY_BUFFER, a_meshData->textureCoords.size() * sizeof(vec2), a_meshData->textureCoords.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(AMeshGL::EAMeshGLAttribute::MESH_TEXCOORD_ATTRIBUTE, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-	glEnableVertexAttribArray(AMeshGL::EAMeshGLAttribute::MESH_TEXCOORD_ATTRIBUTE);
+	glVertexAttribPointer((int)AMeshGL::EAMeshGLAttribute::MESH_TEXCOORD_ATTRIBUTE, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+	glEnableVertexAttribArray((int)AMeshGL::EAMeshGLAttribute::MESH_TEXCOORD_ATTRIBUTE);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[3]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, a_meshData->indicies.size() * sizeof(GLuint), a_meshData->indicies.data(), GL_STATIC_DRAW);
@@ -59,12 +60,12 @@ AGN::IAMesh* AGN::ADeviceGL::createMesh(AGN::AMeshData* a_meshData)
 	}
 
 	// instantiate Mesh Object with pointers to the uploaded data
-	AMeshGL* mesh = new AMeshGL(a_meshData, vao, vbos, vboCount);
+	AMeshGL* mesh = new AMeshGL(a_id, vao, vbos, vboCount, a_meshData);
 
 	return dynamic_cast<IAMesh*>(mesh);
 }
 
-AGN::IATexture* AGN::ADeviceGL::createTexture(AGN::ATextureData* a_textureData)
+AGN::IATexture* AGN::ADeviceGL::createTexture(const uint16_t a_id, AGN::ATextureData* a_textureData)
 {
 	GLenum glType = ATextureGL::getGlType(a_textureData->type);
 
@@ -83,7 +84,7 @@ AGN::IATexture* AGN::ADeviceGL::createTexture(AGN::ATextureData* a_textureData)
 	}
 
 	// create actual texture.
-	ATextureGL* texture = new ATextureGL(a_textureData, textureID);
+	ATextureGL* texture = new ATextureGL(a_id, a_textureData, textureID);
 
 	return dynamic_cast<IATexture*>(texture);
 }
@@ -121,7 +122,7 @@ AGN::IAShader* AGN::ADeviceGL::createShader(const char* a_shaderSource, AGN::EAS
 	return dynamic_cast<IAShader*>(shader);
 }
 
-AGN::IAMaterial* AGN::ADeviceGL::createMaterial(std::string a_name, std::vector<AGN::IAShader*> a_shaders)
+AGN::IAMaterial* AGN::ADeviceGL::createMaterial(const uint16_t a_id, std::string a_name, std::vector<AGN::IAShader*> a_shaders)
 {
 	// create the GL program
 	GLuint program = glCreateProgram();
@@ -158,7 +159,7 @@ AGN::IAMaterial* AGN::ADeviceGL::createMaterial(std::string a_name, std::vector<
 		return nullptr;
 	}
 
-	AMaterialGL* shaderProgram = new AMaterialGL(a_name, program, a_shaders);
+	AMaterialGL* shaderProgram = new AMaterialGL(a_id, a_name, program, a_shaders);
 
 	return dynamic_cast<IAMaterial*>(shaderProgram);
 }
