@@ -2,17 +2,19 @@
 
 namespace AGN
 {
+	enum class EADrawCommandType;
+
 	class ADrawCommander
 	{
 	public:
 		ADrawCommander();
 		
 		void sortBuckets();
-		void clearBuckets();
-		struct ADrawCommandMesh& addMeshDrawCommand(); // TODO: key as argument?
-		std::vector<struct ADrawCommandMesh*> getSortedMeshDrawCommands();
+		void clearCommands();
+		struct ADrawCommand& addDrawCommand(EADrawCommandType a_type); // TODO: key as argument?
+		std::vector<struct ADrawCommand*> getSortedDrawCommands();
 
 	private:
-		std::vector<struct ADrawCommandMesh*> m_meshDrawCommands;
+		std::vector<struct ADrawCommand*> m_drawCommands;
 	};
 }

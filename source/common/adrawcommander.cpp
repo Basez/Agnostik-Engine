@@ -8,14 +8,12 @@ AGN::ADrawCommander::ADrawCommander()
 {
 }
 
-AGN::ADrawCommandMesh& AGN::ADrawCommander::addMeshDrawCommand()
+AGN::ADrawCommand& AGN::ADrawCommander::addDrawCommand(AGN::EADrawCommandType a_type) // TODO: key as argument?
 {
 	// TODO: use pooling?
 	// TODO: generate key? how will it work
-	ADrawCommandMesh* drawCommandMesh = new ADrawCommandMesh();
-	drawCommandMesh->mesh = nullptr;
-	drawCommandMesh->shaderProgram = nullptr;
-	m_meshDrawCommands.push_back(drawCommandMesh);
+	ADrawCommand* drawCommandMesh = new ADrawCommand(a_type);
+	m_drawCommands.push_back(drawCommandMesh);
 	return *drawCommandMesh;
 }
 
@@ -26,21 +24,21 @@ void AGN::ADrawCommander::sortBuckets()
 }
 
 
-std::vector<AGN::ADrawCommandMesh*> AGN::ADrawCommander::getSortedMeshDrawCommands()
+std::vector<AGN::ADrawCommand*> AGN::ADrawCommander::getSortedDrawCommands()
 {
 	// TODO: Sort
 	// TODO: Multi-threaded
 	// TODO: Refactor
 
-	return m_meshDrawCommands;
+	return m_drawCommands;
 }
 
-void AGN::ADrawCommander::clearBuckets()
+void AGN::ADrawCommander::clearCommands()
 {
 	// TODO: delete commands & clear vectors
-	while (m_meshDrawCommands.size() > 0)
+	while (m_drawCommands.size() > 0)
 	{
-		delete m_meshDrawCommands[0];
-		m_meshDrawCommands.erase(m_meshDrawCommands.begin());
+		delete m_drawCommands[0];
+		m_drawCommands.erase(m_drawCommands.begin());
 	}
 }

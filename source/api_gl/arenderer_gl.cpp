@@ -16,10 +16,10 @@ void AGN::ARendererGL::init()
 void AGN::ARendererGL::render(AGN::ADrawCommander& a_drawCommander)
 {
 	// TODO: loop through sorted draw commands & draw em
-	std::vector<ADrawCommandMesh*> list = a_drawCommander.getSortedMeshDrawCommands();
+	std::vector<ADrawCommand*> list = a_drawCommander.getSortedDrawCommands();
 
-	for (ADrawCommandMesh* command : list)
+	for (ADrawCommand* command : list)
 	{
-		// TODO: Draw Mesh
+		// TODO: Draw Meshes
 	}
 }

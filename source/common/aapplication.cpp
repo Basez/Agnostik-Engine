@@ -42,7 +42,7 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 		m_renderAPI->getRenderer().render(*m_drawCommander);
 
 		// clear render buckets at the end of the frame (after data is uploaded to the GPU)
-		m_drawCommander->clearBuckets();
+		m_drawCommander->clearCommands();
 	}
 
 }
@@ -61,13 +61,15 @@ void AGN::AAplication::createDrawQueue()
 {
 	const std::vector<AEntity*> entities = m_sceneManager->getEntities();
 
-	// fill commander with mesh draw commands
+	// fill commander with entity draw commands
 	for (unsigned int i = 0; i < entities.size(); i++)
 	{
-		ADrawCommandMesh& meshdrawCommand = m_drawCommander->addMeshDrawCommand();
-		meshdrawCommand.mesh = entities[i]->getMesh();
-		meshdrawCommand.shaderProgram = entities[i]->getShaderProgram();
+		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::DrawEntity);
+		ADrawEntityData& data = drawCommand.data.entityData;
+		data.mesh = entities[i]->getMesh();
+		data.shaderProgram = entities[i]->getShaderProgram();
 	}
+
 }
 
 void AGN::AAplication::sortDrawQueue()

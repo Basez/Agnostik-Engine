@@ -4,20 +4,41 @@
 \
 namespace AGN
 {
-	struct ADrawCommandMesh
-	{
-		//const DrawCommandType m_type;
-		class IAMesh* mesh;
-		class IAShaderProgram* shaderProgram;
-	};
-
-	/*
-	enum class DrawCommandType
+	enum class EADrawCommandType
 	{
 		DrawEntity = 1,
 		ClearBuffer = 2,
 		SwapBackBuffer = 4
-	};*/
+	};
+
+	struct ADrawEntityData
+	{
+		class IAMesh* mesh;
+		class IAShaderProgram* shaderProgram;
+	};
+
+	struct AClearBufferData
+	{
+		uint32_t clearColor;
+	};
+	
+	struct ADrawCommand
+	{
+		ADrawCommand(EADrawCommandType a_type)
+			: type(a_type)
+		{
+			// ensure data is null when command is instantiated
+			memset(&data, 0, sizeof(DrawData));
+		}
+		const EADrawCommandType type;
+
+		union DrawData
+		{
+			ADrawEntityData entityData;
+			AClearBufferData clearcolorData;
+		} data;
+	};
+
 }
 
 // TODO: Reference: http://blog.molecular-matters.com/2015/02/13/stateless-layered-multi-threaded-rendering-part-4-memory-management-synchronization/
