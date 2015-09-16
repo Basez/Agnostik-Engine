@@ -5,7 +5,7 @@
 #include "iawindow.hpp"
 #include "iarenderer.hpp"
 #include "iamesh.hpp"
-#include "iashaderprogram.hpp"
+#include "iamaterial.hpp"
 
 #include "aentity.hpp"
 #include "ascenemanager.hpp"
@@ -67,7 +67,7 @@ void AGN::AAplication::createDrawQueue()
 		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::DrawEntity);
 		ADrawEntityData& data = drawCommand.data.entityData;
 		data.mesh = entities[i]->getMesh();
-		data.shaderProgram = entities[i]->getShaderProgram();
+		data.shaderProgram = entities[i]->getMaterial();
 	}
 
 }

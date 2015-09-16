@@ -2,7 +2,9 @@
 
 namespace AGN
 {
+	// fwd declare enum classes
 	enum class EATextureType;
+	enum class EAShaderType;
 
 	class AResourceManager
 	{
@@ -12,12 +14,11 @@ namespace AGN
 		void init();
 		class IAMesh& loadMesh(std::string a_relativePath, uint32_t additional_assimp_flags = 0);
 		class IATexture& loadTexture(std::string a_relativePath, EATextureType a_textureType);
-		class IAShaderProgram& loadShaderProgram(struct AShaderProgramData& a_data);
+		class IAMaterial& createMaterial(struct AMaterialData& a_data);
 
 	private:
 		std::vector<class IAMesh*> m_meshList;
-		std::vector<class IAShader*> m_shaderList;
-		std::vector<class IAShaderProgram*> m_shaderProgramList;
+		std::vector<class IAMaterial*> m_materialList;
 		std::vector<class IATexture*> m_textureList;
 	};
 }

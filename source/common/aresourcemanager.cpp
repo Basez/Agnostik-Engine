@@ -8,7 +8,7 @@
 #include "afileutils.hpp"
 #include "iatexture.hpp"
 #include "iamesh.hpp"
-#include "iashaderprogram.hpp"
+#include "iamaterial.hpp"
 #include "iashader.hpp"
 
 // assimp
@@ -171,7 +171,7 @@ AGN::IATexture& AGN::AResourceManager::loadTexture(std::string a_relativePath, E
 	return *g_application.getRenderAPI().getDevice().createTexture(textureData);
 }
 
-AGN::IAShaderProgram& AGN::AResourceManager::loadShaderProgram(AGN::AShaderProgramData& a_data)
+AGN::IAMaterial& AGN::AResourceManager::createMaterial(AGN::AMaterialData& a_data)
 {
 	vector<IAShader*> m_shaders;
 
@@ -185,6 +185,6 @@ AGN::IAShaderProgram& AGN::AResourceManager::loadShaderProgram(AGN::AShaderProgr
 		m_shaders.push_back(g_application.getRenderAPI().getDevice().createShader(a_data.vertexShader.c_str(), AGN::EAShaderType::VertexShader));
 	}
 
-
-	return *g_application.getRenderAPI().getDevice().createShaderProgram(m_shaders);
+	return *g_application.getRenderAPI().getDevice().createMaterial(a_data.name, m_shaders);;
 }
+

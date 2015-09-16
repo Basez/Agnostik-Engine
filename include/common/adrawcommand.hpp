@@ -14,7 +14,7 @@ namespace AGN
 	struct ADrawEntityData
 	{
 		class IAMesh* mesh;
-		class IAShaderProgram* shaderProgram;
+		class IAMaterial* shaderProgram;
 	};
 
 	struct AClearBufferData

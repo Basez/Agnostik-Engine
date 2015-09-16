@@ -5,7 +5,7 @@
 #include "aaplication.hpp"
 #include "iamesh.hpp"
 #include "iatexture.hpp"
-#include "iashaderprogram.hpp"
+#include "iamaterial.hpp"
 #include "aentity.hpp"
 #include "acamera.hpp"
 
@@ -36,17 +36,18 @@ void AGN::ASceneManager::loadTestScene01()
 
 	IATexture& myTexture = g_application.getResourceManager().loadTexture("test.png", EATextureType::TEXTURE_2D);
 
-	AShaderProgramData shaderData;
-	shaderData.vertexShader = g_shader_mesh_vert;
-	shaderData.pixelShader = g_shader_mesh_pix;
-	IAShaderProgram& myShaderProgram = g_application.getResourceManager().loadShaderProgram(shaderData);
+	AMaterialData materialData;
+	materialData.name = "meshmaterial";
+	materialData.vertexShader = g_shader_mesh_vert;
+	materialData.pixelShader = g_shader_mesh_pix;
+	IAMaterial& myShaderProgram = g_application.getResourceManager().createMaterial(materialData);
 
 	// TODO: bind textures to shader?
 
 	// create the suzanna entity;
 	AEntity* suzanneEntity = new AEntity();
 	suzanneEntity->setMesh(&suzanneMesh);
-	suzanneEntity->setShaderProgram(&myShaderProgram);
+	suzanneEntity->setMaterial(&myShaderProgram);
 	suzanneEntity->setPosition(glm::vec3(0, 0, -10));
 	m_entities.push_back(suzanneEntity);
 }

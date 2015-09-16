@@ -1,9 +1,10 @@
 #include "asharedh.hpp"
-#include "ashaderprogram_gl.hpp"
+#include "amaterial_gl.hpp"
 #include "ashader_gl.hpp"
 
-AGN::AShaderProgramGL::AShaderProgramGL(GLuint a_programID, std::vector<IAShader*> a_shaders)
-	: m_programID(a_programID)
+AGN::AMaterialGL::AMaterialGL(std::string a_name, GLuint a_programID, std::vector<IAShader*> a_shaders)
+	: m_name(a_name)
+	, m_programID(a_programID)
 {
 	for (unsigned int i = 0; i < a_shaders.size(); i++)
 	{
@@ -11,7 +12,7 @@ AGN::AShaderProgramGL::AShaderProgramGL(GLuint a_programID, std::vector<IAShader
 	}
 }
 
-GLint AGN::AShaderProgramGL::getUniformLocation(const char* a_title)
+GLint AGN::AMaterialGL::getUniformLocation(const char* a_title)
 {
 	GLint uniformID = glGetUniformLocation(m_programID, a_title);
 
@@ -23,7 +24,7 @@ GLint AGN::AShaderProgramGL::getUniformLocation(const char* a_title)
 	return uniformID;
 }
 
-GLint AGN::AShaderProgramGL::getAttribLocation(const char* a_title)
+GLint AGN::AMaterialGL::getAttribLocation(const char* a_title)
 {
 	GLint attribID = glGetAttribLocation(m_programID, a_title);
 
@@ -34,3 +35,4 @@ GLint AGN::AShaderProgramGL::getAttribLocation(const char* a_title)
 
 	return attribID;
 }
+

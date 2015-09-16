@@ -3,7 +3,7 @@
 #include "amesh_gl.hpp"
 #include "atexture_gl.hpp"
 #include "ashader_gl.hpp"
-#include "ashaderprogram_gl.hpp"
+#include "amaterial_gl.hpp"
 
 using namespace glm;
 
@@ -121,7 +121,7 @@ AGN::IAShader* AGN::ADeviceGL::createShader(const char* a_shaderSource, AGN::EAS
 	return dynamic_cast<IAShader*>(shader);
 }
 
-AGN::IAShaderProgram* AGN::ADeviceGL::createShaderProgram(std::vector<AGN::IAShader*> a_shaders)
+AGN::IAMaterial* AGN::ADeviceGL::createMaterial(std::string a_name, std::vector<AGN::IAShader*> a_shaders)
 {
 	// create the GL program
 	GLuint program = glCreateProgram();
@@ -158,7 +158,7 @@ AGN::IAShaderProgram* AGN::ADeviceGL::createShaderProgram(std::vector<AGN::IASha
 		return nullptr;
 	}
 
-	AShaderProgramGL* shaderProgram = new AShaderProgramGL(program, a_shaders);
+	AMaterialGL* shaderProgram = new AMaterialGL(a_name, program, a_shaders);
 
-	return dynamic_cast<IAShaderProgram*>(shaderProgram);
+	return dynamic_cast<IAMaterial*>(shaderProgram);
 }
