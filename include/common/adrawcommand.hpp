@@ -11,6 +11,14 @@ namespace AGN
 		SwapBackBuffer = 4
 	};
 
+	enum class RenderPhase
+	{
+		PreDraw = 4,
+		FullscreenViewport = 2,
+		BackbufferViewport = 1,
+		PostDraw = 0
+	};
+
 	struct ADrawEntityData
 	{
 		class IAMesh* mesh;
@@ -20,6 +28,7 @@ namespace AGN
 	struct AClearBufferData
 	{
 		uint32_t clearColor;
+		uint32_t buffersToClear;
 	};
 	
 	struct ADrawCommand

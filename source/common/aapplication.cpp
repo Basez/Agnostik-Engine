@@ -58,13 +58,46 @@ void AGN::AAplication::update()
 
 void AGN::AAplication::createDrawQueue()
 {
-	const std::vector<AEntity*> entities = m_sceneManager->getEntities();
+	// Swap buffer Draw command
+	{
+		// sortkey
+		uint8_t renderPhase = (uint8_t)RenderPhase::PostDraw;
+		uint8_t layer = 0;
+		uint8_t translucencyType = 0;
+		uint8_t cmd = 0;
+		uint16_t meshId = 0;
+		uint16_t materialId = 0;
+		uint32_t depth = 0;
+		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, meshId, materialId, depth);
 
-	// fill commander with entity draw commands
+		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::SwapBackBuffer, sortkey);
+	}
+
+	// TODO: make these static draw commands
+	// do clear buffer calls
+	{
+		// get sortkey
+		uint8_t renderPhase = (uint8_t)RenderPhase::PreDraw;
+		uint8_t layer = 0;
+		uint8_t translucencyType = 0;
+		uint8_t cmd = 0;
+		uint16_t meshId = 0;
+		uint16_t materialId = 0;
+		uint32_t depth = 0;
+		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, meshId, materialId, depth);
+		
+		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::ClearBuffer, sortkey);
+		AClearBufferData& data = drawCommand.data.clearcolorData;
+		data.buffersToClear = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
+		data.clearColor = 0x00FF00;
+	}
+
+	// fill commander with entity draw entity commands
+	const std::vector<AEntity*> entities = m_sceneManager->getEntities();
 	for (unsigned int i = 0; i < entities.size(); i++)
 	{
 		// get sortkey
-		uint8_t renderPhase = 0;		// TODO:
+		uint8_t renderPhase = (uint8_t)RenderPhase::FullscreenViewport;
 		uint8_t layer = 0;				// TODO:
 		uint8_t translucencyType = 0;	// TODO:
 		uint8_t cmd = 0;				// TODO: ?
