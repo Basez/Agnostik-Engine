@@ -37,8 +37,7 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 	{
 		update();
 		createDrawQueue();
-		sortDrawQueue();
-
+		m_drawCommander->sortCommandList();
 		m_renderAPI->getRenderer().render(*m_drawCommander);
 
 		// clear render buckets at the end of the frame (after data is uploaded to the GPU)
@@ -64,18 +63,22 @@ void AGN::AAplication::createDrawQueue()
 	// fill commander with entity draw commands
 	for (unsigned int i = 0; i < entities.size(); i++)
 	{
-		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::DrawEntity);
+		// get sortkey
+		uint8_t renderPhase = 0;		// TODO:
+		uint8_t layer = 0;				// TODO:
+		uint8_t translucencyType = 0;	// TODO:
+		uint8_t cmd = 0;				// TODO: ?
+		uint16_t meshId = entities[i]->getMesh()->getId();
+		uint16_t materialId = entities[i]->getMaterial()->getId();
+		uint32_t depth = 0;				// TODO:
+
+		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, meshId, materialId, depth);
+
+		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::DrawEntity, sortkey);
 		ADrawEntityData& data = drawCommand.data.entityData;
 		data.mesh = entities[i]->getMesh();
 		data.shaderProgram = entities[i]->getMaterial();
 	}
-
-}
-
-void AGN::AAplication::sortDrawQueue()
-{
-	// TODO: sort draw queue
-	m_drawCommander->sortBuckets();
 }
 
 AGN::IARenderAPI& AGN::AAplication::getRenderAPI()

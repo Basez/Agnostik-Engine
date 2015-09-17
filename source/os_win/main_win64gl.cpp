@@ -15,6 +15,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int* testIntPointer = nullptr;
 	g_log.debug("pointer size: %i", sizeof(testIntPointer));
 
+
 	// load configurations
 	std::string currentFolder = AFileUtils::getCurrentFolder();
 	std::string configFile = AFileUtils::findFile("config.ini", currentFolder.c_str(), 3, 3);

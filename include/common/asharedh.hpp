@@ -10,6 +10,7 @@
 #include <ios>
 #include <stdint.h>
 #include <vector>
+#include <cassert>
 
 // GLM
 #define GLM_FORCE_RADIANS // force use of radians everywhere

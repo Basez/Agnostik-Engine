@@ -33,7 +33,11 @@ void AGN::ASceneManager::init()
 void AGN::ASceneManager::loadTestScene01()
 {
 	IAMesh& suzanneMesh = g_application.getResourceManager().loadMesh("suzanne.obj");
+	IAMesh& triangleMesh = g_application.getResourceManager().loadMesh("triangle.obj");
+	IAMesh& cubeMesh = g_application.getResourceManager().loadMesh("cube.obj");
+	IAMesh& skyboxMesh = g_application.getResourceManager().loadMesh("skybox.obj");		
 
+	// TODO: bind textures to shader?
 	IATexture& myTexture = g_application.getResourceManager().loadTexture("test.png", EATextureType::TEXTURE_2D);
 
 	AMaterialData materialData;
@@ -42,7 +46,12 @@ void AGN::ASceneManager::loadTestScene01()
 	materialData.pixelShader = g_shader_mesh_pix;
 	IAMaterial& myMaterial = g_application.getResourceManager().loadMaterial(materialData);
 
-	// TODO: bind textures to shader?
+	// create the triangle I entity;
+	AEntity* triangleEntityA = new AEntity();
+	triangleEntityA->setMesh(&triangleMesh);
+	triangleEntityA->setMaterial(&myMaterial);
+	triangleEntityA->setPosition(glm::vec3(0, 0, -10));
+	m_entities.push_back(triangleEntityA);
 
 	// create the suzanna entity;
 	AEntity* suzanneEntity = new AEntity();
@@ -50,4 +59,19 @@ void AGN::ASceneManager::loadTestScene01()
 	suzanneEntity->setMaterial(&myMaterial);
 	suzanneEntity->setPosition(glm::vec3(0, 0, -10));
 	m_entities.push_back(suzanneEntity);
+
+	// create the cube entity;
+	AEntity* cubeEntity = new AEntity();
+	cubeEntity->setMesh(&cubeMesh);
+	cubeEntity->setMaterial(&myMaterial);
+	cubeEntity->setPosition(glm::vec3(0, 0, -10));
+	m_entities.push_back(cubeEntity);
+
+	// create the triangle II entity;
+	AEntity* triangleEntityB = new AEntity();
+	triangleEntityB->setMesh(&triangleMesh);
+	triangleEntityB->setMaterial(&myMaterial);
+	triangleEntityB->setPosition(glm::vec3(0, 0, -10));
+	m_entities.push_back(triangleEntityB);
+
 }

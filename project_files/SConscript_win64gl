@@ -30,6 +30,7 @@ env.Append(CPPPATH = additionalIncludes)
 envRelease = env.Clone()
 envRelease.AppendUnique(LINKFLAGS=['/DEBUG'])								# add debug flag, comment out if final release?
 envRelease.AppendUnique(CCFLAGS=['/MD'])									
+envRelease.AppendUnique(CPPDEFINES = ['AGN_RELEASE']) 
 
 # set variant dirs (temp folders)	
 envRelease.VariantDir('../genfiles/gen-common-release', '../source/common', duplicate=0)		# specify intermediate folder for generated .obj files
@@ -55,11 +56,12 @@ envDebug = env.Clone()
 envDebug.Append(LINKFLAGS=['/DEBUG'])
 envDebug.AppendUnique(CCFLAGS=['/MDd'])													# Dynamically link with the debugging CRT
 envDebug.AppendUnique(CCFLAGS=['/Od'])													# Disable optimizations
+envDebug.AppendUnique(CPPDEFINES = ['AGN_DEBUG']) 
+
 #envDebug['PDB']='${TARGET.base}.pdb'													# not sure what this does or why its required?
 envDebug.VariantDir('../genfiles/gen-common-debug', '../source/common', duplicate=0)		# specify intermediate folder for generated .obj files
 envDebug.VariantDir('../genfiles/gen-api_gl-debug', '../source/api_gl', duplicate=0)
 envDebug.VariantDir('../genfiles/gen-os_win-debug', '../source/os_win', duplicate=0)
-envDebug.Append(CPPDEFINES = ['_DEBUG'])
 
 # Gather all cpp files
 objsCommonDebug = [file for file in envDebug.Glob('../genfiles/gen-common-debug/*.cpp')]

@@ -68,7 +68,7 @@ AGN::IAMesh& AGN::AResourceManager::loadMesh(std::string a_relativePath, uint32_
 	// If the import failed, report it
 	if (!scene)
 	{
-		g_log.error("Error loading model! %s", importer.GetErrorString());
+		g_log.error("Error loading model! '%s' the issue: %s", a_relativePath.c_str(), importer.GetErrorString());
 	}
 
 	const aiVector3D zeroVector(0.0f, 0.0f, 0.0f);

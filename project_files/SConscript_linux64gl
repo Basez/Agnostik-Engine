@@ -45,7 +45,8 @@ env.Alias('install', installDir)
 ##############################################################################
 # Create release env
 envRelease = env.Clone()
-#envRelease.AppendUnique(LINKFLAGS=['/DEBUG'])								# add debug flag, comment out if final release?
+envRelease.AppendUnique(CPPDEFINES = ['AGN_RELEASE']) 
+
 envRelease.VariantDir('../genfiles/gen-common-release', '../source/common', duplicate=0)		# specify intermediate folder for generated .obj files
 envRelease.VariantDir('../genfiles/gen-api_gl-release', '../source/api_gl', duplicate=0)
 envRelease.VariantDir('../genfiles/gen-os_linux-release', '../source/os_linux', duplicate=0)
@@ -75,7 +76,8 @@ applicationProgramRelease = envRelease.Program(source = objsCommonRelease + objs
 envDebug = env.Clone()
 envDebug.AppendUnique(CXXFLAGS=['-gsplit-dwarf'])							# debug flag in dwarf output (folder is incorrect though)
 envDebug.AppendUnique(CXXFLAGS=['-g'])										# debug flag
-envDebug.Append(CPPDEFINES = ['_DEBUG'])
+envDebug.Append(CPPDEFINES = ['AGN_DEBUG'])
+
 envDebug.VariantDir('../genfiles/gen-common-debug', '../source/common', duplicate=0)		# specify intermediate folder for generated .obj files
 envDebug.VariantDir('../genfiles/gen-api_gl-debug', '../source/api_gl', duplicate=0)
 envDebug.VariantDir('../genfiles/gen-os_linux-debug', '../source/os_linux', duplicate=0)

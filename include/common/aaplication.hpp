@@ -14,7 +14,6 @@ namespace AGN
 	private:
 		void update();
 		void createDrawQueue();
-		void sortDrawQueue();
 
 		class IARenderAPI* m_renderAPI;
 		class ASceneManager* m_sceneManager;

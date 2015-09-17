@@ -24,12 +24,14 @@ namespace AGN
 	
 	struct ADrawCommand
 	{
-		ADrawCommand(EADrawCommandType a_type)
-			: type(a_type)
+		ADrawCommand(const uint64_t a_sortKey, EADrawCommandType a_type)
+			: sortKey(a_sortKey)
+			, type(a_type)
 		{
 			// ensure data is null when command is instantiated
 			memset(&data, 0, sizeof(DrawData));
 		}
+		const uint64_t sortKey;
 		const EADrawCommandType type;
 
 		union DrawData
@@ -38,6 +40,15 @@ namespace AGN
 			AClearBufferData clearcolorData;
 		} data;
 	};
+
+	struct ASortDrawCommand
+	{
+		inline bool operator() (const AGN::ADrawCommand* struct1, const AGN::ADrawCommand* struct2)
+		{
+			return (struct1->sortKey > struct2->sortKey);
+		}
+	};
+
 
 }
 
