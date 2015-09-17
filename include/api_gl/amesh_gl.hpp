@@ -11,6 +11,7 @@ namespace AGN
 		
 		std::string getRelativePath() override;
 		uint16_t getId() override { return m_id; }
+		const uint32_t getVao() const { return m_vao; }
 
 		enum class EAMeshGLAttribute
 		{

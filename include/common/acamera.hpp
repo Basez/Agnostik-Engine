@@ -19,6 +19,7 @@ namespace AGN
 
 		const glm::vec3 getPosition() const { return m_position; }
 		const glm::quat getRotation() const { return m_rotation; }
+		const glm::mat4 getProjectionMatrix() const { return m_projectionMatrix; }
 		const glm::vec3 getForward() const;
 		const glm::vec3 getEulerAngles() const;
 		const glm::mat4 getViewMatrix();

@@ -19,10 +19,12 @@ namespace AGN
 		PostDraw = 0
 	};
 
+	// TODO: this is not really memory friendly,
+	// TODO: if the data is stored here directly, its faster (cache coherent)
+	// TODO: now it is simply accessing the data irregularly
 	struct ADrawEntityData
 	{
-		class IAMesh* mesh;
-		class IAMaterial* shaderProgram;
+		class AEntity* entity;
 	};
 
 	struct AClearBufferData

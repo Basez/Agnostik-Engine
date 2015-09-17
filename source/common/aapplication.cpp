@@ -17,6 +17,8 @@
 AGN::AAplication appTemp = AGN::AAplication();
 AGN::AAplication& g_application = appTemp;
 
+using namespace glm;
+
 void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 {
 	m_renderAPI = a_renderAPI;
@@ -32,6 +34,8 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 	m_sceneManager = new ASceneManager();
 	m_sceneManager->init();
 	m_sceneManager->loadTestScene01();
+
+	m_renderAPI->getRenderer().setCamera(m_sceneManager->getCurrentCamera());
 
 	while (!m_quit)
 	{
@@ -58,6 +62,7 @@ void AGN::AAplication::update()
 
 void AGN::AAplication::createDrawQueue()
 {
+	// TODO: make these static draw commands
 	// Swap buffer Draw command
 	{
 		// sortkey
@@ -88,7 +93,7 @@ void AGN::AAplication::createDrawQueue()
 		
 		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::ClearBuffer, sortkey);
 		AClearBufferData& data = drawCommand.data.clearcolorData;
-		data.buffersToClear = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
+		data.buffersToClear = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT; // TODO: OpenGL specific? shouldnt be here
 		data.clearColor = 0x00FF00;
 	}
 
@@ -96,21 +101,22 @@ void AGN::AAplication::createDrawQueue()
 	const std::vector<AEntity*> entities = m_sceneManager->getEntities();
 	for (unsigned int i = 0; i < entities.size(); i++)
 	{
+		AEntity& entity = *entities[i];
+
 		// get sortkey
 		uint8_t renderPhase = (uint8_t)RenderPhase::FullscreenViewport;
 		uint8_t layer = 0;				// TODO:
 		uint8_t translucencyType = 0;	// TODO:
 		uint8_t cmd = 0;				// TODO: ?
-		uint16_t meshId = entities[i]->getMesh()->getId();
-		uint16_t materialId = entities[i]->getMaterial()->getId();
+		uint16_t meshId = entity.getMesh()->getId();
+		uint16_t materialId = entity.getMaterial()->getId();
 		uint32_t depth = 0;				// TODO:
 
 		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, meshId, materialId, depth);
 
 		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::DrawEntity, sortkey);
 		ADrawEntityData& data = drawCommand.data.entityData;
-		data.mesh = entities[i]->getMesh();
-		data.shaderProgram = entities[i]->getMaterial();
+		data.entity = &entity;
 	}
 }
 
