@@ -3,7 +3,7 @@ import os
 Import('rootDir')
 Import('buildname')
 
-env = Environment(TARGET_ARCH='x86_64', platform = 'win32', MSVC_VERSION='12.0')
+env = Environment(TARGET_ARCH='x86_64', platform = 'win32', MSVC_VERSION='14.0')
 Export('env')
 
 print "Executing MSVC SConscript..."

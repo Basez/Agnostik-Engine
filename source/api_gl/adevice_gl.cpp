@@ -162,12 +162,9 @@ AGN::IAShaderPipeline* AGN::ADeviceGL::createShaderPipeline(const uint16_t a_aId
 		}
 	}
 
-	if (shaderPipelineData.pixelShader == nullptr ||
-		shaderPipelineData.vertextShader == nullptr)
+	if (shaderPipelineData.pixelShader == nullptr || shaderPipelineData.vertextShader == nullptr)
 	{
-		// TODO: do we want to force this?
-		g_log.error("ShaderPipeline cannot be created as its missing either a pixelShader or vertextShader");
-		return nullptr;
+		g_log.warning("ShaderPipeline is missing a pixelShader or vertextShader");
 	}
 
 	// Link the program

@@ -65,9 +65,7 @@ void AGN::ADrawCommander::sortCommandList()
 
 std::vector<AGN::ADrawCommand*> AGN::ADrawCommander::getSortedDrawCommands()
 {
-	// TODO: Sort
-	// TODO: Multi-threaded
-	// TODO: Refactor
+	// TODO: Check if sorted?
 	return m_drawCommands;
 }
 

@@ -93,7 +93,7 @@ void AGN::ATextureGL::pullBuffer()
 }
 
 // generates a new texture on the GPU memory with the currently stored pixeldata
-// TODO: use glTexSubImage2D instead, should be faster, but cnt get it to work yet
+// TODO: use glTexSubImage2D instead, should be faster?
 void AGN::ATextureGL::pushBuffer()
 {
 	if (m_textureData->buffer == nullptr)

@@ -1,23 +1,23 @@
 #include "asharedh.hpp"
 #include "awindow_gl.hpp"
+#include "afileutils.hpp"
 
 AGN::AWindowGL::AWindowGL(glm::ivec2 a_dimentions)
 	: m_dimentions(a_dimentions)
 {
 	Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 
-	// TODO:
-	//string appName = //FileUtils::getExecutableName();
-	//string windowName;
+	std::string windowName;
 
-	// TODO:
-	//#ifdef NDEBUG
-	//	windowName = appName + string(" - RELEASE");
-	//#else
-	//	windowName = appName + string(" - DEBUG");
-	//#endif
+#ifdef AGN_DEBUG
+	windowName = std::string("Agnostik - DEBUG");
+#elif AGN_RELEASE
+	windowName = std::string("Agnostik - RELEASE");
+#else
+	windowName = AGN::AFileUtils::getExecutableName();
+#endif
 
-	m_sdlWindow = SDL_CreateWindow("SDL window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, a_dimentions.x, a_dimentions.y, flags);
+	m_sdlWindow = SDL_CreateWindow(windowName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, a_dimentions.x, a_dimentions.y, flags);
 
 	if (m_sdlWindow == nullptr)
 		SDL_ShowSimpleMessageBox(0, "Window init error", SDL_GetError(), m_sdlWindow);

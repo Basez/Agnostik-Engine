@@ -1,7 +1,7 @@
 #pragma once
 
 // TODO: optimize the data of these objects? (important for later)
-\
+
 namespace AGN
 {
 	enum class EADrawCommandType

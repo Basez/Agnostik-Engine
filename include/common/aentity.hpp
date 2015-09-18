@@ -7,9 +7,9 @@ namespace AGN
 	public:
 		AEntity();
 
-		void setMesh(class IAMesh* a_mesh);
-		void setMaterial(class AMaterial* a_material);
-		void setShaderPipeline(class IAShaderPipeline* a_shaderPipeline);
+		void setMesh(class IAMesh* a_mesh) { m_mesh = a_mesh; }
+		void setMaterial(class AMaterial* a_material) { m_material = a_material; }
+		void setShaderPipeline(class IAShaderPipeline* a_shaderPipeline) { m_shaderPipeline = a_shaderPipeline; }
 		void setPosition(const glm::vec3 a_position) { m_position = a_position; }
 		void setRotation(const glm::quat a_rotation) { m_rotation = a_rotation; }
 		void setScale(const glm::vec3 a_scale) { m_scale = a_scale; }

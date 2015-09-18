@@ -384,6 +384,9 @@ License:
 //
 
 
+#pragma warning( push )
+#pragma warning( disable : 4312)
+
 #ifndef STBI_NO_STDIO
 #include <stdio.h>
 #endif // STBI_NO_STDIO
@@ -6292,6 +6295,9 @@ STBIDEF int stbi_info_from_callbacks(stbi_io_callbacks const *c, void *user, int
 }
 
 #endif // STB_IMAGE_IMPLEMENTATION
+
+// disable certain stb warnings
+#pragma warning( pop )  
 
 /*
    revision history:
