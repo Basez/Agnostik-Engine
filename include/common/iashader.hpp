@@ -2,10 +2,14 @@
 
 namespace AGN
 {
+	enum class EAShaderType; 
+
 	class IAShader
 	{
 	public:
 		virtual ~IAShader() {}
+		virtual EAShaderType getType() = 0;
+		virtual uint16_t getAId() = 0;
 	};
 
 	enum class EAShaderType

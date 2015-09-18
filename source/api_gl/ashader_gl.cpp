@@ -1,9 +1,10 @@
 #include "asharedh.hpp"
 #include "ashader_gl.hpp"
 
-AGN::AShaderGL::AShaderGL(EAShaderType a_type, GLuint a_id)
-	: m_type(a_type)
-	, m_id(a_id)
+AGN::AShaderGL::AShaderGL(const uint16_t a_aId, EAShaderType a_type, GLuint a_glId)
+	: m_aId(a_aId)
+	, m_type(a_type)
+	, m_glId(a_glId)
 {
 
 }
@@ -19,7 +20,7 @@ GLenum AGN::AShaderGL::getGlShaderType(EAShaderType a_type)
 		return GL_FRAGMENT_SHADER;
 
 	default:
-		g_log.error("Unsupported Shadertype");
+		g_log.error("Unsupported Shader type");
 		break;			
 	}
 	

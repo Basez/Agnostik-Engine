@@ -112,14 +112,6 @@ void AGN::ATextureGL::pushBuffer()
 	}
 }
 
-
-
-
-
-
-
-
-
 GLenum AGN::ATextureGL::getGlType(EATextureType a_type)
 {
 	switch (a_type)

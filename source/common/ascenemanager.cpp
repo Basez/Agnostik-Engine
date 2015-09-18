@@ -5,9 +5,11 @@
 #include "aaplication.hpp"
 #include "iamesh.hpp"
 #include "iatexture.hpp"
-#include "iamaterial.hpp"
+#include "amaterial.hpp"
 #include "aentity.hpp"
 #include "acamera.hpp"
+#include "iashader.hpp"
+#include "iashaderpipeline.hpp"
 
 // shaders
 #include "shader_mesh_pix.hpp"
@@ -32,24 +34,32 @@ void AGN::ASceneManager::init()
 
 void AGN::ASceneManager::loadTestScene01()
 {
-	IAMesh& suzanneMesh = g_application.getResourceManager().loadMesh("suzanne.obj");
-	IAMesh& triangleMesh = g_application.getResourceManager().loadMesh("triangle.obj");
-	IAMesh& cubeMesh = g_application.getResourceManager().loadMesh("cube.obj");
-	IAMesh& skyboxMesh = g_application.getResourceManager().loadMesh("skybox.obj");		
+	AResourceManager& resourceManager = g_application.getResourceManager();
+
+	IAMesh& suzanneMesh = resourceManager.loadMesh("suzanne.obj");
+	IAMesh& triangleMesh = resourceManager.loadMesh("triangle.obj");
+	IAMesh& cubeMesh = resourceManager.loadMesh("cube.obj");
+	IAMesh& skyboxMesh = resourceManager.loadMesh("skybox.obj");		
 
 	// TODO: bind textures to shader?
-	IATexture& myTexture = g_application.getResourceManager().loadTexture("test.png", EATextureType::TEXTURE_2D);
+	IATexture& myTexture = resourceManager.loadTexture("test.png", EATextureType::TEXTURE_2D);
 
 	AMaterialData materialData;
 	materialData.name = "meshmaterial";
-	materialData.vertexShader = g_shader_mesh_vert;
-	materialData.pixelShader = g_shader_mesh_pix;
-	IAMaterial& myMaterial = g_application.getResourceManager().loadMaterial(materialData);
+	materialData.diffuseTexture = &myTexture;
+	AMaterial& myMaterial = resourceManager.createMaterial(materialData);
+
+	// load shaders
+	std::vector<AGN::IAShader*> meshShaders;
+	meshShaders.push_back(&resourceManager.createShader(g_shader_mesh_vert, EAShaderType::VertexShader));
+	meshShaders.push_back(&resourceManager.createShader(g_shader_mesh_pix, EAShaderType::PixelShader));
+	IAShaderPipeline& meshShaderPipeline = resourceManager.createShaderPipeline(meshShaders);
 
 	// create the triangle I entity;
 	AEntity* triangleEntityA = new AEntity();
 	triangleEntityA->setMesh(&triangleMesh);
 	triangleEntityA->setMaterial(&myMaterial);
+	triangleEntityA->setShaderPipeline(&meshShaderPipeline);
 	triangleEntityA->setPosition(glm::vec3(0, 0, -10));
 	m_entities.push_back(triangleEntityA);
 
@@ -57,6 +67,7 @@ void AGN::ASceneManager::loadTestScene01()
 	AEntity* suzanneEntity = new AEntity();
 	suzanneEntity->setMesh(&suzanneMesh);
 	suzanneEntity->setMaterial(&myMaterial);
+	suzanneEntity->setShaderPipeline(&meshShaderPipeline);
 	suzanneEntity->setPosition(glm::vec3(0, 0, -10));
 	m_entities.push_back(suzanneEntity);
 
@@ -64,6 +75,7 @@ void AGN::ASceneManager::loadTestScene01()
 	AEntity* cubeEntity = new AEntity();
 	cubeEntity->setMesh(&cubeMesh);
 	cubeEntity->setMaterial(&myMaterial);
+	cubeEntity->setShaderPipeline(&meshShaderPipeline);
 	cubeEntity->setPosition(glm::vec3(0, 0, -10));
 	m_entities.push_back(cubeEntity);
 
@@ -71,7 +83,7 @@ void AGN::ASceneManager::loadTestScene01()
 	AEntity* triangleEntityB = new AEntity();
 	triangleEntityB->setMesh(&triangleMesh);
 	triangleEntityB->setMaterial(&myMaterial);
+	triangleEntityB->setShaderPipeline(&meshShaderPipeline);
 	triangleEntityB->setPosition(glm::vec3(0, 0, -10));
 	m_entities.push_back(triangleEntityB);
-
 }

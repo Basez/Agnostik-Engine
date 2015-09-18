@@ -8,7 +8,7 @@
 #include "arender_api_gl.hpp"
 #include "amesh_gl.hpp"
 #include "atexture_gl.hpp"
-#include "amaterial_gl.hpp"
+#include "amaterial.hpp"
 #include "acamera.hpp"
 #include "aentity.hpp"
 
@@ -69,27 +69,27 @@ void AGN::ARendererGL::drawEntity(ADrawCommand* a_command, ADrawCommand* a_prevC
 {
 	AEntity* entity = a_command->data.entityData.entity;
 	AMeshGL* mesh = dynamic_cast<AMeshGL*>(entity->getMesh());
-	AMaterialGL* material = dynamic_cast<AMaterialGL*>(entity->getMaterial());
+	AMaterial* material = dynamic_cast<AMaterial*>(entity->getMaterial());
 	
 	// get previous data 
 	AEntity* prevEntity = nullptr;
 	AMeshGL* prevMesh = nullptr;
-	AMaterialGL* prevMaterial = nullptr;
+	AMaterial* prevMaterial = nullptr;
 	if (a_prevCommand != nullptr && a_prevCommand->type == EADrawCommandType::DrawEntity)
 	{
 		prevEntity = a_prevCommand->data.entityData.entity;
 		prevMesh = dynamic_cast<AMeshGL*>(prevEntity->getMesh());
-		prevMaterial = dynamic_cast<AMaterialGL*>(prevEntity->getMaterial());
+		prevMaterial = dynamic_cast<AMaterial*>(prevEntity->getMaterial());
 	}
 
 	// different mesh? bind VAO
-	if (prevMesh == nullptr || mesh->getId() != prevMesh->getId())
+	if (prevMesh == nullptr || mesh->getAId() != prevMesh->getAId())
 	{
 		glBindVertexArray(mesh->getVao());
 	}
 
 	// different shader? 
-	if (prevMaterial == nullptr || material->getId() != prevMaterial->getId())
+	if (prevMaterial == nullptr || material->getAId() != prevMaterial->getAId())
 	{
 		// TODO: set uniforms!
 		/*

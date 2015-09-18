@@ -5,7 +5,7 @@
 #include "iawindow.hpp"
 #include "iarenderer.hpp"
 #include "iamesh.hpp"
-#include "iamaterial.hpp"
+#include "amaterial.hpp"
 
 #include "aentity.hpp"
 #include "ascenemanager.hpp"
@@ -108,8 +108,8 @@ void AGN::AAplication::createDrawQueue()
 		uint8_t layer = 0;				// TODO:
 		uint8_t translucencyType = 0;	// TODO:
 		uint8_t cmd = 0;				// TODO: ?
-		uint16_t meshId = entity.getMesh()->getId();
-		uint16_t materialId = entity.getMaterial()->getId();
+		uint16_t meshId = entity.getMesh()->getAId();
+		uint16_t materialId = entity.getMaterial()->getAId();
 		uint32_t depth = 0;				// TODO:
 
 		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, meshId, materialId, depth);

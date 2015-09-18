@@ -9,10 +9,10 @@ namespace AGN
 	public:
 		ADeviceGL();
 		void init() override;
-		class IAMesh* createMesh(const uint16_t a_id, struct AMeshData* a_meshData) override;
-		class IATexture* createTexture(const uint16_t a_id, struct ATextureData* a_textureData) override;
-		class IAShader* createShader(const char* a_shaderSource, EAShaderType a_type) override;
-		class IAMaterial* createMaterial(const uint16_t a_id, std::string a_name, std::vector<class IAShader*> a_shaders) override;
+		class IAMesh* createMesh(const uint16_t a_aId, struct AMeshData* a_meshData) override;
+		class IATexture* createTexture(const uint16_t a_aId, struct ATextureData* a_textureData) override;
+		class IAShader* createShader(const uint16_t a_aId, const char* a_shaderSource, EAShaderType a_type) override;
+		class IAShaderPipeline* createShaderPipeline(const uint16_t a_aId, std::vector<AGN::IAShader*> a_shaders) override;
 
 	};
 }

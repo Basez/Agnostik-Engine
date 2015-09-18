@@ -26,6 +26,8 @@ namespace AGN
 		virtual void debug(const char *a_debugInfo, ...) = 0;
 		virtual void warning(const char *a_warning, ...) = 0;
 		virtual void error(const char *a_error, ...) = 0;
+
+		static const int MAX_LOG_BUFFER = 1024;
 	};
 }
 

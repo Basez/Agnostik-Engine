@@ -8,7 +8,7 @@
 #include "afileutils.hpp"
 #include "iatexture.hpp"
 #include "iamesh.hpp"
-#include "iamaterial.hpp"
+#include "amaterial.hpp"
 #include "iashader.hpp"
 
 // assimp
@@ -25,8 +25,10 @@ using namespace glm;
 
 AGN::AResourceManager::AResourceManager()
 	: m_meshIdCount(0)
-	, m_materialIdCount(0)
+	, m_shaderIdCount(0)
 	, m_textureIdCount(0)
+	, m_materialIdCount(0)
+	, m_shaderPipelineIdCount(0)
 {
 
 }
@@ -39,11 +41,11 @@ void AGN::AResourceManager::init()
 AGN::IAMesh& AGN::AResourceManager::loadMesh(std::string a_relativePath, uint32_t additional_assimp_flags)
 {
 	// check if it exists
-	for (unsigned int i = 0; i < m_meshList.size(); i++)
+	for (unsigned int i = 0; i < m_loadedMeshes.size(); i++)
 	{
-		if (m_meshList[i]->getRelativePath().compare(a_relativePath) == 0)
+		if (m_loadedMeshes[i]->getRelativePath().compare(a_relativePath) == 0)
 		{
-			return dynamic_cast<AGN::IAMesh&>(*m_meshList[i]);
+			return dynamic_cast<AGN::IAMesh&>(*m_loadedMeshes[i]);
 		}
 	}
 
@@ -137,7 +139,7 @@ AGN::IAMesh& AGN::AResourceManager::loadMesh(std::string a_relativePath, uint32_
 	
 	IAMesh* newMesh = g_application.getRenderAPI().getDevice().createMesh(m_meshIdCount++, meshData);
 
-	m_meshList.push_back(newMesh);
+	m_loadedMeshes.push_back(newMesh);
 
 	return *newMesh;
 }
@@ -145,11 +147,11 @@ AGN::IAMesh& AGN::AResourceManager::loadMesh(std::string a_relativePath, uint32_
 AGN::IATexture& AGN::AResourceManager::loadTexture(std::string a_relativePath, EATextureType a_textureType)
 {
 	// check if it exists
-	for (unsigned int i = 0; i < m_textureList.size(); i++)
+	for (unsigned int i = 0; i < m_loadedTextures.size(); i++)
 	{
-		if (m_textureList[i]->getRelativePath().compare(a_relativePath) == 0)
+		if (m_loadedTextures[i]->getRelativePath().compare(a_relativePath) == 0)
 		{
-			return dynamic_cast<AGN::IATexture&>(*m_textureList[i]);
+			return dynamic_cast<AGN::IATexture&>(*m_loadedTextures[i]);
 		}
 	}
 
@@ -176,38 +178,53 @@ AGN::IATexture& AGN::AResourceManager::loadTexture(std::string a_relativePath, E
 
 	IATexture* newTexture = g_application.getRenderAPI().getDevice().createTexture(m_textureIdCount++, textureData);
 
-	m_textureList.push_back(newTexture);
+	m_loadedTextures.push_back(newTexture);
 
 	return *newTexture;
 }
 
-AGN::IAMaterial& AGN::AResourceManager::loadMaterial(AGN::AMaterialData& a_data)
+AGN::IAShader& AGN::AResourceManager::createShader(const char* a_shaderSource, EAShaderType a_shaderType)
 {
-	// check if it exists
-	for (unsigned int i = 0; i < m_materialList.size(); i++)
+	// TODO: check if it exists --> doesnt have paths how do we check?
+	/*
+	for (unsigned int i = 0; i < m_loadedShaders.size(); i++)
 	{
-		if (m_materialList[i]->getName().compare(a_data.name) == 0)
+		if (m_loadedShaders[i]->getRelativePath().compare(a_relativePath) == 0)
 		{
-			return dynamic_cast<AGN::IAMaterial&>(*m_materialList[i]);
+			return dynamic_cast<AGN::IAShader&>(*m_loadedShaders[i]);
 		}
 	}
+	*/
+	AGN::IAShader* newShader = g_application.getRenderAPI().getDevice().createShader(m_shaderIdCount++, a_shaderSource, a_shaderType);
+	m_shaders.push_back(newShader);
 
-	vector<IAShader*> m_shaders;
+	return *newShader;
+}
 
-	if (a_data.pixelShader.length() > 0)
+AGN::IAShaderPipeline& AGN::AResourceManager::createShaderPipeline(std::vector<AGN::IAShader*> a_shaders)
+{
+	// TODO: how do we check we have a duplicate shaderpipeline?
+
+	AGN::IAShaderPipeline* newShaderPipeline = g_application.getRenderAPI().getDevice().createShaderPipeline(m_shaderPipelineIdCount++, a_shaders);
+	m_shaderpipelines.push_back(newShaderPipeline);
+
+	return *newShaderPipeline;
+}
+
+AGN::AMaterial& AGN::AResourceManager::createMaterial(AGN::AMaterialData& a_data)
+{
+	// check if it exists
+	for (unsigned int i = 0; i < m_materials.size(); i++)
 	{
-		m_shaders.push_back(g_application.getRenderAPI().getDevice().createShader(a_data.pixelShader.c_str(), AGN::EAShaderType::PixelShader));
+		if (m_materials[i]->getName().compare(a_data.name) == 0)
+		{
+			return dynamic_cast<AGN::AMaterial&>(*m_materials[i]);
+		}
 	}
+	
+	AMaterial* newMaterial = new AMaterial(m_materialIdCount++, a_data);
 
-	if (a_data.vertexShader.length() > 0)
-	{
-		m_shaders.push_back(g_application.getRenderAPI().getDevice().createShader(a_data.vertexShader.c_str(), AGN::EAShaderType::VertexShader));
-	}
-
-	IAMaterial* newMaterial = g_application.getRenderAPI().getDevice().createMaterial(m_materialIdCount++, a_data.name, m_shaders);
-
-	m_materialList.push_back(newMaterial);
+	m_materials.push_back(newMaterial);
 
 	return *newMaterial;
 }
-

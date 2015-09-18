@@ -7,10 +7,10 @@ namespace AGN
 	class AMeshGL : public IAMesh
 	{
 	public:
-		AMeshGL(const uint16_t a_id, const uint32_t a_vao, const uint32_t *a_vbos, const uint8_t a_vboCount, AMeshData* a_meshData);
+		AMeshGL(const uint16_t a_aId, const uint32_t a_vao, const uint32_t *a_vbos, const uint8_t a_vboCount, AMeshData* a_meshData);
 		
 		std::string getRelativePath() override;
-		uint16_t getId() override { return m_id; }
+		uint16_t getAId() override { return m_aId; }
 		const uint32_t getVao() const { return m_vao; }
 
 		enum class EAMeshGLAttribute
@@ -23,7 +23,7 @@ namespace AGN
 		};
 	
 	private:
-		const uint16_t m_id;
+		const uint16_t m_aId;
 		const uint32_t m_vao;
 		const uint32_t *m_vbos;
 		const uint8_t m_vboCount;

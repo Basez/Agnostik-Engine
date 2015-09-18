@@ -3,7 +3,7 @@
 #include "amesh_gl.hpp"
 #include "atexture_gl.hpp"
 #include "ashader_gl.hpp"
-#include "amaterial_gl.hpp"
+#include "ashaderpipeline_gl.hpp"
 
 using namespace glm;
 
@@ -17,7 +17,7 @@ void AGN::ADeviceGL::init()
 	
 }
 
-AGN::IAMesh* AGN::ADeviceGL::createMesh(const uint16_t a_id, AGN::AMeshData* a_meshData)
+AGN::IAMesh* AGN::ADeviceGL::createMesh(const uint16_t a_aId, AGN::AMeshData* a_meshData)
 {
 	// upload the data to the GL Driver and GFX card
 	uint32_t vao = -1;
@@ -60,12 +60,12 @@ AGN::IAMesh* AGN::ADeviceGL::createMesh(const uint16_t a_id, AGN::AMeshData* a_m
 	}
 
 	// instantiate Mesh Object with pointers to the uploaded data
-	AMeshGL* mesh = new AMeshGL(a_id, vao, vbos, vboCount, a_meshData);
+	AMeshGL* mesh = new AMeshGL(a_aId, vao, vbos, vboCount, a_meshData);
 
 	return dynamic_cast<IAMesh*>(mesh);
 }
 
-AGN::IATexture* AGN::ADeviceGL::createTexture(const uint16_t a_id, AGN::ATextureData* a_textureData)
+AGN::IATexture* AGN::ADeviceGL::createTexture(const uint16_t a_aId, AGN::ATextureData* a_textureData)
 {
 	GLenum glType = ATextureGL::getGlType(a_textureData->type);
 
@@ -84,30 +84,30 @@ AGN::IATexture* AGN::ADeviceGL::createTexture(const uint16_t a_id, AGN::ATexture
 	}
 
 	// create actual texture.
-	ATextureGL* texture = new ATextureGL(a_id, a_textureData, textureID);
+	ATextureGL* texture = new ATextureGL(a_aId, a_textureData, textureID);
 
 	return dynamic_cast<IATexture*>(texture);
 }
 
-AGN::IAShader* AGN::ADeviceGL::createShader(const char* a_shaderSource, AGN::EAShaderType a_type)
+AGN::IAShader* AGN::ADeviceGL::createShader(const uint16_t a_aId, const char* a_shaderSource, AGN::EAShaderType a_type)
 {
 	// generate gl shader
-	GLuint shaderID = glCreateShader(AShaderGL::getGlShaderType(a_type));
+	GLuint shaderGlId = glCreateShader(AShaderGL::getGlShaderType(a_type));
 
 	// Load the shader source for each shader object.
 	const GLchar* sources[] = { a_shaderSource };
-	glShaderSource(shaderID, 1, sources, NULL);
-	glCompileShader(shaderID);
+	glShaderSource(shaderGlId, 1, sources, NULL);
+	glCompileShader(shaderGlId);
 
 	// Check for errors
 	GLint compileStatus;
-	glGetShaderiv(shaderID, GL_COMPILE_STATUS, &compileStatus);
+	glGetShaderiv(shaderGlId, GL_COMPILE_STATUS, &compileStatus);
 	if (compileStatus != GL_TRUE)
 	{
 		GLint logLength;
-		glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &logLength);
+		glGetShaderiv(shaderGlId, GL_INFO_LOG_LENGTH, &logLength);
 		GLchar* infoLog = new GLchar[logLength];
-		glGetShaderInfoLog(shaderID, logLength, NULL, infoLog);
+		glGetShaderInfoLog(shaderGlId, logLength, NULL, infoLog);
 
 		g_log.error(infoLog);
 
@@ -117,49 +117,86 @@ AGN::IAShader* AGN::ADeviceGL::createShader(const char* a_shaderSource, AGN::EAS
 
 		return nullptr;
 	}
-	AShaderGL *shader = new AShaderGL(a_type, shaderID);
+	AShaderGL* shader = new AShaderGL(a_aId, a_type, shaderGlId);
 
 	return dynamic_cast<IAShader*>(shader);
 }
 
-AGN::IAMaterial* AGN::ADeviceGL::createMaterial(const uint16_t a_id, std::string a_name, std::vector<AGN::IAShader*> a_shaders)
+AGN::IAShaderPipeline* AGN::ADeviceGL::createShaderPipeline(const uint16_t a_aId, std::vector<AGN::IAShader*> a_shaders)
 {
-	// create the GL program
-	GLuint program = glCreateProgram();
+	AShaderPipelineData shaderPipelineData = AShaderPipelineData(); // is object nulled?
+	shaderPipelineData.aId = a_aId;
+
+	GLuint programGl = glCreateProgram();
 
 	for (unsigned int i = 0; i < a_shaders.size(); i++)
 	{
 		AShaderGL* shaderGL = dynamic_cast<AShaderGL*>(a_shaders[i]);
-		glAttachShader(program, shaderGL->getGlID());
+		glAttachShader(programGl, shaderGL->getGlId());
+
+		switch (shaderGL->getType())
+		{
+		case EAShaderType::VertexShader:
+			shaderPipelineData.vertextShader = a_shaders[i];
+			break;
+
+		case EAShaderType::PixelShader:
+			shaderPipelineData.pixelShader = a_shaders[i];
+			break;
+
+		case EAShaderType::HullShader:
+			shaderPipelineData.hullShader = a_shaders[i];
+			break;
+
+		case EAShaderType::DomainShader:
+			shaderPipelineData.domainShader = a_shaders[i];
+			break;
+
+		case EAShaderType::GeometryShader:
+			shaderPipelineData.geometryShader = a_shaders[i];
+			break;
+
+		case EAShaderType::ComputeShader:
+			shaderPipelineData.computeShader = a_shaders[i];
+			break;
+		}
+	}
+
+	if (shaderPipelineData.pixelShader == nullptr ||
+		shaderPipelineData.vertextShader == nullptr)
+	{
+		// TODO: do we want to force this?
+		g_log.error("ShaderPipeline cannot be created as its missing either a pixelShader or vertextShader");
+		return nullptr;
 	}
 
 	// Link the program
-	glLinkProgram(program);
- 
+	glLinkProgram(programGl);
+
 	// Check the link status.
 	GLint linkStatus;
-	glGetProgramiv(program, GL_LINK_STATUS, &linkStatus );
-	if ( linkStatus != GL_TRUE )
+	glGetProgramiv(programGl, GL_LINK_STATUS, &linkStatus);
+	if (linkStatus != GL_TRUE)
 	{
 		GLint logLength;
-		glGetProgramiv( program, GL_INFO_LOG_LENGTH, &logLength );
+		glGetProgramiv(programGl, GL_INFO_LOG_LENGTH, &logLength);
 		GLchar* infoLog = new GLchar[logLength];
- 
-		glGetProgramInfoLog( program, logLength, NULL, infoLog );
- 
+
+		glGetProgramInfoLog(programGl, logLength, NULL, infoLog);
+
 		g_log.error(infoLog);
 
 		delete infoLog;
 		return nullptr;
 	}
 
-	if (program == (GLuint)-1) 
+	if (programGl == (GLuint)-1)
 	{
 		g_log.error("something went wrong with loading / compiling shader");
 		return nullptr;
 	}
 
-	AMaterialGL* shaderProgram = new AMaterialGL(a_id, a_name, program, a_shaders);
+	AShaderPipelineGL* shaderPipeline = new AShaderPipelineGL(programGl, shaderPipelineData);
 
-	return dynamic_cast<IAMaterial*>(shaderProgram);
+	return dynamic_cast<IAShaderPipeline*>(shaderPipeline);
 }

@@ -55,13 +55,13 @@ void AGN::ALoggerWin::info(const char *a_info, ...)
 {
 	// Use the formatting to get the correct log and copy it to the messageLog
 	va_list arguments;
-	char message[512];
+	char message[IALogger::MAX_LOG_BUFFER];
 
 	va_start(arguments, a_info);
 	vsprintf_s(message, a_info, arguments);
 	va_end(arguments);
 
-	char messageLog[512];
+	char messageLog[IALogger::MAX_LOG_BUFFER];
 	char timeLog[256];
 	getTimeFormatted(timeLog, 256);
 	sprintf_s(messageLog, sizeof(messageLog), "%s| %s \n", timeLog, message);
@@ -79,13 +79,13 @@ void AGN::ALoggerWin::debug(const char *a_info, ...)
 {
 	// Use the formatting to get the correct log and copy it to the messageLog
 	va_list arguments;
-	char message[512];
+	char message[IALogger::MAX_LOG_BUFFER];
 
 	va_start(arguments, a_info);
 	vsprintf_s(message, a_info, arguments);
 	va_end(arguments);
 
-	char messageLog[512];
+	char messageLog[IALogger::MAX_LOG_BUFFER];
 	char timeLog[256];
 	getTimeFormatted(timeLog, 256);
 	sprintf_s(messageLog, sizeof(messageLog), "%s| %s \n", timeLog, message);
@@ -103,13 +103,13 @@ void AGN::ALoggerWin::warning(const char *a_info, ...)
 {
 	// Use the formatting to get the correct log and copy it to the messageLog
 	va_list arguments;
-	char message[512];
+	char message[IALogger::MAX_LOG_BUFFER];
 
 	va_start(arguments, a_info);
 	vsprintf_s(message, a_info, arguments);
 	va_end(arguments);
 
-	char messageLog[512];
+	char messageLog[IALogger::MAX_LOG_BUFFER];
 	char timeLog[256];
 	getTimeFormatted(timeLog, 256);
 	sprintf_s(messageLog, sizeof(messageLog), "%s| %s \n", timeLog, message);
@@ -128,13 +128,13 @@ void AGN::ALoggerWin::error(const char *a_info, ...)
 {
 	// Use the formatting to get the correct log and copy it to the messageLog
 	va_list arguments;
-	char message[512];
-
+	char message[IALogger::MAX_LOG_BUFFER];
+	
 	va_start(arguments, a_info);
 	vsprintf_s(message, a_info, arguments);
 	va_end(arguments);
 
-	char messageLog[512];
+	char messageLog[IALogger::MAX_LOG_BUFFER];
 	char timeLog[256];
 	getTimeFormatted(timeLog, 256);
 	sprintf_s(messageLog, sizeof(messageLog), "%s| %s \n", timeLog, message);

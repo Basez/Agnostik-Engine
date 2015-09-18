@@ -24,13 +24,13 @@ void AGN::ALoggerLinux::info(const char *a_info, ...)
 {
 	// Use the formatting to get the correct log
 	va_list arguments;
-	char message[512];
+	char message[IALogger::MAX_LOG_BUFFER];
 
 	va_start(arguments, a_info);
 	vsprintf(message, a_info, arguments);
 	va_end(arguments);
 
-	char messageLog[512];
+	char messageLog[IALogger::MAX_LOG_BUFFER];
 	char timeLog[256];
 	getTimeFormatted(timeLog);
 	sprintf(messageLog, "\033[36m%s| %s\033[0m\n", timeLog, message); // blue-aquaish
@@ -42,13 +42,13 @@ void AGN::ALoggerLinux::debug(const char *a_info, ...)
 {
 	// Use the formatting to get the correct log
 	va_list arguments;
-	char message[512];
+	char message[IALogger::MAX_LOG_BUFFER];
 
 	va_start(arguments, a_info);
 	vsprintf(message, a_info, arguments);
 	va_end(arguments);
 
-	char messageLog[512];
+	char messageLog[IALogger::MAX_LOG_BUFFER];
 	char timeLog[256];
 	getTimeFormatted(timeLog);
 	sprintf(messageLog, "\033[32m%s| %s\033[0m\n", timeLog, message); // green
@@ -62,13 +62,13 @@ void AGN::ALoggerLinux::warning(const char *a_info, ...)
 {
 	// Use the formatting to get the correct log
 	va_list arguments;
-	char message[512];
+	char message[IALogger::MAX_LOG_BUFFER];
 
 	va_start(arguments, a_info);
 	vsprintf(message, a_info, arguments);
 	va_end(arguments);
 
-	char messageLog[512];
+	char messageLog[IALogger::MAX_LOG_BUFFER];
 	char timeLog[256];
 	getTimeFormatted(timeLog);
 	sprintf(messageLog, "\033[1;93m%s| %s\033[0m\n", timeLog, message); // bold & yellow
@@ -82,13 +82,13 @@ void AGN::ALoggerLinux::error(const char *a_info, ...)
 {
 	// Use the formatting to get the correct log
 	va_list arguments;
-	char message[512];
+	char message[IALogger::MAX_LOG_BUFFER];
 
 	va_start(arguments, a_info);
 	vsprintf(message, a_info, arguments);
 	va_end(arguments);
 
-	char messageLog[512];
+	char messageLog[IALogger::MAX_LOG_BUFFER];
 	char timeLog[256];
 	getTimeFormatted(timeLog);
 	sprintf(messageLog, "\033[1;31m%s| %s\033[0m\n", timeLog, message); // bold & red

@@ -9,7 +9,7 @@ namespace AGN
 	public:
 		virtual ~IAMesh() {}
 		virtual std::string getRelativePath() = 0;
-		virtual uint16_t getId() = 0;
+		virtual uint16_t getAId() = 0;
 	};
 
 	struct AMeshData
