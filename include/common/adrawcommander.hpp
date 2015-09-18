@@ -14,7 +14,8 @@ namespace AGN
 			uint8_t& a_layer,
 			uint8_t& a_translucencyType,
 			uint8_t& a_cmd,
-			uint16_t& a_meshId,
+			uint32_t& a_meshId,
+			uint16_t& a_shaderPipelineId,
 			uint16_t& a_materialId,
 			uint32_t& a_depth);
 
@@ -27,8 +28,9 @@ namespace AGN
 		// num of bits each sort key property is occupying
 		enum class SortKeyBitAmount
 		{
-			Depth = 28,
-			MaterialID = 10,
+			Depth = 16,
+			MaterialID = 12,
+			ShaderPipelineID = 10,
 			MeshID = 16,
 			CMD = 2,
 			TranslucencyType = 2,
@@ -40,7 +42,8 @@ namespace AGN
 		enum class SortKeyShift
 		{
 			Depth = 0,
-			MaterialID = 28,
+			MaterialID = 16,
+			ShaderPipelineID = 28,
 			MeshID = 38,
 			CMD = 54,
 			TranslucencyType = 56,

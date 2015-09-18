@@ -16,6 +16,8 @@ namespace AGN
 
 		class IAMesh* getMesh() const { return m_mesh; }
 		class AMaterial* getMaterial() const { return m_material; }
+		class IAShaderPipeline* getShaderPipeline() const { return m_shaderPipeline; }
+
 		glm::vec3 getPosition() const { return m_position; }
 		glm::quat getRotation() const { return m_rotation; }
 		glm::vec3 getScale() const { return m_scale; }

@@ -5,8 +5,9 @@
 #include "iawindow.hpp"
 #include "iarenderer.hpp"
 #include "iamesh.hpp"
-#include "amaterial.hpp"
+#include "iashaderpipeline.hpp"
 
+#include "amaterial.hpp"
 #include "aentity.hpp"
 #include "ascenemanager.hpp"
 #include "aconfigmanager.hpp"
@@ -70,10 +71,11 @@ void AGN::AAplication::createDrawQueue()
 		uint8_t layer = 0;
 		uint8_t translucencyType = 0;
 		uint8_t cmd = 0;
-		uint16_t meshId = 0;
+		uint32_t meshId = 0;
+		uint16_t shaderPipelineId = 0;
 		uint16_t materialId = 0;
 		uint32_t depth = 0;
-		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, meshId, materialId, depth);
+		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, meshId, shaderPipelineId, materialId, depth);
 
 		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::SwapBackBuffer, sortkey);
 	}
@@ -86,10 +88,11 @@ void AGN::AAplication::createDrawQueue()
 		uint8_t layer = 0;
 		uint8_t translucencyType = 0;
 		uint8_t cmd = 0;
-		uint16_t meshId = 0;
+		uint32_t meshId = 0;
+		uint16_t shaderPipelineId = 0;
 		uint16_t materialId = 0;
 		uint32_t depth = 0;
-		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, meshId, materialId, depth);
+		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, meshId, shaderPipelineId, materialId, depth);
 		
 		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::ClearBuffer, sortkey);
 		AClearBufferData& data = drawCommand.data.clearcolorData;
@@ -108,11 +111,12 @@ void AGN::AAplication::createDrawQueue()
 		uint8_t layer = 0;				// TODO:
 		uint8_t translucencyType = 0;	// TODO:
 		uint8_t cmd = 0;				// TODO: ?
-		uint16_t meshId = entity.getMesh()->getAId();
+		uint32_t meshId = entity.getMesh()->getAId();
+		uint16_t shaderPipelineId = entity.getShaderPipeline()->getAId();
 		uint16_t materialId = entity.getMaterial()->getAId();
 		uint32_t depth = 0;				// TODO:
 
-		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, meshId, materialId, depth);
+		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, meshId, shaderPipelineId, materialId, depth);
 
 		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::DrawEntity, sortkey);
 		ADrawEntityData& data = drawCommand.data.entityData;

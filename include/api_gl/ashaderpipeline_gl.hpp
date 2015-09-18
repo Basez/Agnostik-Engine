@@ -14,7 +14,8 @@ namespace AGN
 		class IAShader* getDomainShader() override { return m_domainShader; }
 		class IAShader* getGeometryShader() override { return m_geometryShader; }
 		class IAShader* getComputeShader() override { return m_computeShader; }
-		
+		uint16_t getAId() { return m_aId; }
+
 	private:
 		const uint16_t m_aId;				
 		const GLuint m_glProgramId;			
