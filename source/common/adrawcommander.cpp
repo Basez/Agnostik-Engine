@@ -16,6 +16,7 @@ AGN::ADrawCommander::ADrawCommander()
 	bitSectionTotal += (uint64_t)SortKeyBitAmount::Layer;
 	bitSectionTotal += (uint64_t)SortKeyBitAmount::TranslucencyType;
 	bitSectionTotal += (uint64_t)SortKeyBitAmount::CMD;
+	bitSectionTotal += (uint64_t)SortKeyBitAmount::ShaderPipelineID;
 	bitSectionTotal += (uint64_t)SortKeyBitAmount::MeshID;
 	bitSectionTotal += (uint64_t)SortKeyBitAmount::MaterialID;
 	bitSectionTotal += (uint64_t)SortKeyBitAmount::Depth;
@@ -84,8 +85,8 @@ uint64_t AGN::ADrawCommander::getSortKey(uint8_t& a_renderPhase,
 	uint8_t& a_layer,
 	uint8_t& a_translucencyType,
 	uint8_t& a_cmd,
-	uint32_t& a_meshId,
 	uint16_t& a_shaderPipelineId,
+	uint32_t& a_meshId,
 	uint16_t& a_materialId,
 	uint32_t& a_depth)
 {
@@ -95,8 +96,8 @@ uint64_t AGN::ADrawCommander::getSortKey(uint8_t& a_renderPhase,
 		a_layer >= (uint8_t)1 << (uint8_t)SortKeyBitAmount::Layer ||
 		a_translucencyType >= (uint8_t)1 << (uint8_t)SortKeyBitAmount::TranslucencyType ||
 		a_cmd >= (uint8_t)1 << (uint8_t)SortKeyBitAmount::CMD ||
-		a_meshId >= (uint32_t)1 << (uint32_t)SortKeyBitAmount::MeshID ||
 		a_shaderPipelineId >= (uint16_t)1 << (uint16_t)SortKeyBitAmount::ShaderPipelineID ||
+		a_meshId >= (uint32_t)1 << (uint32_t)SortKeyBitAmount::MeshID ||
 		a_materialId >= (uint16_t)1 << (uint16_t)SortKeyBitAmount::MaterialID ||
 		a_depth >= (uint32_t)1 << (uint32_t)SortKeyBitAmount::Depth)
 	{
@@ -111,8 +112,8 @@ uint64_t AGN::ADrawCommander::getSortKey(uint8_t& a_renderPhase,
 	sortKey += (uint64_t)a_layer << (uint64_t)SortKeyShift::Layer;
 	sortKey += (uint64_t)a_translucencyType << (uint64_t)SortKeyShift::TranslucencyType;
 	sortKey += (uint64_t)a_cmd << (uint64_t)SortKeyShift::CMD;
-	sortKey += (uint64_t)a_meshId << (uint64_t)SortKeyShift::MeshID;
 	sortKey += (uint64_t)a_shaderPipelineId << (uint64_t)SortKeyShift::ShaderPipelineID;
+	sortKey += (uint64_t)a_meshId << (uint64_t)SortKeyShift::MeshID;
 	sortKey += (uint64_t)a_materialId << (uint64_t)SortKeyShift::MaterialID;
 	sortKey += (uint64_t)a_depth << (uint64_t)SortKeyShift::Depth;
 

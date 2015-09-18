@@ -14,8 +14,8 @@ namespace AGN
 			uint8_t& a_layer,
 			uint8_t& a_translucencyType,
 			uint8_t& a_cmd,
-			uint32_t& a_meshId,
 			uint16_t& a_shaderPipelineId,
+			uint32_t& a_meshId,
 			uint16_t& a_materialId,
 			uint32_t& a_depth);
 
@@ -30,8 +30,8 @@ namespace AGN
 		{
 			Depth = 16,
 			MaterialID = 12,
-			ShaderPipelineID = 10,
 			MeshID = 16,
+			ShaderPipelineID = 10,
 			CMD = 2,
 			TranslucencyType = 2,
 			Layer = 3,
@@ -43,8 +43,8 @@ namespace AGN
 		{
 			Depth = 0,
 			MaterialID = 16,
-			ShaderPipelineID = 28,
-			MeshID = 38,
+			MeshID = 28,
+			ShaderPipelineID = 44,
 			CMD = 54,
 			TranslucencyType = 56,
 			Layer = 58,
