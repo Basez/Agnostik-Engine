@@ -4,6 +4,9 @@
 
 AGN::AWindowGL::AWindowGL(glm::ivec2 a_dimentions)
 	: m_dimentions(a_dimentions)
+	, m_mouseOnScreen(false)
+	, m_keyboardFocus(true)
+	, m_minimized(false)
 {
 	Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 
@@ -33,5 +36,50 @@ void AGN::AWindowGL::setTitle(const char* a_title)
 void AGN::AWindowGL::showMessageBox(const char* a_title, const char* a_message)
 {
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, a_title, a_message, m_sdlWindow);
+}
+
+void AGN::AWindowGL::onWindowEvent(SDL_Event a_event)
+{
+	switch (a_event.window.event)
+	{
+	case SDL_WINDOWEVENT_RESIZED:
+		m_dimentions.x = a_event.window.data1;
+		m_dimentions.y = a_event.window.data2;
+		break;
+
+	case SDL_WINDOWEVENT_EXPOSED:		// TODO: Repaint/render on window exposure?
+										//SDL_RenderPresent(g_renderer);
+		break;
+
+	case SDL_WINDOWEVENT_ENTER:
+		m_mouseOnScreen = true;
+		break;
+
+	case SDL_WINDOWEVENT_LEAVE:
+		m_mouseOnScreen = false;
+		break;
+
+	case SDL_WINDOWEVENT_FOCUS_GAINED:
+		m_keyboardFocus = true;
+		break;
+
+	case SDL_WINDOWEVENT_FOCUS_LOST:
+		m_keyboardFocus = false;
+		break;
+
+	case SDL_WINDOWEVENT_MINIMIZED:
+		m_minimized = true;
+		break;
+
+	case SDL_WINDOWEVENT_MAXIMIZED:
+		m_minimized = false;
+		break;
+
+	case SDL_WINDOWEVENT_RESTORED:
+		// TODO: Window restored?
+		break;
+	}
+
+	// TODO: check if default values of booleans are correct! (m_keyboardFocus/m_mouseOnScreen/m_minimized)
 }
 

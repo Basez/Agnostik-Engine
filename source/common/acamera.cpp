@@ -79,6 +79,7 @@ void AGN::ACamera::setProjectionRH(float a_fov, float a_zNear, float a_zFar)
 	float aspectRatio = (float)windowDimentions.x / (float)windowDimentions.y;
 
 	m_projectionMatrix = glm::perspective(glm::radians(a_fov), aspectRatio, a_zNear, a_zFar);
+	m_hasChangedFlag = true;
 }
 
 const glm::vec3 AGN::ACamera::getForward() const

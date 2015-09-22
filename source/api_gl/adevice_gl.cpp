@@ -67,7 +67,7 @@ AGN::IAMesh* AGN::ADeviceGL::createMesh(const uint16_t a_aId, AGN::AMeshData* a_
 
 AGN::IATexture* AGN::ADeviceGL::createTexture(const uint16_t a_aId, AGN::ATextureData* a_textureData)
 {
-	GLenum glType = ATextureGL::getGlType(a_textureData->type);
+	GLenum glType = ATextureGL::getGlTypeByTextureType(a_textureData->type);
 
 	GLuint textureID = -1;
 

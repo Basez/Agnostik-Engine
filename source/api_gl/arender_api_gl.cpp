@@ -190,3 +190,60 @@ void AGN::ARenderAPIGL::enableVSync(bool a_value)
 		SDL_GL_SetSwapInterval(0);
 	}
 }
+
+void AGN::ARenderAPIGL::handleEvents()
+{
+	SDL_Event event;
+
+	while (SDL_PollEvent(&event))
+	{
+		switch (event.type)
+		{
+		case SDL_QUIT:			
+			//g_quit = true;
+			break;
+
+		case SDL_KEYDOWN:
+			//Input.setHold(event.key.keysym.scancode, true);
+			break;
+
+		case SDL_KEYUP:
+			//Input.setHold(event.key.keysym.scancode, false);
+			break;
+
+		case SDL_MOUSEBUTTONDOWN:
+			//Input.setMouseHold(event.button.button, true);
+			break;
+
+		case SDL_MOUSEBUTTONUP:
+			//Input.setMouseHold(event.button.button, false);
+			//Input.mouseClick(event.button.button);
+			break;
+
+		case SDL_MOUSEMOTION:
+			//Input.setMouseXY(event.motion.x, event.motion.y);
+			//g_cameraController->onMouseMotion(event.motion.x, event.motion.y);
+			break;
+
+		case SDL_MOUSEWHEEL:
+			//Input.setMouseScroll((int)event.wheel.y);
+			break;
+
+		case SDL_WINDOWEVENT:
+			m_window->onWindowEvent(event);
+
+			if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+			{
+				// TODO: refactor, this is a weird hack?
+				int windowSizeX = event.window.data1;
+				int windowSizeY = event.window.data2;
+
+				//g_camera3D->setProjectionRH(60.0f, (float)windowSizeX / (float)windowSizeY, 0.1f, 10000.0f);
+				//g_camera3D->setViewport(0, 0, windowSizeX, windowSizeY);
+				//g_camera3D->onWindowResize();
+				g_log.info("window resized to %i/%i", windowSizeX, windowSizeY);
+			}
+			break;
+		}
+	}
+}

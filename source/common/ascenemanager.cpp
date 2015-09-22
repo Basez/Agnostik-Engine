@@ -28,7 +28,7 @@ AGN::ASceneManager::~ASceneManager()
 void AGN::ASceneManager::init()
 {
 	m_camera = new ACamera();
-	m_camera->setPosition(glm::vec3(0, 10, 0));
+	m_camera->setPosition(glm::vec3(0, 0, 10));
 	m_camera->setProjectionRH(60.0f, 0.1f, 10000.0f);
 }
 

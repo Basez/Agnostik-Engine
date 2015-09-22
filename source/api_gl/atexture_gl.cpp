@@ -1,12 +1,12 @@
 #include "asharedh.hpp"
 #include "atexture_gl.hpp"
 
-AGN::ATextureGL::ATextureGL(const uint16_t a_id, ATextureData* a_textureData, GLenum a_textureID)
+AGN::ATextureGL::ATextureGL(const uint16_t a_id, ATextureData* a_textureData, GLuint a_glId)
 	: m_id(a_id)
 	, m_textureData(a_textureData)
-	, m_textureID(a_textureID)
+	, m_glId(a_glId)
 {
-	m_glType = ATextureGL::getGlType(a_textureData->type);
+	m_glType = ATextureGL::getGlTypeByTextureType(a_textureData->type);
 	setTextureParams(a_textureData->flags);
 
 	// upload to gpu
@@ -23,7 +23,7 @@ std::string AGN::ATextureGL::getRelativePath()
 
 void AGN::ATextureGL::setTextureParams(unsigned int a_flags)
 {
-	glBindTexture(m_glType, m_textureID);
+	glBindTexture(m_glType, m_glId);
 
 	// set parameters
 	if (a_flags & (int)EATextureRenderFlags::USE_NEAREST_NEIGBOR)
@@ -79,7 +79,7 @@ void AGN::ATextureGL::pullBuffer()
 	}
 
 	// get buffer from loaded texture
-	glBindTexture(m_glType, m_textureID);
+	glBindTexture(m_glType, m_glId);
 	const unsigned int size = m_textureData->width * m_textureData->height;
 	m_textureData->buffer = new uint32_t[size];
 	glGetTexImage(m_glType, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_textureData->buffer);
@@ -101,7 +101,7 @@ void AGN::ATextureGL::pushBuffer()
 		g_log.error("Cannot push buffer of this texture, because the buffer is null!");
 	}
 
-	glBindTexture(m_glType, m_textureID);
+	glBindTexture(m_glType, m_glId);
 	glTexImage2D(m_glType, 0, GL_RGBA, m_textureData->width, m_textureData->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_textureData->buffer);
 	glBindTexture(m_glType, 0);
 
@@ -112,7 +112,7 @@ void AGN::ATextureGL::pushBuffer()
 	}
 }
 
-GLenum AGN::ATextureGL::getGlType(EATextureType a_type)
+GLenum AGN::ATextureGL::getGlTypeByTextureType(EATextureType a_type)
 {
 	switch (a_type)
 	{

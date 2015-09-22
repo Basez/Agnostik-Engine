@@ -14,6 +14,8 @@ namespace AGN
 
 	private:
 		void drawEntity(struct ADrawCommand* a_command, struct ADrawCommand* a_prevCommand = nullptr);
+		void bindTexturesToShader(GLuint a_shaderProgram, GLuint a_textureCount, class ATextureGL** a_textureArray);
+
 		class ACamera* m_currentCamera;
 		glm::mat4 m_vp;
 

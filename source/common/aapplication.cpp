@@ -41,12 +41,19 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 	while (!m_quit)
 	{
 		update();
+
+		// high level rendering
 		createDrawQueue();
 		m_drawCommander->sortCommandList();
+
+		// api specific rendering
 		m_renderAPI->getRenderer().render(*m_drawCommander);
 
 		// clear render buckets at the end of the frame (after data is uploaded to the GPU)
 		m_drawCommander->clearCommands();
+
+		// api specific event handling, input etc
+		m_renderAPI->handleEvents();
 	}
 
 }

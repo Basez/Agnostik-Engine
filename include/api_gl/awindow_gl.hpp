@@ -3,7 +3,6 @@
 #include "iawindow.hpp"
 
 struct SDL_Window;
-
 namespace AGN
 {
 	class AWindowGL : public IAWindow
@@ -16,9 +15,13 @@ namespace AGN
 		
 		glm::ivec2 getDimentions() override { return m_dimentions; }
 		SDL_Window* getSDLWindow() { return m_sdlWindow; }
+		void onWindowEvent(SDL_Event a_event);
 
 	private:
 		glm::ivec2 m_dimentions;
 		SDL_Window* m_sdlWindow;
+		bool m_mouseOnScreen;
+		bool m_keyboardFocus;
+		bool m_minimized;
 	};
 }

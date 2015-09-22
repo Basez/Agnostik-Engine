@@ -15,6 +15,9 @@ namespace AGN
 		class IAShader* getGeometryShader() override { return m_geometryShader; }
 		class IAShader* getComputeShader() override { return m_computeShader; }
 		uint16_t getAId() { return m_aId; }
+		GLuint getGlProgramId() { return m_glProgramId; }
+
+		GLint getUniformIdByName(const char* a_name);
 
 	private:
 		const uint16_t m_aId;				
@@ -25,5 +28,10 @@ namespace AGN
 		class IAShader* m_domainShader;		
 		class IAShader* m_geometryShader;	
 		class IAShader* m_computeShader;
+
+		GLint m_uniformCount;
+		std::string* m_uniformNames;
+		GLint* m_uniformIDs;
+
 	};	
 }
