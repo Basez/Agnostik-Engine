@@ -69,13 +69,18 @@ void AGN::AInputGL::registerFrameCompletion()
 	m_scrollAmount = 0;
 }
 
-void AGN::AInputGL::registerMouseXY(int a_mouseX, int a_mouseY)
+void AGN::AInputGL::registerMouseMotion(int a_mouseX, int a_mouseY)
 {
 	m_oldMouseX = m_mouseX;
 	m_mouseX = a_mouseX;
 
 	m_oldMouseY = m_mouseY;
 	m_mouseY = a_mouseY;
+
+	for (IAInputMouseMotionHandler* motionHandler : m_mouseMotionHandlers)
+	{
+		motionHandler->onMouseMotion(m_mouseX, m_mouseY);
+	}
 }
 
 bool AGN::AInputGL::getKeyDown(AGN::AGN_SCANCODE a_key)
@@ -123,4 +128,21 @@ bool AGN::AInputGL::getMouse(AGN::AGN_MOUSECODE a_mouseButton)
 bool AGN::AInputGL::getCapslock()
 {
 	return bool((SDL_GetModState() & KMOD_CAPS) == 1);
+}
+
+void AGN::AInputGL::addMouseMotionHandler(AGN::IAInputMouseMotionHandler* a_motionHandler)
+{
+	m_mouseMotionHandlers.push_back(a_motionHandler);
+}
+
+void AGN::AInputGL::removeMouseMotionHandler(AGN::IAInputMouseMotionHandler* a_motionHandler)
+{
+	for (unsigned int i = 0; i < m_mouseMotionHandlers.size(); i++)
+	{
+		if (m_mouseMotionHandlers[i] == a_motionHandler)
+		{
+			m_mouseMotionHandlers.erase(m_mouseMotionHandlers.begin() + i);
+			return;
+		}
+	}
 }

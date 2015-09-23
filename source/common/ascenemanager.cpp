@@ -10,6 +10,7 @@
 #include "acamera.hpp"
 #include "iashader.hpp"
 #include "iashaderpipeline.hpp"
+#include "acameracontroller.hpp"
 
 // shaders
 #include "shader_mesh_pix.hpp"
@@ -30,6 +31,11 @@ void AGN::ASceneManager::init()
 	m_camera = new ACamera();
 	m_camera->setPosition(glm::vec3(0, 0, 10));
 	m_camera->setProjectionRH(60.0f, 0.1f, 10000.0f);
+}
+
+void AGN::ASceneManager::update(float a_deltaTime)
+{
+	m_cameraController->update(a_deltaTime);
 }
 
 void AGN::ASceneManager::loadTestScene01()
@@ -86,4 +92,7 @@ void AGN::ASceneManager::loadTestScene01()
 	triangleEntityB->setShaderPipeline(&meshShaderPipeline);
 	triangleEntityB->setPosition(glm::vec3(0, 0, -10));
 	m_entities.push_back(triangleEntityB);
+
+	// create camera controller+
+	m_cameraController = new ACameraController(*m_camera, false);
 }

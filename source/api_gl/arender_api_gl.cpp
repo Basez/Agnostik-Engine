@@ -223,7 +223,7 @@ void AGN::ARenderAPIGL::handleEvents()
 			break;
 
 		case SDL_MOUSEMOTION:
-			g_input.registerMouseXY(event.motion.x, event.motion.y);
+			g_input.registerMouseMotion(event.motion.x, event.motion.y);
 			//g_cameraController->onMouseMotion(event.motion.x, event.motion.y);
 			break;
 

@@ -43,31 +43,31 @@ void AGN::ACamera::updateViewMatrix()
 	}
 }
 
-void AGN::ACamera::translate(const glm::vec3& a_addedPosition)
+void AGN::ACamera::translate(glm::vec3& a_addedPosition)
 {
 	m_position += a_addedPosition;
 	m_hasChangedFlag = true;
 }
 
-void AGN::ACamera::rotate(const glm::quat& a_addedRotation)
+void AGN::ACamera::rotate(glm::quat& a_addedRotation)
 {
 	m_rotation = m_rotation * a_addedRotation;
 	m_hasChangedFlag = true;
 }
 
-void AGN::ACamera::setPosition(const glm::vec3& a_postion)
+void AGN::ACamera::setPosition(glm::vec3& a_postion)
 {
 	m_position = a_postion;
 	m_hasChangedFlag = true;
 }
 
-void AGN::ACamera::setRotation(const glm::quat& a_rotation)
+void AGN::ACamera::setRotation(glm::quat& a_rotation)
 {
 	m_rotation = a_rotation;
 	m_hasChangedFlag = true;
 }
 
-void AGN::ACamera::setEulerAngles(const glm::vec3& a_eulerAngles)
+void AGN::ACamera::setEulerAngles(glm::vec3& a_eulerAngles)
 {
 	m_rotation = quat(glm::radians(a_eulerAngles));
 	m_hasChangedFlag = true;

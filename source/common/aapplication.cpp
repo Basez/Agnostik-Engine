@@ -67,11 +67,15 @@ void AGN::AAplication::cleanup()
 
 void AGN::AAplication::update()
 {
+	// calculate delatTime
+	// TODO: Cross-Platform!
+	static Uint32 lastTime = 0;
+	Uint32 time = SDL_GetTicks();
+	float deltaTime = float(time - lastTime) / 1000.0f;
+	lastTime = time;
+
 	// logic
-	if (g_input.getKeyUp(AGN_SCANCODE::A))
-		g_log.debug("A up");
-	if (g_input.getKeyDown(AGN_SCANCODE::A))
-		g_log.debug("A Down");
+	m_sceneManager->update(deltaTime);
 }
 
 void AGN::AAplication::createDrawQueue()

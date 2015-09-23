@@ -9,6 +9,7 @@ namespace AGN
 		~ASceneManager();
 
 		void init();
+		void update(float a_deltaTime);
 		void loadTestScene01();
 
 		const std::vector<class AEntity*> getEntities() const { return m_entities; }
@@ -17,6 +18,6 @@ namespace AGN
 	private:
 		std::vector<class AEntity*> m_entities; 
 		class ACamera* m_camera;
-		
+		class ACameraController* m_cameraController;
 	};
 }

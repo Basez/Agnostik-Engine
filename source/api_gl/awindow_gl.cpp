@@ -38,6 +38,18 @@ void AGN::AWindowGL::showMessageBox(const char* a_title, const char* a_message)
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, a_title, a_message, m_sdlWindow);
 }
 
+void AGN::AWindowGL::warpCursor(glm::ivec2 a_screenPosition)
+{
+	SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
+	SDL_WarpMouseInWindow(m_sdlWindow, a_screenPosition.x, a_screenPosition.y);
+	SDL_EventState(SDL_MOUSEMOTION, SDL_ENABLE);
+}
+
+void AGN::AWindowGL::showCursor(bool a_shown)
+{
+	SDL_ShowCursor(a_shown);
+}
+
 void AGN::AWindowGL::onWindowEvent(SDL_Event a_event)
 {
 	switch (a_event.window.event)

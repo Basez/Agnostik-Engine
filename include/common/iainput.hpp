@@ -16,15 +16,9 @@ namespace AGN
 		virtual void registerHold(AGN::AGN_SCANCODE a_key, bool a_held) = 0;
 		virtual void registerFrameCompletion() = 0;
 		virtual void registerMouseScroll(int a_scrollAmount) = 0;
-		virtual void registerMouseXY(int a_mouseX, int a_mouseY) = 0;
+		virtual void registerMouseMotion(int a_mouseX, int a_mouseY) = 0;
 
-		// TODO: click callback management?
-		// TODO: inputString (for text fields)
-		//virtual void addClickCallback(std::function<void(int, int)>* a_function);
-		//virtual void removeClickCallback(std::function<void(int, int)>* a_function);
-		//virtual void setTrackInputIntoString(bool a_value, const int a_maxCharacters = -1) { m_doTrackInput = a_value; m_maxInputCharacters = a_maxCharacters; }
-		//virtual void setInputString(std::string a_string) { m_inputString = a_string; }
-			
+		// poll input functions
 		virtual bool getKeyDown(AGN::AGN_SCANCODE a_key) = 0;
 		virtual bool getKeyUp(AGN::AGN_SCANCODE a_key) = 0;
 		virtual bool getKey(AGN::AGN_SCANCODE a_key) = 0;
@@ -33,15 +27,28 @@ namespace AGN
 		virtual bool getMouse(AGN::AGN_MOUSECODE a_mouseButton) = 0;
 		virtual int getMouseX() = 0;
 		virtual int getMouseY() = 0;
+		virtual int getMouseXMove() = 0;
+		virtual int getMouseYMove() = 0;
 		virtual bool getCapslock() = 0;
 		virtual const int getMouseScroll() = 0;
-		
-		// TODO: click callback management?
-		// TODO: inputString (for text fields)?
-		//virtual int getMouseXMove() { return m_mouseX - m_oldMouseX; }
-		//virtual int getMouseYMove() { return m_mouseY - m_oldMouseY; }
+
+		// callback systems
+		virtual void addMouseMotionHandler(class IAInputMouseMotionHandler* a_motionHandler) = 0;
+		virtual void removeMouseMotionHandler(class IAInputMouseMotionHandler* a_motionHandler) = 0;
+		//virtual void addClickCallback(std::function<void(int, int)>* a_function);		// TODO: click callback management?
+		//virtual void removeClickCallback(std::function<void(int, int)>* a_function);	// TODO: click callback management?
+		//virtual void setTrackInputIntoString(bool a_value, const int a_maxCharacters = -1) { m_doTrackInput = a_value; m_maxInputCharacters = a_maxCharacters; }			// TODO: inputString (for text fields)
+		//virtual void setInputString(std::string a_string) { m_inputString = a_string; }		// TODO: inputString (for text fields)
 		//virtual std::string getInputString() const { return m_inputString; }
 		//virtual const bool getDoTrackInput() const { return m_doTrackInput; }
+	};
+
+	// interface for handling mouse motion events
+	class IAInputMouseMotionHandler
+	{
+	public:
+		virtual ~IAInputMouseMotionHandler() {};
+		virtual void onMouseMotion(int a_mouseX, int a_mouseY) = 0;
 	};
 
 	enum class AGN_MOUSECODE

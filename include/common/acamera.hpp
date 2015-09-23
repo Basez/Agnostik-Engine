@@ -9,12 +9,12 @@ namespace AGN
 
 		void reset();
 		void applyViewMatrix();
-		void translate(const glm::vec3& a_addedPosition);
+		void translate(glm::vec3& a_addedPosition);
 
-		void rotate(const glm::quat& a_addedRotation);
-		void setPosition(const glm::vec3& a_postion);
-		void setRotation(const glm::quat& a_rotation);
-		void setEulerAngles(const glm::vec3& a_eulerAngles);
+		void rotate(glm::quat& a_addedRotation);
+		void setPosition(glm::vec3& a_postion);
+		void setRotation(glm::quat& a_rotation);
+		void setEulerAngles(glm::vec3& a_eulerAngles);
 		void setProjectionRH(float a_fov, float a_zNear, float a_zFar);
 
 		const glm::vec3 getPosition() const { return m_position; }

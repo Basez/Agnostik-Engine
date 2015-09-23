@@ -17,7 +17,7 @@ namespace AGN
 		void registerHold(AGN::AGN_SCANCODE a_key, bool a_held) override;
 		void registerFrameCompletion() override;
 		void registerMouseScroll(int a_scrollAmount) override { m_scrollAmount = a_scrollAmount; }
-		void registerMouseXY(int a_mouseX, int a_mouseY) override;
+		void registerMouseMotion(int a_mouseX, int a_mouseY) override;
 
 		bool getKeyDown(AGN::AGN_SCANCODE a_key) override;
 		bool getKeyUp(AGN::AGN_SCANCODE a_key) override;
@@ -27,8 +27,14 @@ namespace AGN
 		bool getMouse(AGN::AGN_MOUSECODE a_mouseButton) override;
 		int getMouseX() override { return m_mouseX; }
 		int getMouseY() override { return m_mouseY; }
+		int getMouseXMove() override { return m_mouseX - m_oldMouseX; }
+		int getMouseYMove() override { return m_mouseY - m_oldMouseY; }
 		bool getCapslock() override;
 		const int getMouseScroll() override { return m_scrollAmount; };
+
+		// callbacks
+		void addMouseMotionHandler(class IAInputMouseMotionHandler* a_motionHandler);
+		void removeMouseMotionHandler(class IAInputMouseMotionHandler* a_motionHandler);
 
 	private:
 		//void onInputCharacter(SDL_Scancode a_key);
@@ -46,7 +52,7 @@ namespace AGN
 		int m_mouseY;
 		int m_scrollAmount;
 
-		//std::vector<std::function<void(int, int)>*> m_clickCallbacks;
+		std::vector<class IAInputMouseMotionHandler*> m_mouseMotionHandlers;
 		//std::string m_inputString;
 		//int m_maxInputCharacters;
 	};
