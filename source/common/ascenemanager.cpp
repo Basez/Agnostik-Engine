@@ -16,6 +16,8 @@
 #include "shader_mesh_pix.hpp"
 #include "shader_mesh_vert.hpp"
 
+using namespace glm;
+
 AGN::ASceneManager::ASceneManager()
 {
 	
@@ -28,9 +30,11 @@ AGN::ASceneManager::~ASceneManager()
 
 void AGN::ASceneManager::init()
 {
-	m_camera = new ACamera();
-	m_camera->setPosition(glm::vec3(0, 0, 10));
+	m_camera = new ACamera(vec3(0, 2, 7.5f), quat(vec3(glm::radians(-10.0f),0,0)));
 	m_camera->setProjectionRH(60.0f, 0.1f, 10000.0f);
+
+	// create camera controller
+	m_cameraController = new ACameraController(*m_camera, false);
 }
 
 void AGN::ASceneManager::update(float a_deltaTime)
@@ -66,7 +70,7 @@ void AGN::ASceneManager::loadTestScene01()
 	triangleEntityA->setMesh(&triangleMesh);
 	triangleEntityA->setMaterial(&myMaterial);
 	triangleEntityA->setShaderPipeline(&meshShaderPipeline);
-	triangleEntityA->setPosition(glm::vec3(0, 0, -10));
+	triangleEntityA->setPosition(vec3(-5, 0, 0));
 	m_entities.push_back(triangleEntityA);
 
 	// create the suzanna entity;
@@ -74,7 +78,7 @@ void AGN::ASceneManager::loadTestScene01()
 	suzanneEntity->setMesh(&suzanneMesh);
 	suzanneEntity->setMaterial(&myMaterial);
 	suzanneEntity->setShaderPipeline(&meshShaderPipeline);
-	suzanneEntity->setPosition(glm::vec3(0, 0, -10));
+	suzanneEntity->setPosition(vec3(0, 0, 0));
 	m_entities.push_back(suzanneEntity);
 
 	// create the cube entity;
@@ -82,7 +86,7 @@ void AGN::ASceneManager::loadTestScene01()
 	cubeEntity->setMesh(&cubeMesh);
 	cubeEntity->setMaterial(&myMaterial);
 	cubeEntity->setShaderPipeline(&meshShaderPipeline);
-	cubeEntity->setPosition(glm::vec3(0, 0, -10));
+	cubeEntity->setPosition(vec3(5, 0, 0));
 	m_entities.push_back(cubeEntity);
 
 	// create the triangle II entity;
@@ -90,9 +94,6 @@ void AGN::ASceneManager::loadTestScene01()
 	triangleEntityB->setMesh(&triangleMesh);
 	triangleEntityB->setMaterial(&myMaterial);
 	triangleEntityB->setShaderPipeline(&meshShaderPipeline);
-	triangleEntityB->setPosition(glm::vec3(0, 0, -10));
+	triangleEntityB->setPosition(vec3(5, 0, 0));
 	m_entities.push_back(triangleEntityB);
-
-	// create camera controller+
-	m_cameraController = new ACameraController(*m_camera, false);
 }
