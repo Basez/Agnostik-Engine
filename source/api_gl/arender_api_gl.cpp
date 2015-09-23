@@ -4,6 +4,8 @@
 #include "adevice_gl.hpp"
 #include "arenderer_gl.hpp"
 #include "aconfigmanager.hpp"
+#include "ainput_gl.hpp"
+#include "aaplication.hpp"
 
 AGN::ARenderAPIGL::ARenderAPIGL()
 	: m_initialized(false)
@@ -199,34 +201,34 @@ void AGN::ARenderAPIGL::handleEvents()
 	{
 		switch (event.type)
 		{
-		case SDL_QUIT:			
-			//g_quit = true;
+		case SDL_QUIT:	
+			g_application.quit();
 			break;
 
 		case SDL_KEYDOWN:
-			//Input.setHold(event.key.keysym.scancode, true);
+			g_input.registerHold(AInputGL::getAGNKey(event.key.keysym.scancode), true);
 			break;
 
 		case SDL_KEYUP:
-			//Input.setHold(event.key.keysym.scancode, false);
+			g_input.registerHold(AInputGL::getAGNKey(event.key.keysym.scancode), false);
 			break;
 
 		case SDL_MOUSEBUTTONDOWN:
-			//Input.setMouseHold(event.button.button, true);
+			g_input.registerMouseHold(AInputGL::getAGNMouse(event.button.button), true);
 			break;
 
 		case SDL_MOUSEBUTTONUP:
-			//Input.setMouseHold(event.button.button, false);
-			//Input.mouseClick(event.button.button);
+			g_input.registerMouseHold(AInputGL::getAGNMouse(event.button.button), false);
+			g_input.registerMouseClick(AInputGL::getAGNMouse(event.button.button));
 			break;
 
 		case SDL_MOUSEMOTION:
-			//Input.setMouseXY(event.motion.x, event.motion.y);
+			g_input.registerMouseXY(event.motion.x, event.motion.y);
 			//g_cameraController->onMouseMotion(event.motion.x, event.motion.y);
 			break;
 
 		case SDL_MOUSEWHEEL:
-			//Input.setMouseScroll((int)event.wheel.y);
+			g_input.registerMouseScroll((int)event.wheel.y);
 			break;
 
 		case SDL_WINDOWEVENT:

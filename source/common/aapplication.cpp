@@ -52,6 +52,8 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 		// clear render buckets at the end of the frame (after data is uploaded to the GPU)
 		m_drawCommander->clearCommands();
 
+		g_input.registerFrameCompletion();
+
 		// api specific event handling, input etc
 		m_renderAPI->handleEvents();
 	}
@@ -66,6 +68,10 @@ void AGN::AAplication::cleanup()
 void AGN::AAplication::update()
 {
 	// logic
+	if (g_input.getKeyUp(AGN_SCANCODE::A))
+		g_log.debug("A up");
+	if (g_input.getKeyDown(AGN_SCANCODE::A))
+		g_log.debug("A Down");
 }
 
 void AGN::AAplication::createDrawQueue()

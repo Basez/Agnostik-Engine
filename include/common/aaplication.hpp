@@ -10,6 +10,7 @@ namespace AGN
 
 		class IARenderAPI& getRenderAPI();
 		class AResourceManager& getResourceManager();
+		void quit() { m_quit = true; }
 
 	private:
 		void update();
