@@ -13,6 +13,6 @@
 //#include <SDL/SDL_ttf.h>
 
 
-// TODO: DOCUMENT, used for openGL's VBO initializations
+// used for openGL's VBO initializations
 #define BUFFER_OFFSET(i) ((char*)NULL + (i))
 #define MEMBER_OFFSET(s,m) ((char*)NULL + (offsetof(s,m)))

@@ -6,9 +6,11 @@
 
 using namespace glm;
 
-AGN::ACamera::ACamera()
-	: m_position(glm::vec3())
-	, m_rotation(glm::quat())
+AGN::ACamera::ACamera(glm::vec3 a_initialPosition, glm::quat a_initialRotation)
+	: m_initialPosition(a_initialPosition)
+	, m_initialRotation(a_initialRotation)
+	, m_position(a_initialPosition)
+	, m_rotation(a_initialRotation)
 	, m_viewMatrix(glm::mat4())
 	, m_projectionMatrix(glm::mat4())
 	, m_hasChangedFlag(true)
@@ -18,7 +20,8 @@ AGN::ACamera::ACamera()
 
 void AGN::ACamera::reset()
 {
-	m_rotation = quat();
+	m_position = m_initialPosition;
+	m_rotation = m_initialRotation;
 	m_hasChangedFlag = true;
 }
 

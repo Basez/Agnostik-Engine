@@ -146,3 +146,20 @@ void AGN::AInputGL::removeMouseMotionHandler(AGN::IAInputMouseMotionHandler* a_m
 		}
 	}
 }
+
+void AGN::AInputGL::addMouseClickHandler(class IAInputMouseClickHandler* a_clickHandler)
+{
+	m_mouseClickHandlers.push_back(a_clickHandler);
+}
+
+void AGN::AInputGL::removeMouseClickHandler(class IAInputMouseClickHandler* a_clickHandler)
+{
+	for (unsigned int i = 0; i < m_mouseClickHandlers.size(); i++)
+	{
+		if (m_mouseClickHandlers[i] == a_clickHandler)
+		{
+			m_mouseClickHandlers.erase(m_mouseClickHandlers.begin() + i);
+			return;
+		}
+	}
+}

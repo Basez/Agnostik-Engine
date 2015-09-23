@@ -35,8 +35,9 @@ namespace AGN
 		// callback systems
 		virtual void addMouseMotionHandler(class IAInputMouseMotionHandler* a_motionHandler) = 0;
 		virtual void removeMouseMotionHandler(class IAInputMouseMotionHandler* a_motionHandler) = 0;
-		//virtual void addClickCallback(std::function<void(int, int)>* a_function);		// TODO: click callback management?
-		//virtual void removeClickCallback(std::function<void(int, int)>* a_function);	// TODO: click callback management?
+		virtual void addMouseClickHandler(class IAInputMouseClickHandler* a_clickHandler) = 0;
+		virtual void removeMouseClickHandler(class IAInputMouseClickHandler* a_clickHandler) = 0;
+
 		//virtual void setTrackInputIntoString(bool a_value, const int a_maxCharacters = -1) { m_doTrackInput = a_value; m_maxInputCharacters = a_maxCharacters; }			// TODO: inputString (for text fields)
 		//virtual void setInputString(std::string a_string) { m_inputString = a_string; }		// TODO: inputString (for text fields)
 		//virtual std::string getInputString() const { return m_inputString; }
@@ -49,6 +50,14 @@ namespace AGN
 	public:
 		virtual ~IAInputMouseMotionHandler() {};
 		virtual void onMouseMotion(int a_mouseX, int a_mouseY) = 0;
+	};
+
+	// interface for handling mouse click events
+	class IAInputMouseClickHandler
+	{
+	public:
+		virtual ~IAInputMouseClickHandler() {};
+		virtual void onMouseClick(int a_mouseX, int a_mouseY) = 0;
 	};
 
 	enum class AGN_MOUSECODE

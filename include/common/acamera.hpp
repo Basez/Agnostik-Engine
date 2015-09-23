@@ -5,7 +5,7 @@ namespace AGN
 	class ACamera
 	{
 	public:
-		ACamera();
+		ACamera(glm::vec3 a_initialPosition = glm::vec3(), glm::quat a_initialRotation = glm::quat());
 
 		void reset();
 		void applyViewMatrix();
@@ -27,6 +27,9 @@ namespace AGN
 
 	private:
 		void updateViewMatrix();
+
+		glm::vec3 m_initialPosition;
+		glm::quat m_initialRotation;
 
 		glm::vec3 m_position;
 		glm::quat m_rotation;

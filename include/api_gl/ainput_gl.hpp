@@ -33,8 +33,11 @@ namespace AGN
 		const int getMouseScroll() override { return m_scrollAmount; };
 
 		// callbacks
-		void addMouseMotionHandler(class IAInputMouseMotionHandler* a_motionHandler);
-		void removeMouseMotionHandler(class IAInputMouseMotionHandler* a_motionHandler);
+		void addMouseMotionHandler(class IAInputMouseMotionHandler* a_motionHandler) override;
+		void removeMouseMotionHandler(class IAInputMouseMotionHandler* a_motionHandler) override;
+		void addMouseClickHandler(class IAInputMouseClickHandler* a_clickHandler) override;
+		void removeMouseClickHandler(class IAInputMouseClickHandler* a_clickHandler) override;
+
 
 	private:
 		//void onInputCharacter(SDL_Scancode a_key);
@@ -53,6 +56,8 @@ namespace AGN
 		int m_scrollAmount;
 
 		std::vector<class IAInputMouseMotionHandler*> m_mouseMotionHandlers;
+		std::vector<class IAInputMouseClickHandler*> m_mouseClickHandlers;
+
 		//std::string m_inputString;
 		//int m_maxInputCharacters;
 	};
