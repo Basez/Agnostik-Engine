@@ -54,8 +54,8 @@ AGN::IAMesh& AGN::AResourceManager::loadMesh(std::string a_relativePath, uint32_
 	AMeshData* meshData = new AMeshData();
 	meshData->relativePath = a_relativePath;
 
-	unsigned int flags = additional_assimp_flags | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices; // aiProcess_Triangulate | aiProcess_CalcTangentSpace |
-
+	unsigned int flags = additional_assimp_flags | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenNormals;
+	
 	//if (!a_rightHandCoordinates)
 	//{
 	//	flags |= aiProcess_FlipWindingOrder;
@@ -104,39 +104,39 @@ AGN::IAMesh& AGN::AResourceManager::loadMesh(std::string a_relativePath, uint32_
 		vertexOffset += loadedMesh->mNumVertices;
 	}
 
-	// load textures/materials into openGL via ShaderManager
-	// TODO: Confirm this code works
+	/*
+	// TODO: load textures/materials into openGL via ShaderManager
 	for (unsigned int i = 0; i < scene->mNumMaterials; i++)
 	{
 		// TODO: TEXTURE LOADING, add to a queue?
-
-		/*
 		const aiMaterial* material = scene->mMaterials[i];
 		int texIndex = 0;
 		aiString relativePath;  // filename
-
 		string finalPath = AFileUtils::getPathRelativeToPath(a_relativePath, relativePath.C_Str());
 
 		if (material->GetTexture(aiTextureType_DIFFUSE, texIndex, &relativePath) == AI_SUCCESS)
 		{
 			// TODO: TextureLoading?
 			//m_textureDiffuse = new BTexture(BTextureType::TEXTURE_2D, finalPath.c_str());
+			g_log.debug("finalPath.c_str(): %s", finalPath.c_str());
 		}
 
 		if (material->GetTexture(aiTextureType_NORMALS, texIndex, &relativePath) == AI_SUCCESS)
 		{
 			// TODO: TextureLoading?
 			//m_textureNormal = new BTexture(BTextureType::TEXTURE_2D, finalPath.c_str());
+			g_log.debug("finalPath.c_str(): %s", finalPath.c_str());
 		}
 
 		if (material->GetTexture(aiTextureType_SPECULAR, texIndex, &relativePath) == AI_SUCCESS)
 		{
 			// TODO: TextureLoading?
 			//m_textureSpecular = new BTexture(BTextureType::TEXTURE_2D, finalPath.c_str());
+			g_log.debug("finalPath.c_str(): %s", finalPath.c_str());
 		}
-		*/
+		
 	}
-	
+	*/
 	IAMesh* newMesh = g_application.getRenderAPI().getDevice().createMesh(m_meshIdCount++, meshData);
 
 	m_loadedMeshes.push_back(newMesh);

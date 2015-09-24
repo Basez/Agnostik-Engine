@@ -34,7 +34,8 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 
 	m_sceneManager = new ASceneManager();
 	m_sceneManager->init();
-	m_sceneManager->loadTestScene01();
+	//m_sceneManager->loadTestScene01();
+	m_sceneManager->loadScrambledScene();
 
 	m_renderAPI->getRenderer().setCamera(m_sceneManager->getCurrentCamera());
 
@@ -83,7 +84,7 @@ void AGN::AAplication::createDrawQueue()
 	// TODO: make these static draw commands
 	// Swap buffer Draw command
 	{
-		// sortkey
+		// create sortkey
 		uint8_t renderPhase = (uint8_t)RenderPhase::PostDraw;
 		uint8_t layer = 0;
 		uint8_t translucencyType = 0;
@@ -98,9 +99,9 @@ void AGN::AAplication::createDrawQueue()
 	}
 
 	// TODO: make these static draw commands
-	// do clear buffer calls
+	// PREDRAW clear buffer
 	{
-		// get sortkey
+		// create sortkey
 		uint8_t renderPhase = (uint8_t)RenderPhase::PreDraw;
 		uint8_t layer = 0;
 		uint8_t translucencyType = 0;
@@ -110,11 +111,53 @@ void AGN::AAplication::createDrawQueue()
 		uint16_t materialId = 0;
 		uint32_t depth = 0;
 		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, shaderPipelineId, meshId, materialId, depth);
-
 		
 		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::ClearBuffer, sortkey);
 		AClearBufferData& data = drawCommand.data.clearcolorData;
 		data.buffersToClear = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT; // TODO: OpenGL specific? shouldnt be here
+		data.clearColor = 0x00FF00;
+	}
+
+	// fill commander with skybox draw entity commands
+	const std::vector<AEntity*> skyboxEntities = m_sceneManager->getSkyboxEntities();
+	for (unsigned int i = 0; i < skyboxEntities.size(); i++)
+	{
+		AEntity& entity = *skyboxEntities[i];
+
+		// create sortkey
+		uint8_t renderPhase = (uint8_t)RenderPhase::FullscreenViewport;
+		uint8_t layer = (uint8_t)RenderLayer::Skybox;
+		uint8_t translucencyType = 0;				// TODO:
+		uint8_t cmd = 0;							// TODO: ?
+		uint16_t shaderPipelineId = entity.getShaderPipeline()->getAId();
+		uint32_t meshId = entity.getMesh()->getAId();
+		uint16_t materialId = entity.getMaterial()->getAId();
+		uint32_t depth = 0;							// TODO:
+
+		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, shaderPipelineId, meshId, materialId, depth);
+
+		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::DrawEntity, sortkey);
+		ADrawEntityData& data = drawCommand.data.entityData;
+		data.entity = &entity;
+	}
+
+	// TODO: make these static draw commands
+	// Clear Z Buffer after skybox
+	{
+		// create sortkey
+		uint8_t renderPhase = (uint8_t)RenderPhase::FullscreenViewport;
+		uint8_t layer = (uint8_t)RenderLayer::PreEntities;
+		uint8_t translucencyType = 0;
+		uint8_t cmd = 0;
+		uint16_t shaderPipelineId = 0;
+		uint32_t meshId = 0;
+		uint16_t materialId = 0;
+		uint32_t depth = 0;
+		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, shaderPipelineId, meshId, materialId, depth);
+
+		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::ClearBuffer, sortkey);
+		AClearBufferData& data = drawCommand.data.clearcolorData;
+		data.buffersToClear = GL_DEPTH_BUFFER_BIT; // TODO: OpenGL specific? shouldnt be here
 		data.clearColor = 0x00FF00;
 	}
 
@@ -124,18 +167,17 @@ void AGN::AAplication::createDrawQueue()
 	{
 		AEntity& entity = *entities[i];
 
-		// get sortkey
+		// create sortkey
 		uint8_t renderPhase = (uint8_t)RenderPhase::FullscreenViewport;
-		uint8_t layer = 0;				// TODO:
-		uint8_t translucencyType = 0;	// TODO:
-		uint8_t cmd = 0;				// TODO: ?
+		uint8_t layer = (uint8_t)RenderLayer::Entities;
+		uint8_t translucencyType = 0;				// TODO:
+		uint8_t cmd = 0;							// TODO: ?
 		uint16_t shaderPipelineId = entity.getShaderPipeline()->getAId();
 		uint32_t meshId = entity.getMesh()->getAId();
 		uint16_t materialId = entity.getMaterial()->getAId();
-		uint32_t depth = 0;				// TODO:
+		uint32_t depth = 0;							// TODO:
 
 		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, shaderPipelineId, meshId, materialId, depth);
-
 
 		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::DrawEntity, sortkey);
 		ADrawEntityData& data = drawCommand.data.entityData;

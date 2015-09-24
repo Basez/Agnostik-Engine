@@ -4,19 +4,30 @@
 
 namespace AGN
 {
+	// used to distinguish command types (isn't used in sorting)
 	enum class EADrawCommandType
 	{
-		DrawEntity = 1,
-		ClearBuffer = 2,
-		SwapBackBuffer = 4
+		ClearBuffer,
+		DrawEntity,
+		SwapBackBuffer
 	};
 
+	// used in sort key (higher is first)
 	enum class RenderPhase
 	{
 		PreDraw = 4,
 		FullscreenViewport = 2,
 		BackbufferViewport = 1,
 		PostDraw = 0
+	};
+
+	// used in sort key (higher is first)
+	enum class RenderLayer
+	{
+		Skybox = 3,
+		PreEntities = 2,
+		Entities = 1,
+		Effects = 0,
 	};
 
 	// TODO: this is not really memory friendly,

@@ -114,7 +114,7 @@ void AGN::ARendererGL::drawEntity(ADrawCommand* a_command, ADrawCommand* a_prevC
 	}
 
 	// different material? 
-	if (prevMaterial == nullptr || shaderPipeline->getAId() != prevMaterial->getAId())
+	if (prevMaterial == nullptr || material->getAId() != prevMaterial->getAId())
 	{
 		// TODO: make dynamic?
 		ATextureGL* diffuse = dynamic_cast<ATextureGL*>(material->getDiffuseTexture());
