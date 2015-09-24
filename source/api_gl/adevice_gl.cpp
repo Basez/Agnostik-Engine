@@ -72,10 +72,18 @@ AGN::IATexture* AGN::ADeviceGL::createTexture(const uint16_t a_aId, AGN::ATextur
 	GLuint textureID = -1;
 
 	// generate GL texture
-	glGenTextures(1, &textureID);    // get new texture ID
-	glBindTexture(glType, textureID);
-	glTexImage2D(glType, 0, GL_RGBA, a_textureData->width, a_textureData->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, a_textureData->buffer);
-	glBindTexture(glType, 0);
+	if (glType == GL_TEXTURE_2D)
+	{
+		glGenTextures(1, &textureID);    // get new texture ID
+		glBindTexture(glType, textureID);
+		glTexImage2D(glType, 0, GL_RGBA, a_textureData->width, a_textureData->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, a_textureData->buffer);
+		glBindTexture(glType, 0);
+	}
+	else
+	{
+		g_log.error("Unsupported TextureType: %s please add support", AGN::AConversionUtils::getAsHexString(glType).c_str());
+	}
+	
 
 	GLenum errorType = GL_NO_ERROR;
 	while ((errorType = glGetError()) != GL_NO_ERROR)

@@ -19,7 +19,7 @@ namespace AGN
 		GLenum getGlType() { return m_glType; }
 
 	private:
-		void setTextureParams(unsigned int a_flags);
+		void setTextureParams(unsigned int a_flags = 0);
 
 		const uint16_t m_id;
 		ATextureData* m_textureData;
