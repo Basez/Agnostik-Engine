@@ -1,8 +1,6 @@
 #pragma once 
 
-#include <map>
 #include <string>
-#include <sstream>
 
 namespace AGN
 {
@@ -11,9 +9,10 @@ namespace AGN
 	public:
 		static std::string getAsHexString(int a_value)
 		{
-			std::stringstream stream;
-			stream << std::string("0x") << std::hex << a_value;
-			return std::string(stream.str());
+			// TODO: confirm it works
+			char buffer[256];
+			snprintf(buffer, sizeof(buffer), "0x%X\n", a_value);
+			return std::string(buffer);
 		};
 	};
 }

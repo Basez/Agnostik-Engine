@@ -103,14 +103,7 @@ void AGN::ARendererGL::drawEntity(ADrawCommand* a_command, ADrawCommand* a_prevC
 	// different shader? 
 	if (prevShaderPipeline == nullptr || shaderPipeline->getAId() != prevShaderPipeline->getAId())
 	{
-		glUseProgram(shaderPipeline->getGlProgramId());
-
-		// bind shader & its shader specific uniforms
-		// TODO: make dynamic
-		static const vec4 lightDirection(normalize(vec4(1, 1, 0, 0)));
-		glUniform4fv(shaderPipeline->getUniformIdByName("uLightAmbient"), 1, glm::value_ptr(g_ambient));
-		glUniform4fv(shaderPipeline->getUniformIdByName("uLightColor"), 1, glm::value_ptr(g_white));
-		glUniform4fv(shaderPipeline->getUniformIdByName("uLightDirection"), 1, glm::value_ptr(lightDirection));
+		shaderPipeline->bind();
 	}
 
 	// different material? 

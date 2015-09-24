@@ -15,9 +15,10 @@ namespace AGN
 		virtual class IAShader* getGeometryShader() = 0;
 		virtual class IAShader* getComputeShader() = 0;
 
+		 // TODO: change architecture after bind stuff works
 		virtual uint16_t getAId() = 0;
 
-		void setProperty(std::string a_propertyName, int a_value) {}; // TODO: set uniforms?
+		virtual void bind() = 0;
 	};
 
 	struct AShaderPipelineData

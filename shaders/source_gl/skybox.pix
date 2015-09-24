@@ -1,6 +1,7 @@
 // skybox.pix
 #version 330 core
  
+in vec4 v2f_normalW; 	// Surface normal in world space.
 in vec2 v2f_texcoord;
  
 uniform sampler2D textureSampler0;	// Diffuse

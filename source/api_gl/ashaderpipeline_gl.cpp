@@ -2,6 +2,8 @@
 #include "ashaderpipeline_gl.hpp"
 #include "ashader_gl.hpp"
 
+using namespace glm;
+
 AGN::AShaderPipelineGL::AShaderPipelineGL(const GLuint a_glprogramId, AShaderPipelineData& a_data)
 	: m_aId(a_data.aId)
 	, m_glProgramId(a_glprogramId)
@@ -31,6 +33,13 @@ AGN::AShaderPipelineGL::AShaderPipelineGL(const GLuint a_glprogramId, AShaderPip
 
 		m_uniformNames[i] = std::string(uniformName);
 		m_uniformIDs[i] = glGetUniformLocation(m_glProgramId, uniformName);
+
+		GLsizei uniformStringLength = 0;
+		int uniformSize = 0;
+		GLenum uniformType = 0;
+		glGetActiveUniform(m_glProgramId, m_uniformIDs[i], bufSize, &uniformStringLength, &uniformSize, &uniformType, uniformName);
+		//GL_FLOAT_VEC4
+		//int asda = 1;
 	}
 
 
@@ -47,6 +56,28 @@ AGN::AShaderPipelineGL::AShaderPipelineGL(const GLuint a_glprogramId, AShaderPip
 	
 	// get type of all uniform variables in uniform block
 	glGetActiveUniformsiv(shaderProgram, eNumUniformsInBlock, indices, GL_UNIFORM_TYPE, type);
+	*/
+}
+
+void AGN::AShaderPipelineGL::bind()
+{
+	// TODO: loop through properties and bind them DYNAMICALLY DIFFERENT PER SHADERPIPELINE
+	glUseProgram(m_glProgramId);
+
+	if (glGetUniformLocation(m_glProgramId, "uLightAmbient") != -1)
+	{
+		static const vec4 white(1);
+		static const vec4 black(0);
+		static const vec4 ambient(0.2f, 0.2f, 0.2f, 1.0f);
+		static const vec4 lightDirection(normalize(vec4(1, 1, 0, 0)));
+		glUniform4fv(getUniformIdByName("uLightAmbient"), 1, glm::value_ptr(ambient));
+		glUniform4fv(getUniformIdByName("uLightColor"), 1, glm::value_ptr(white));
+		glUniform4fv(getUniformIdByName("uLightDirection"), 1, glm::value_ptr(lightDirection));
+	}
+	
+	/*
+	// bind shader & its shader specific uniforms
+	// TODO: make dynamic
 	*/
 }
 
