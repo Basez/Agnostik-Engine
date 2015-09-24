@@ -153,16 +153,18 @@ void AGN::ASceneManager::loadScrambledScene()
 	meshShaders.push_back(&resourceManager.createShader(g_shader_mesh_pix, EAShaderType::PixelShader));
 	IAShaderPipeline& meshShaderPipeline = resourceManager.createShaderPipeline(meshShaders);
 
-	std::vector<AGN::IAShader*> skyboxShaders;
-	skyboxShaders.push_back(&resourceManager.createShader(g_shader_skybox_vert, EAShaderType::VertexShader));
-	skyboxShaders.push_back(&resourceManager.createShader(g_shader_skybox_pix, EAShaderType::PixelShader));
-	IAShaderPipeline& skyboxShaderPipeline = resourceManager.createShaderPipeline(skyboxShaders);
+	// TODO: put back after uniform buffers are in
+	//std::vector<AGN::IAShader*> skyboxShaders;
+	//skyboxShaders.push_back(&resourceManager.createShader(g_shader_skybox_vert, EAShaderType::VertexShader));
+	//skyboxShaders.push_back(&resourceManager.createShader(g_shader_skybox_pix, EAShaderType::PixelShader));
+	//IAShaderPipeline& skyboxShaderPipeline = resourceManager.createShaderPipeline(skyboxShaders);
 
 	// Skybox entity
 	AEntity* skyboxEntity = new AEntity();
 	skyboxEntity->setMesh(&skyboxMesh);
 	skyboxEntity->setMaterial(&skyboxMaterial);
-	skyboxEntity->setShaderPipeline(&skyboxShaderPipeline);
+	//skyboxEntity->setShaderPipeline(&skyboxShaderPipeline);
+	skyboxEntity->setShaderPipeline(&meshShaderPipeline);
 	skyboxEntity->setPosition(vec3(0, 0, 0));
 	skyboxEntity->setScale(vec3(10, 10, 10));
 	m_skyboxEntities.push_back(skyboxEntity);

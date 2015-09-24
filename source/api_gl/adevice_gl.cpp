@@ -23,8 +23,6 @@ AGN::IAMesh* AGN::ADeviceGL::createMesh(const uint16_t a_aId, AGN::AMeshData* a_
 	uint32_t vao = -1;
 	uint8_t vboCount = 4;
 	uint32_t *vbos = new uint32_t[4]();
-	
-	GLenum errorType = GL_NO_ERROR;
 
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -54,10 +52,7 @@ AGN::IAMesh* AGN::ADeviceGL::createMesh(const uint16_t a_aId, AGN::AMeshData* a_
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	// Check if everything went all right
-	while ((errorType = glGetError()) != GL_NO_ERROR)
-	{
-		g_log.error("An error occurred during AMeshGL initialization: %u", errorType);
-	}
+	AGN::getOpenGLError();
 
 	// instantiate Mesh Object with pointers to the uploaded data
 	AMeshGL* mesh = new AMeshGL(a_aId, vao, vbos, vboCount, a_meshData);
@@ -85,11 +80,7 @@ AGN::IATexture* AGN::ADeviceGL::createTexture(const uint16_t a_aId, AGN::ATextur
 	}
 	
 
-	GLenum errorType = GL_NO_ERROR;
-	while ((errorType = glGetError()) != GL_NO_ERROR)
-	{
-		g_log.error("An OpenGL error occurred in ADeviceGL::createTexture(): %s ", AConversionUtils::getAsHexString(errorType).c_str());
-	}
+	AGN::getOpenGLError();
 
 	// create actual texture.
 	ATextureGL* texture = new ATextureGL(a_aId, a_textureData, textureID);

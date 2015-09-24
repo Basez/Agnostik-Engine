@@ -17,6 +17,7 @@ namespace AGN
 		uint16_t getAId() { return m_aId; }
 
 		void bind() override;
+		void setStaticUniformFloat(const char* a_name, float a_value) override;
 
 		// TODO: change architecture after bind stuff works
 		GLuint getGlProgramId() { return m_glProgramId; }
@@ -32,9 +33,32 @@ namespace AGN
 		class IAShader* m_geometryShader;	
 		class IAShader* m_computeShader;
 
-		GLint m_uniformCount;
-		std::string* m_uniformNames;
-		GLint* m_uniformIDs;
+		static const int MAX_UNIFORM_NAME = 128;
 
+		// ugh this is stupid
+		// on multiple levels; index is not gl index but vector index :/
+		//int getUniformIndexByNameAndType(const char* a_name, EAShaderPipelineDataType a_type);
+
+		/*
+		struct AUniformPropertyGL
+		{
+			bool isStatic;
+			GLint id;
+			GLchar name[MAX_UNIFORM_NAME];
+			GLenum type;
+
+			union {
+				int asInt;
+				float asFloat;
+				float asFloat2[2];
+				float asFloat3[3];
+				float asFloat4[4];
+				float asMat3[9];
+				float asMat4[16];
+			} data;
+		};*/
+
+		GLint m_uniformPropertyCount;
+		//std::vector<AUniformPropertyGL> m_uniformProperties;
 	};	
 }

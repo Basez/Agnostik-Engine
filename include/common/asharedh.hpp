@@ -22,7 +22,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 
 // Agnostik shared classes
-#include "asharedapi.hpp" // different per API 
 #include "ialogger.hpp"
 #include "iainput.hpp"
 #include "aconversionutils.hpp"
+#include "asharedapi.hpp" // different per API 

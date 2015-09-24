@@ -4,10 +4,13 @@
 in vec4 v2f_normalW; 	// Surface normal in world space.
 in vec2 v2f_texcoord;
  
-uniform vec4 uLightDirection; // Light's direction in world space.
-uniform vec4 uLightColor; // Light's diffuse and specular contribution.
-uniform vec4 uLightAmbient; // Global ambient contribution.
- 
+uniform LightSettings
+{
+	uniform vec4 uLightDirection; // Light's direction in world space.
+	uniform vec4 uLightColor; // Light's diffuse and specular contribution.
+	uniform vec4 uLightAmbient; // Global ambient contribution.
+};
+
 uniform vec4 uMaterialEmissive;
 uniform vec4 uMaterialDiffuse;
 

@@ -106,14 +106,14 @@ uint64_t AGN::ADrawCommander::getSortKey(uint8_t& a_renderPhase,
 #endif // AGN_DEBUG
 
 	uint64_t sortKey = 0;
-	sortKey += (uint64_t)a_renderPhase << (uint64_t)SortKeyShift::RenderPhase;
-	sortKey += (uint64_t)a_layer << (uint64_t)SortKeyShift::Layer;
-	sortKey += (uint64_t)a_translucencyType << (uint64_t)SortKeyShift::TranslucencyType;
-	sortKey += (uint64_t)a_cmd << (uint64_t)SortKeyShift::CMD;
-	sortKey += (uint64_t)a_shaderPipelineId << (uint64_t)SortKeyShift::ShaderPipelineID;
-	sortKey += (uint64_t)a_meshId << (uint64_t)SortKeyShift::MeshID;
-	sortKey += (uint64_t)a_materialId << (uint64_t)SortKeyShift::MaterialID;
-	sortKey += (uint64_t)a_depth << (uint64_t)SortKeyShift::Depth;
+	sortKey += (uint64_t)a_renderPhase << (int)SortKeyShift::RenderPhase;
+	sortKey += (uint64_t)a_layer << (int)SortKeyShift::Layer;
+	sortKey += (uint64_t)a_translucencyType << (int)SortKeyShift::TranslucencyType;
+	sortKey += (uint64_t)a_cmd << (int)SortKeyShift::CMD;
+	sortKey += (uint64_t)a_shaderPipelineId << (int)SortKeyShift::ShaderPipelineID;
+	sortKey += (uint64_t)a_meshId << (int)SortKeyShift::MeshID;
+	sortKey += (uint64_t)a_materialId << (int)SortKeyShift::MaterialID;
+	sortKey += (uint64_t)a_depth << (int)SortKeyShift::Depth;
 
 	return sortKey;
 }

@@ -60,11 +60,7 @@ void AGN::ATextureGL::setTextureParams(unsigned int a_flags)
 
 	glBindTexture(m_glType, 0);
 
-	GLenum errorType = GL_NO_ERROR;
-	while ((errorType = glGetError()) != GL_NO_ERROR)
-	{
-		g_log.error("An OpenGL error occurred in ATextureGL::setTextureParams(): %s ", AConversionUtils::getAsHexString(errorType).c_str());
-	}
+	AGN::getOpenGLError();
 }
 
 
@@ -85,11 +81,7 @@ void AGN::ATextureGL::pullBuffer()
 	glGetTexImage(m_glType, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_textureData->buffer);
 	glBindTexture(m_glType, 0);
 
-	GLenum errorType = GL_NO_ERROR;
-	while ((errorType = glGetError()) != GL_NO_ERROR)
-	{
-		g_log.error("An OpenGL error occurred in ATextureGL::pullBuffer(): %s ", AConversionUtils::getAsHexString(errorType).c_str());
-	}
+	AGN::getOpenGLError();
 }
 
 // generates a new texture on the GPU memory with the currently stored pixeldata
@@ -105,11 +97,7 @@ void AGN::ATextureGL::pushBuffer()
 	glTexImage2D(m_glType, 0, GL_RGBA, m_textureData->width, m_textureData->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_textureData->buffer);
 	glBindTexture(m_glType, 0);
 
-	GLenum errorType = GL_NO_ERROR;
-	while ((errorType = glGetError()) != GL_NO_ERROR)
-	{
-		g_log.error("An OpenGL error occurred in ATextureGL::pushBuffer(): %s ", AConversionUtils::getAsHexString(errorType).c_str());
-	}
+	AGN::getOpenGLError();
 }
 
 GLenum AGN::ATextureGL::getGlTypeByTextureType(EATextureType a_type)

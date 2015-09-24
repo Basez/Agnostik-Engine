@@ -42,11 +42,7 @@ void AGN::ARenderAPIGL::init()
 
 	m_initialized = true;
 
-	GLenum errorType = GL_NO_ERROR;
-	while ((errorType = glGetError()) != GL_NO_ERROR)
-	{
-		g_log.error("An OpenGL error occurred during Initialization: %s", AConversionUtils::getAsHexString(errorType).c_str());
-	}
+	AGN::getOpenGLError();
 }
 
 void AGN::ARenderAPIGL::initOpenGL()
@@ -89,11 +85,7 @@ void AGN::ARenderAPIGL::initOpenGL()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-	GLenum errorType = GL_NO_ERROR;
-	while ((errorType = glGetError()) != GL_NO_ERROR)
-	{
-		g_log.error("An OpenGL error occurred during Initialization: %s", AConversionUtils::getAsHexString(errorType).c_str());
-	}
+	AGN::getOpenGLError();
 }
 
 void AGN::ARenderAPIGL::initGlew()
