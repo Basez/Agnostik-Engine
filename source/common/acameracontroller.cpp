@@ -81,7 +81,8 @@ void AGN::ACameraController::update(float a_deltaTime)
 	if (m_useYLimit && m_camera.getPosition().y + translation.y < m_yLimit)
 	{
 		translation.y = 0;
-		m_camera.setPosition(vec3(m_camera.getPosition().x, m_yLimit, m_camera.getPosition().z));
+		vec3 newPos = vec3(m_camera.getPosition().x, m_yLimit, m_camera.getPosition().z);
+		m_camera.setPosition(newPos);
 	}
 
 	m_camera.translate(translation);

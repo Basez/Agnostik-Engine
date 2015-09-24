@@ -11,8 +11,8 @@ namespace AGN
 		
 		std::string getRelativePath() override;
 		uint16_t getAId() override { return m_aId; }
-		const uint32_t getVao() const { return m_vao; }
-		const uint32_t getIndexCount() const { return (uint32_t)m_meshData->indicies.size();  }
+		uint32_t getVao() const { return m_vao; }
+		uint32_t getIndexCount() const { return (uint32_t)m_meshData->indicies.size();  }
 
 		enum class EAMeshGLAttribute
 		{

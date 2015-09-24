@@ -160,31 +160,10 @@ void AGN::ARenderAPIGL::logAvailableGLExtensions()
 
 void AGN::ARenderAPIGL::enableVSync(bool a_value)
 {
-	/*
-	#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(_WIN64)
-	// Function pointer for the wgl extention function we need to enable/disable
-	// vsync
-	typedef BOOL(APIENTRY *PFNWGLSWAPINTERVALPROC)(int);
-	PFNWGLSWAPINTERVALPROC wglSwapIntervalEXT = 0;
-
-	const char *extensions = (char*)glGetString(GL_EXTENSIONS);
-
-	if (strstr(extensions, "WGL_EXT_swap_control") == 0)
-	{
-	Log.error("Extension not found?");
-	return;
-	}
-	else
-	{
-	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALPROC)wglGetProcAddress("wglSwapIntervalEXT");
-	if (wglSwapIntervalEXT)	wglSwapIntervalEXT(a_value);
-	}
-	#else
-	Log.error("Vsync is not supported for current platform!");
-	#endif
-	*/
 	if (a_value)
 	{
+		// TODO: for working vsync on linux, apparently I should use GLFW instead of SDL
+		// Link: https://www.gamedev.net/topic/482099-vsync-with-linux-sdlgl/
 		SDL_GL_SetSwapInterval(1);
 	}
 	else

@@ -65,11 +65,11 @@ std::string AGN::AFileUtils::findFile(std::string a_file, std::string a_startFol
 			// skip windows .. folders (what are these??)
 			if (strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0)
 			{
-				g_log.debug("Found weird %s folder.. skipping", ent->d_name);
+				//g_log.debug("Found weird %s folder.. skipping", ent->d_name);
 			}
 			else if (ent->d_type == DT_DIR)
 			{
-				g_log.debug("Found folder: %s", ent->d_name);
+				//g_log.debug("Found folder: %s", ent->d_name);
 
 				if (a_deepLevel > 0)
 				{
@@ -85,7 +85,7 @@ std::string AGN::AFileUtils::findFile(std::string a_file, std::string a_startFol
 			}
 			else if (strcmp(ent->d_name, a_file.c_str()) == 0)
 			{
-				g_log.debug("FOUND THE FILE");
+				//g_log.debug("FOUND THE FILE");
 				std::string foundFile = ent->d_name;
 				closedir(dir);
 
@@ -94,7 +94,7 @@ std::string AGN::AFileUtils::findFile(std::string a_file, std::string a_startFol
 			}
 			else
 			{
-				g_log.debug("nope: %s", ent->d_name);
+				//g_log.debug("nope: %s", ent->d_name);
 			}
 		}
 		closedir(dir);

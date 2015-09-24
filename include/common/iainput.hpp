@@ -30,7 +30,7 @@ namespace AGN
 		virtual int getMouseXMove() = 0;
 		virtual int getMouseYMove() = 0;
 		virtual bool getCapslock() = 0;
-		virtual const int getMouseScroll() = 0;
+		virtual int getMouseScroll() = 0;
 
 		// callback systems
 		virtual void addMouseMotionHandler(class IAInputMouseMotionHandler* a_motionHandler) = 0;

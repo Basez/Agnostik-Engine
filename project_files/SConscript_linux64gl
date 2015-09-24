@@ -27,8 +27,12 @@ env.Append(CPPPATH = additionalIncludes)
 # set warnings
 env.AppendUnique(CXXFLAGS=['-Wall'])
 env.AppendUnique(CXXFLAGS=['-Wextra'])
-env.AppendUnique(CXXFLAGS=['-Wno-comment']) # disable the "/*" warning
 # env.AppendUnique(CXXFLAGS=['-fms-extensions']) 						# Source: https://gcc.gnu.org/onlinedocs/gcc/Unnamed-Fields.html
+
+# disable certain warinings (Enable when refactoring code)
+env.AppendUnique(CXXFLAGS=['-Wno-unused-variable'])						# disable the unused variable warning
+env.AppendUnique(CXXFLAGS=['-Wno-unused-parameter']) 					# disable the parameter variable warning
+env.AppendUnique(CXXFLAGS=['-Wno-comment']) 							# disable the "/*" warning
 
 """
 #install libraries! (when building on posix / linux systems)

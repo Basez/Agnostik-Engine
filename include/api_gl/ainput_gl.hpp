@@ -30,7 +30,7 @@ namespace AGN
 		int getMouseXMove() override { return m_mouseX - m_oldMouseX; }
 		int getMouseYMove() override { return m_mouseY - m_oldMouseY; }
 		bool getCapslock() override;
-		const int getMouseScroll() override { return m_scrollAmount; };
+		int getMouseScroll() override { return m_scrollAmount; };
 
 		// callbacks
 		void addMouseMotionHandler(class IAInputMouseMotionHandler* a_motionHandler) override;
