@@ -65,6 +65,7 @@ void AGN::ACameraController::update(float a_deltaTime)
 	bool localMovement = true;
 	vec3 translation;
 
+	
 	int xMovement = (int)g_input.getKey(AGN_SCANCODE::D) - (int)g_input.getKey(AGN_SCANCODE::A);
 	int yMovement = (int)g_input.getKey(AGN_SCANCODE::SPACE) - (int)g_input.getKey(AGN_SCANCODE::C);
 	int zMovement = (int)g_input.getKey(AGN_SCANCODE::S) - (int)g_input.getKey(AGN_SCANCODE::W);

@@ -23,8 +23,9 @@
 using namespace std;
 using namespace glm;
 
-AGN::AResourceManager::AResourceManager()
-	: m_meshIdCount(0)
+AGN::AResourceManager::AResourceManager(class IADevice& a_device)
+	: m_device(a_device)
+	, m_meshIdCount(0)
 	, m_shaderIdCount(0)
 	, m_textureIdCount(0)
 	, m_materialIdCount(0)
@@ -33,10 +34,6 @@ AGN::AResourceManager::AResourceManager()
 
 }
 
-void AGN::AResourceManager::init()
-{
-	
-}
 
 AGN::IAMesh& AGN::AResourceManager::loadMesh(std::string a_relativePath, uint32_t additional_assimp_flags)
 {
@@ -137,7 +134,8 @@ AGN::IAMesh& AGN::AResourceManager::loadMesh(std::string a_relativePath, uint32_
 		
 	}
 	*/
-	IAMesh* newMesh = g_application.getRenderAPI().getDevice().createMesh(m_meshIdCount++, meshData);
+
+	IAMesh* newMesh = m_device.createMesh(m_meshIdCount++, meshData);
 
 	m_loadedMeshes.push_back(newMesh);
 
@@ -176,7 +174,7 @@ AGN::IATexture& AGN::AResourceManager::loadTexture(std::string a_relativePath, E
 
 	stbi_image_free(loadedData);
 
-	IATexture* newTexture = g_application.getRenderAPI().getDevice().createTexture(m_textureIdCount++, textureData);
+	IATexture* newTexture = m_device.createTexture(m_textureIdCount++, textureData);
 
 	m_loadedTextures.push_back(newTexture);
 
@@ -195,7 +193,7 @@ AGN::IAShader& AGN::AResourceManager::createShader(const char* a_shaderSource, E
 		}
 	}
 	*/
-	AGN::IAShader* newShader = g_application.getRenderAPI().getDevice().createShader(m_shaderIdCount++, a_shaderSource, a_shaderType);
+	AGN::IAShader* newShader = m_device.createShader(m_shaderIdCount++, a_shaderSource, a_shaderType);
 	m_shaders.push_back(newShader);
 
 	return *newShader;
@@ -205,7 +203,7 @@ AGN::IAShaderPipeline& AGN::AResourceManager::createShaderPipeline(std::vector<A
 {
 	// TODO: how do we check we have a duplicate shaderpipeline?
 
-	AGN::IAShaderPipeline* newShaderPipeline = g_application.getRenderAPI().getDevice().createShaderPipeline(m_shaderPipelineIdCount++, a_shaders);
+	AGN::IAShaderPipeline* newShaderPipeline = m_device.createShaderPipeline(m_shaderPipelineIdCount++, a_shaders);
 	m_shaderpipelines.push_back(newShaderPipeline);
 
 	return *newShaderPipeline;

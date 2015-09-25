@@ -90,14 +90,14 @@ uint64_t AGN::ADrawCommander::getSortKey(uint8_t& a_renderPhase,
 {
 #ifdef AGN_DEBUG
 	// check if key values are under limit
-	if (a_renderPhase >= (uint8_t)1 << (uint8_t)SortKeyBitAmount::RenderPhase ||
-		a_layer >= (uint8_t)1 << (uint8_t)SortKeyBitAmount::Layer ||
-		a_translucencyType >= (uint8_t)1 << (uint8_t)SortKeyBitAmount::TranslucencyType ||
-		a_cmd >= (uint8_t)1 << (uint8_t)SortKeyBitAmount::CMD ||
-		a_shaderPipelineId >= (uint16_t)1 << (uint16_t)SortKeyBitAmount::ShaderPipelineID ||
-		a_meshId >= (uint32_t)1 << (uint32_t)SortKeyBitAmount::MeshID ||
-		a_materialId >= (uint16_t)1 << (uint16_t)SortKeyBitAmount::MaterialID ||
-		a_depth >= (uint32_t)1 << (uint32_t)SortKeyBitAmount::Depth)
+	if (a_renderPhase >= static_cast<uint8_t>(1)		<< static_cast<uint8_t>(SortKeyBitAmount::RenderPhase) ||
+		a_layer >= static_cast<uint8_t>(1)				<< static_cast<uint8_t>(SortKeyBitAmount::Layer) ||
+		a_translucencyType >= static_cast<uint8_t>(1)	<< static_cast<uint8_t>(SortKeyBitAmount::TranslucencyType) ||
+		a_cmd >= static_cast<uint8_t>(1)				<< static_cast<uint8_t>(SortKeyBitAmount::CMD) ||
+		a_shaderPipelineId >= static_cast<uint16_t>(1)	<< static_cast<uint16_t>(SortKeyBitAmount::ShaderPipelineID) ||
+		a_meshId >= static_cast<uint32_t>(1)			<< static_cast<uint32_t>(SortKeyBitAmount::MeshID) ||
+		a_materialId >= static_cast<uint16_t>(1)		<< static_cast<uint16_t>(SortKeyBitAmount::MaterialID) ||
+		a_depth >= static_cast<uint32_t>(1)				<< static_cast<uint32_t>(SortKeyBitAmount::Depth))
 	{
 		g_log.error("Value gone overflow when generating Sortkey!");
 		assert(false);
@@ -105,15 +105,16 @@ uint64_t AGN::ADrawCommander::getSortKey(uint8_t& a_renderPhase,
 	}
 #endif // AGN_DEBUG
 
+	
 	uint64_t sortKey = 0;
-	sortKey += (uint64_t)a_renderPhase << (int)SortKeyShift::RenderPhase;
-	sortKey += (uint64_t)a_layer << (int)SortKeyShift::Layer;
-	sortKey += (uint64_t)a_translucencyType << (int)SortKeyShift::TranslucencyType;
-	sortKey += (uint64_t)a_cmd << (int)SortKeyShift::CMD;
-	sortKey += (uint64_t)a_shaderPipelineId << (int)SortKeyShift::ShaderPipelineID;
-	sortKey += (uint64_t)a_meshId << (int)SortKeyShift::MeshID;
-	sortKey += (uint64_t)a_materialId << (int)SortKeyShift::MaterialID;
-	sortKey += (uint64_t)a_depth << (int)SortKeyShift::Depth;
+	sortKey += static_cast<uint64_t>(a_renderPhase)			<< static_cast<int>(SortKeyShift::RenderPhase);
+	sortKey += static_cast<uint64_t>(a_layer)				<< static_cast<int>(SortKeyShift::Layer);
+	sortKey += static_cast<uint64_t>(a_translucencyType)	<< static_cast<int>(SortKeyShift::TranslucencyType);
+	sortKey += static_cast<uint64_t>(a_cmd)					<< static_cast<int>(SortKeyShift::CMD);
+	sortKey += static_cast<uint64_t>(a_shaderPipelineId)	<< static_cast<int>(SortKeyShift::ShaderPipelineID);
+	sortKey += static_cast<uint64_t>(a_meshId)				<< static_cast<int>(SortKeyShift::MeshID);
+	sortKey += static_cast<uint64_t>(a_materialId)			<< static_cast<int>(SortKeyShift::MaterialID);
+	sortKey += static_cast<uint64_t>(a_depth)				<< static_cast<int>(SortKeyShift::Depth);
 
 	return sortKey;
 }

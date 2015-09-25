@@ -36,6 +36,7 @@ namespace AGN
 	struct ADrawEntityData
 	{
 		class AEntity* entity;
+		class IAShaderPipeline* shaderPipeline;
 	};
 
 	struct AClearBufferData

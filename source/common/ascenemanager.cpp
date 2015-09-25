@@ -14,12 +14,7 @@
 
 #include <assimp/postprocess.h>
 
-// shaders
-// TODO: make crossplatform 
-#include "shader_mesh_pix.hpp"
-#include "shader_mesh_vert.hpp"
-#include "shader_skybox_pix.hpp"
-#include "shader_skybox_vert.hpp"
+
 
 using namespace glm;
 
@@ -76,17 +71,10 @@ void AGN::ASceneManager::loadTestScene01()
 	crateMatData.diffuseTexture = &resourceManager.loadTexture("market_props_crate_1_texture.png", EATextureType::TEXTURE_2D);
 	AMaterial& crateMaterial = resourceManager.createMaterial(crateMatData);
 
-	// create shaders
-	std::vector<AGN::IAShader*> meshShaders;
-	meshShaders.push_back(&resourceManager.createShader(g_shader_mesh_vert, EAShaderType::VertexShader));
-	meshShaders.push_back(&resourceManager.createShader(g_shader_mesh_pix, EAShaderType::PixelShader));
-	IAShaderPipeline& meshShaderPipeline = resourceManager.createShaderPipeline(meshShaders);
-
 	// create the triangle I entity;
 	AEntity* triangleEntityA = new AEntity();
 	triangleEntityA->setMesh(&triangleMesh);
 	triangleEntityA->setMaterial(&testMaterial);
-	triangleEntityA->setShaderPipeline(&meshShaderPipeline);
 	triangleEntityA->setPosition(vec3(-5, 0, 0));
 	m_entities.push_back(triangleEntityA);
 
@@ -94,7 +82,6 @@ void AGN::ASceneManager::loadTestScene01()
 	AEntity* suzanneEntity = new AEntity();
 	suzanneEntity->setMesh(&suzanneMesh);
 	suzanneEntity->setMaterial(&testMaterial);
-	suzanneEntity->setShaderPipeline(&meshShaderPipeline);
 	suzanneEntity->setPosition(vec3(0, 0, 0));
 	m_entities.push_back(suzanneEntity);
 
@@ -102,7 +89,6 @@ void AGN::ASceneManager::loadTestScene01()
 	AEntity* cubeEntity = new AEntity();
 	cubeEntity->setMesh(&cubeMesh);
 	cubeEntity->setMaterial(&testMaterial);
-	cubeEntity->setShaderPipeline(&meshShaderPipeline);
 	cubeEntity->setPosition(vec3(5, 0, 0));
 	m_entities.push_back(cubeEntity);
 
@@ -110,7 +96,6 @@ void AGN::ASceneManager::loadTestScene01()
 	AEntity* triangleEntityB = new AEntity();
 	triangleEntityB->setMesh(&triangleMesh);
 	triangleEntityB->setMaterial(&testMaterial);
-	triangleEntityB->setShaderPipeline(&meshShaderPipeline);
 	triangleEntityB->setPosition(vec3(5, 0, 0));
 	m_entities.push_back(triangleEntityB);
 
@@ -118,7 +103,6 @@ void AGN::ASceneManager::loadTestScene01()
 	AEntity* crateEntity = new AEntity();
 	crateEntity->setMesh(&crateMesh);
 	crateEntity->setMaterial(&crateMaterial);
-	crateEntity->setShaderPipeline(&meshShaderPipeline);
 	crateEntity->setPosition(vec3(2,2,2));
 	m_entities.push_back(crateEntity);
 }
@@ -128,14 +112,14 @@ void AGN::ASceneManager::loadScrambledScene()
 	AResourceManager& resourceManager = g_application.getResourceManager();
 
 	IAMesh& crateMesh = resourceManager.loadMesh("crate_001.dae", aiProcess_FlipUVs);
-	//IAMesh& suzanneMesh = resourceManager.loadMesh("suzanne.obj");
+	IAMesh& suzanneMesh = resourceManager.loadMesh("suzanne.obj");
 	IAMesh& skyboxMesh = resourceManager.loadMesh("skybox_old.obj");
 
 	// create materials
-	//AMaterialData testMatData;
-	//testMatData.name = "test_material";
-	//testMatData.diffuseTexture = &resourceManager.loadTexture("test.png", EATextureType::TEXTURE_2D);
-	//AMaterial& testMaterial = resourceManager.createMaterial(testMatData);
+	AMaterialData testMatData;
+	testMatData.name = "test_material";
+	testMatData.diffuseTexture = &resourceManager.loadTexture("test.png", EATextureType::TEXTURE_2D);
+	AMaterial& testMaterial = resourceManager.createMaterial(testMatData);
 
 	AMaterialData crateMatData;
 	crateMatData.name = "crate_material";
@@ -147,38 +131,22 @@ void AGN::ASceneManager::loadScrambledScene()
 	skyboxMatData.diffuseTexture = &resourceManager.loadTexture("skybox/full.jpg", EATextureType::TEXTURE_2D);
 	AMaterial& skyboxMaterial = resourceManager.createMaterial(skyboxMatData);
 
-	// create shaders
-	std::vector<AGN::IAShader*> meshShaders;
-	meshShaders.push_back(&resourceManager.createShader(g_shader_mesh_vert, EAShaderType::VertexShader));
-	meshShaders.push_back(&resourceManager.createShader(g_shader_mesh_pix, EAShaderType::PixelShader));
-	IAShaderPipeline& meshShaderPipeline = resourceManager.createShaderPipeline(meshShaders);
-
-	// TODO: put back after uniform buffers are in
-	//std::vector<AGN::IAShader*> skyboxShaders;
-	//skyboxShaders.push_back(&resourceManager.createShader(g_shader_skybox_vert, EAShaderType::VertexShader));
-	//skyboxShaders.push_back(&resourceManager.createShader(g_shader_skybox_pix, EAShaderType::PixelShader));
-	//IAShaderPipeline& skyboxShaderPipeline = resourceManager.createShaderPipeline(skyboxShaders);
-
 	// Skybox entity
 	AEntity* skyboxEntity = new AEntity();
 	skyboxEntity->setMesh(&skyboxMesh);
 	skyboxEntity->setMaterial(&skyboxMaterial);
 	//skyboxEntity->setShaderPipeline(&skyboxShaderPipeline);
-	skyboxEntity->setShaderPipeline(&meshShaderPipeline);
 	skyboxEntity->setPosition(vec3(0, 0, 0));
 	skyboxEntity->setScale(vec3(10, 10, 10));
 	m_skyboxEntities.push_back(skyboxEntity);
-
 
 	// crate
 	AEntity* crateEntity = new AEntity();
 	crateEntity->setMesh(&crateMesh);
 	crateEntity->setMaterial(&crateMaterial);
-	crateEntity->setShaderPipeline(&meshShaderPipeline);
 	crateEntity->setPosition(vec3(0, 0, 0));
 	m_entities.push_back(crateEntity);
 
-	/*
 	// create crate entities
 	int index = 0;
 	for (int x = 0; x < 10; x++)
@@ -194,7 +162,6 @@ void AGN::ASceneManager::loadScrambledScene()
 					AEntity* crateEntity = new AEntity();
 					crateEntity->setMesh(&crateMesh);
 					crateEntity->setMaterial(&crateMaterial);
-					crateEntity->setShaderPipeline(&meshShaderPipeline);
 					crateEntity->setPosition(vec3(x * 2, y * 2, z * 2));
 					m_entities.push_back(crateEntity);
 				}
@@ -204,7 +171,6 @@ void AGN::ASceneManager::loadScrambledScene()
 					AEntity* suzanneEntity = new AEntity();
 					suzanneEntity->setMesh(&suzanneMesh);
 					suzanneEntity->setMaterial(&testMaterial);
-					suzanneEntity->setShaderPipeline(&meshShaderPipeline);
 					suzanneEntity->setPosition(vec3(x * 2, y * 2, z * 2));
 					m_entities.push_back(suzanneEntity);
 				}
@@ -212,5 +178,5 @@ void AGN::ASceneManager::loadScrambledScene()
 			}
 		}
 	}
-	*/
+	
 }

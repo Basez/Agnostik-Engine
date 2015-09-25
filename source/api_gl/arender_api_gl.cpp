@@ -113,7 +113,7 @@ void AGN::ARenderAPIGL::initGlew()
 	GLenum errorType = GL_NO_ERROR;
 	while ((errorType = glGetError()) != GL_NO_ERROR)
 	{
-		g_log.warning("An OpenGL error occurred during GLEW initialization: %s It is safe to ignore this issue", AConversionUtils::getAsHexString(errorType).c_str());
+		g_log.warning("An OpenGL error occurred during GLEW initialization: %X It is safe to ignore this issue", errorType);
 	}
 }
 

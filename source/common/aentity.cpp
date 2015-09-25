@@ -9,7 +9,6 @@ using namespace glm;
 AGN::AEntity::AEntity()
 	: m_mesh(nullptr)
 	, m_material(nullptr)
-	, m_shaderPipeline(nullptr)
 	, m_position(glm::vec3())
 	, m_rotation(glm::quat())
 	, m_scale(glm::vec3(1))

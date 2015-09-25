@@ -28,20 +28,21 @@ AGN::IAMesh* AGN::ADeviceGL::createMesh(const uint16_t a_aId, AGN::AMeshData* a_
 	glBindVertexArray(vao);
 	glGenBuffers(vboCount, vbos);
 
+	
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
 	glBufferData(GL_ARRAY_BUFFER, a_meshData->positions.size() * sizeof(vec3), a_meshData->positions.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer((int)AMeshGL::EAMeshGLAttribute::MESH_POSITION_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-	glEnableVertexAttribArray((int)AMeshGL::EAMeshGLAttribute::MESH_POSITION_ATTRIBUTE);
+	glVertexAttribPointer(static_cast<int>(AMeshGL::EAMeshGLAttribute::MESH_POSITION_ATTRIBUTE), 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+	glEnableVertexAttribArray(static_cast<int>(AMeshGL::EAMeshGLAttribute::MESH_POSITION_ATTRIBUTE));
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[1]);
 	glBufferData(GL_ARRAY_BUFFER, a_meshData->normals.size() * sizeof(vec3), a_meshData->normals.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer((int)AMeshGL::EAMeshGLAttribute::MESH_NORMAL_ATTRIBUTE, 3, GL_FLOAT, GL_TRUE, 0, BUFFER_OFFSET(0));
-	glEnableVertexAttribArray((int)AMeshGL::EAMeshGLAttribute::MESH_NORMAL_ATTRIBUTE);
+	glVertexAttribPointer(static_cast<int>(AMeshGL::EAMeshGLAttribute::MESH_NORMAL_ATTRIBUTE), 3, GL_FLOAT, GL_TRUE, 0, BUFFER_OFFSET(0));
+	glEnableVertexAttribArray(static_cast<int>(AMeshGL::EAMeshGLAttribute::MESH_NORMAL_ATTRIBUTE));
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[2]);
 	glBufferData(GL_ARRAY_BUFFER, a_meshData->textureCoords.size() * sizeof(vec2), a_meshData->textureCoords.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer((int)AMeshGL::EAMeshGLAttribute::MESH_TEXCOORD_ATTRIBUTE, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-	glEnableVertexAttribArray((int)AMeshGL::EAMeshGLAttribute::MESH_TEXCOORD_ATTRIBUTE);
+	glVertexAttribPointer(static_cast<int>(AMeshGL::EAMeshGLAttribute::MESH_TEXCOORD_ATTRIBUTE), 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+	glEnableVertexAttribArray(static_cast<int>(AMeshGL::EAMeshGLAttribute::MESH_TEXCOORD_ATTRIBUTE));
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[3]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, a_meshData->indicies.size() * sizeof(GLuint), a_meshData->indicies.data(), GL_STATIC_DRAW);
@@ -76,7 +77,7 @@ AGN::IATexture* AGN::ADeviceGL::createTexture(const uint16_t a_aId, AGN::ATextur
 	}
 	else
 	{
-		g_log.error("Unsupported TextureType: %s please add support", AGN::AConversionUtils::getAsHexString(glType).c_str());
+		g_log.error("Unsupported TextureType: %X please add support", glType);
 	}
 	
 

@@ -38,10 +38,14 @@ void AGN::ARendererGL::render(AGN::ADrawCommander& a_drawCommander)
 		return;
 	}
 
+	m_boundMesh = nullptr;
+	m_boundMaterial = nullptr;
+	m_boundShaderPipeline = nullptr;
+
 	// make sure the camera has the correct ViewSettings
 	m_currentCamera->setProjectionRH(60.0f, 0.1f, 10000.0f);
 
-	// precalculate matrices that we are going to re-use through the frame
+	// pre-calculate matrices that we are going to re-use through the frame
 	m_vp = m_currentCamera->getProjectionMatrix() * m_currentCamera->getViewMatrix();
 
 	// loop through sorted draw commands & draw em
@@ -50,11 +54,11 @@ void AGN::ARendererGL::render(AGN::ADrawCommander& a_drawCommander)
 	for (unsigned int i = 0; i < list.size(); i++)
 	{
 		ADrawCommand* command = list[i];
-		ADrawCommand* prevCommand = (i != 0) ? list[i - 1] : nullptr;
 
 		switch (command->type)
 		{
 		case EADrawCommandType::ClearBuffer:
+			
 			float a, r, g, b;
 			PixelUtils::getARGBFloat(command->data.clearcolorData.clearColor, a, r, g, b);
 			glClearColor(r, g, b, 1.0f);
@@ -62,7 +66,7 @@ void AGN::ARendererGL::render(AGN::ADrawCommander& a_drawCommander)
 			break;
 
 		case EADrawCommandType::DrawEntity:
-			drawEntity(command, prevCommand);
+			drawEntity(command);
 			break;
 
 		case EADrawCommandType::SwapBackBuffer:
@@ -71,43 +75,26 @@ void AGN::ARendererGL::render(AGN::ADrawCommander& a_drawCommander)
 			break;
 		}
 	}
+
+	// TODO: unbind everything?
 }
 
-void AGN::ARendererGL::drawEntity(ADrawCommand* a_command, ADrawCommand* a_prevCommand)
+void AGN::ARendererGL::drawEntity(ADrawCommand* a_command)
 {
 	AEntity* entity = a_command->data.entityData.entity;
 	AMeshGL* mesh = dynamic_cast<AMeshGL*>(entity->getMesh());
 	AMaterial* material = dynamic_cast<AMaterial*>(entity->getMaterial());
-	AShaderPipelineGL* shaderPipeline = dynamic_cast<AShaderPipelineGL*>(entity->getShaderPipeline());
-	
-	// get previous data 
-	AEntity* prevEntity = nullptr;
-	AMeshGL* prevMesh = nullptr;
-	AMaterial* prevMaterial = nullptr;
-	AShaderPipelineGL* prevShaderPipeline = nullptr;
-
-	if (a_prevCommand != nullptr && a_prevCommand->type == EADrawCommandType::DrawEntity)
-	{
-		prevEntity = a_prevCommand->data.entityData.entity;
-		prevMesh = dynamic_cast<AMeshGL*>(prevEntity->getMesh());
-		prevMaterial = dynamic_cast<AMaterial*>(prevEntity->getMaterial());
-		prevShaderPipeline = dynamic_cast<AShaderPipelineGL*>(prevEntity->getShaderPipeline());
-	}
-
-	// different mesh? bind VAO
-	if (prevMesh == nullptr || mesh->getAId() != prevMesh->getAId())
-	{
-		glBindVertexArray(mesh->getVao());
-	}
+	AShaderPipelineGL* shaderPipeline = dynamic_cast<AShaderPipelineGL*>(a_command->data.entityData.shaderPipeline);
 
 	// different shader? 
-	if (prevShaderPipeline == nullptr || shaderPipeline->getAId() != prevShaderPipeline->getAId())
+	if (m_boundShaderPipeline == nullptr || m_boundShaderPipeline->getAId() != shaderPipeline->getAId())
 	{
 		shaderPipeline->bind();
+		m_boundShaderPipeline = shaderPipeline;
 	}
 
 	// different material? 
-	if (prevMaterial == nullptr || material->getAId() != prevMaterial->getAId())
+	if (m_boundMaterial == nullptr || m_boundMaterial->getAId() != material->getAId())
 	{
 		// TODO: make dynamic?
 		ATextureGL* diffuse = dynamic_cast<ATextureGL*>(material->getDiffuseTexture());
@@ -121,6 +108,15 @@ void AGN::ARendererGL::drawEntity(ADrawCommand* a_command, ADrawCommand* a_prevC
 		// Material properties
 		glUniform4fv(shaderPipeline->getUniformIdByName("uMaterialEmissive"), 1, glm::value_ptr(g_black));
 		glUniform4fv(shaderPipeline->getUniformIdByName("uMaterialDiffuse"), 1, glm::value_ptr(g_white));
+
+		m_boundMaterial = material;
+	}
+
+	// different mesh? bind VAO
+	if (m_boundMesh == nullptr || m_boundMesh->getAId() != mesh->getAId())
+	{
+		glBindVertexArray(mesh->getVao());
+		m_boundMesh = mesh;
 	}
 
 	// Set object individual uniforms
@@ -143,17 +139,10 @@ void AGN::ARendererGL::drawEntity(ADrawCommand* a_command, ADrawCommand* a_prevC
 	// render the entity
 	glDrawElements(GL_TRIANGLES, mesh->getIndexCount(), GL_UNSIGNED_INT, BUFFER_OFFSET(0));
 	
-	
 #ifdef AGN_DEBUG
 	AGN::getOpenGLError();
 #endif
 
-	/*
-	// unbind ??
-	unbindShaders();
-	glBindVertexArray(0);
-	glDisable(GL_CLIP_DISTANCE0);
-	*/
 }
 
 void AGN::ARendererGL::bindTexturesToShader(GLuint a_shaderProgram, GLuint a_textureCount, ATextureGL** a_textureArray)

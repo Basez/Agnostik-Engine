@@ -9,9 +9,8 @@ namespace AGN
 	class AResourceManager
 	{
 	public:
-		AResourceManager();
+		AResourceManager(class IADevice& a_device);
 
-		void init();
 		class IAMesh& loadMesh(std::string a_relativePath, uint32_t additional_assimp_flags = 0);
 		class IATexture& loadTexture(std::string a_relativePath, EATextureType a_textureType);
 
@@ -26,6 +25,7 @@ namespace AGN
 		std::vector<class IAShaderPipeline*> m_shaderpipelines;
 		std::vector<class AMaterial*> m_materials;
 
+		class IADevice& m_device;
 		uint16_t m_meshIdCount;
 		uint16_t m_shaderIdCount;
 		uint16_t m_textureIdCount;

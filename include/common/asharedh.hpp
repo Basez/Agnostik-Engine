@@ -24,5 +24,4 @@
 // Agnostik shared classes
 #include "ialogger.hpp"
 #include "iainput.hpp"
-#include "aconversionutils.hpp"
 #include "asharedapi.hpp" // different per API 

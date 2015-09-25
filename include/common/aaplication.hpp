@@ -15,16 +15,18 @@ namespace AGN
 	private:
 		void update();
 		void createDrawQueue();
+		void loadShaders();
 
 		class IARenderAPI* m_renderAPI;
 		class ASceneManager* m_sceneManager;
 		class AResourceManager* m_resourceManager;
 		class ADrawCommander* m_drawCommander;
 
+		class IAShaderPipeline* m_meshShaderPipeline;
+		class IAShaderPipeline* m_skyboxShaderPipeline;
+
 		bool m_quit;
 	};
-
-
-
 }
 extern AGN::AAplication& g_application;
+

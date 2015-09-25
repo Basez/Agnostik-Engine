@@ -6,6 +6,7 @@
 #include "iarenderer.hpp"
 #include "iamesh.hpp"
 #include "iashaderpipeline.hpp"
+#include "iashader.hpp"
 
 #include "amaterial.hpp"
 #include "aentity.hpp"
@@ -14,6 +15,13 @@
 #include "aresourcemanager.hpp"
 #include "adrawcommander.hpp"
 #include "adrawcommand.hpp"
+
+// shaders
+// TODO: make crossplatform 
+#include "shader_mesh_pix.hpp"
+#include "shader_mesh_vert.hpp"
+#include "shader_skybox_pix.hpp"
+#include "shader_skybox_vert.hpp"
 
 AGN::AAplication appTemp = AGN::AAplication();
 AGN::AAplication& g_application = appTemp;
@@ -27,8 +35,7 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 
 	m_renderAPI->init();
 	
-	m_resourceManager = new AResourceManager();
-	m_resourceManager->init();
+	m_resourceManager = new AResourceManager(m_renderAPI->getDevice());
 
 	m_drawCommander = new ADrawCommander();
 
@@ -38,6 +45,8 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 	m_sceneManager->loadScrambledScene();
 
 	m_renderAPI->getRenderer().setCamera(m_sceneManager->getCurrentCamera());
+
+	loadShaders();
 
 	while (!m_quit)
 	{
@@ -77,6 +86,21 @@ void AGN::AAplication::update()
 
 	// logic
 	m_sceneManager->update(deltaTime);
+}
+
+void AGN::AAplication::loadShaders()
+{
+	// create shaders
+	std::vector<AGN::IAShader*> meshShaders;
+	meshShaders.push_back(&m_resourceManager->createShader(g_shader_mesh_vert, EAShaderType::VertexShader));
+	meshShaders.push_back(&m_resourceManager->createShader(g_shader_mesh_pix, EAShaderType::PixelShader));
+	m_meshShaderPipeline = &m_resourceManager->createShaderPipeline(meshShaders);
+
+	// TODO: put back after uniform buffers are in
+	//std::vector<AGN::IAShader*> skyboxShaders;
+	//skyboxShaders.push_back(&resourceManager.createShader(g_shader_skybox_vert, EAShaderType::VertexShader));
+	//skyboxShaders.push_back(&resourceManager.createShader(g_shader_skybox_pix, EAShaderType::PixelShader));
+	//IAShaderPipeline& skyboxShaderPipeline = &resourceManager.createShaderPipeline(skyboxShaders);
 }
 
 void AGN::AAplication::createDrawQueue()
@@ -129,7 +153,7 @@ void AGN::AAplication::createDrawQueue()
 		uint8_t layer = (uint8_t)RenderLayer::Skybox;
 		uint8_t translucencyType = 0;				// TODO:
 		uint8_t cmd = 0;							// TODO: ?
-		uint16_t shaderPipelineId = entity.getShaderPipeline()->getAId();
+		uint16_t shaderPipelineId = m_meshShaderPipeline->getAId();
 		uint32_t meshId = entity.getMesh()->getAId();
 		uint16_t materialId = entity.getMaterial()->getAId();
 		uint32_t depth = 0;							// TODO:
@@ -139,6 +163,7 @@ void AGN::AAplication::createDrawQueue()
 		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::DrawEntity, sortkey);
 		ADrawEntityData& data = drawCommand.data.entityData;
 		data.entity = &entity;
+		data.shaderPipeline = m_meshShaderPipeline;
 	}
 
 	// TODO: make these static draw commands
@@ -172,7 +197,7 @@ void AGN::AAplication::createDrawQueue()
 		uint8_t layer = (uint8_t)RenderLayer::Entities;
 		uint8_t translucencyType = 0;				// TODO:
 		uint8_t cmd = 0;							// TODO: ?
-		uint16_t shaderPipelineId = entity.getShaderPipeline()->getAId();
+		uint16_t shaderPipelineId = m_meshShaderPipeline->getAId();
 		uint32_t meshId = entity.getMesh()->getAId();
 		uint16_t materialId = entity.getMaterial()->getAId();
 		uint32_t depth = 0;							// TODO:
@@ -182,6 +207,7 @@ void AGN::AAplication::createDrawQueue()
 		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::DrawEntity, sortkey);
 		ADrawEntityData& data = drawCommand.data.entityData;
 		data.entity = &entity;
+		data.shaderPipeline = m_meshShaderPipeline;
 	}
 }
 
