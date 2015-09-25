@@ -22,6 +22,7 @@
 #include "shader_mesh_vert.hpp"
 #include "shader_skybox_pix.hpp"
 #include "shader_skybox_vert.hpp"
+#include "ashaderpipeline_gl.hpp" // TODO: abstracttt
 
 AGN::AAplication appTemp = AGN::AAplication();
 AGN::AAplication& g_application = appTemp;
@@ -52,22 +53,13 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 	{
 		update();
 
-		// high level rendering
-		createDrawQueue();
-		m_drawCommander->sortCommandList();
-
-		// api specific rendering
-		m_renderAPI->getRenderer().render(*m_drawCommander);
-
-		// clear render buckets at the end of the frame (after data is uploaded to the GPU)
-		m_drawCommander->clearCommands();
+		render();
 
 		g_input.registerFrameCompletion();
 
 		// api specific event handling, input etc
 		m_renderAPI->handleEvents();
 	}
-
 }
 
 void AGN::AAplication::cleanup()
@@ -86,6 +78,38 @@ void AGN::AAplication::update()
 
 	// logic
 	m_sceneManager->update(deltaTime);
+
+	updateMeshShaderProperties(deltaTime);
+}
+
+void AGN::AAplication::updateMeshShaderProperties(float a_deltaTime)
+{
+	// change mesh light properties
+	// test code to update shader buffer
+	// TODO: Abstract this, currently very much hardcoded
+	AShaderPipelineGL* meshShaderGL = dynamic_cast<AShaderPipelineGL*>(m_meshShaderPipeline);
+
+	unsigned char buffer[48];
+
+	static const vec4 lightDirectionNorm(normalize(vec4(1, 1, 1, 1)));
+
+	static float colorAmount = 0;
+	static int direction = 1;
+	colorAmount += a_deltaTime * direction;
+
+	if (direction == 1 && colorAmount > 1.0f) direction = -1;
+	if (direction == -1 && colorAmount < 0.0f) direction = 1;
+
+	float lightAmbient[] = { colorAmount, 0.2f, 0.2f, 0.2f };
+	float lightColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float lightDirection[] = { lightDirectionNorm[0], lightDirectionNorm[1], lightDirectionNorm[2], lightDirectionNorm[3] };
+
+	// TODO: get buffer offset
+	memcpy(buffer + 0, lightDirection, 4 * sizeof(float));
+	memcpy(buffer + 16, lightColor, 4 * sizeof(float));
+	memcpy(buffer + 32, lightAmbient, 4 * sizeof(float));
+
+	meshShaderGL->setUniformBufferData("LightSettings", &buffer, 48);
 }
 
 void AGN::AAplication::loadShaders()
@@ -97,10 +121,24 @@ void AGN::AAplication::loadShaders()
 	m_meshShaderPipeline = &m_resourceManager->createShaderPipeline(meshShaders);
 
 	// TODO: put back after uniform buffers are in
-	//std::vector<AGN::IAShader*> skyboxShaders;
-	//skyboxShaders.push_back(&resourceManager.createShader(g_shader_skybox_vert, EAShaderType::VertexShader));
-	//skyboxShaders.push_back(&resourceManager.createShader(g_shader_skybox_pix, EAShaderType::PixelShader));
-	//IAShaderPipeline& skyboxShaderPipeline = &resourceManager.createShaderPipeline(skyboxShaders);
+	std::vector<AGN::IAShader*> skyboxShaders;
+	skyboxShaders.push_back(&m_resourceManager->createShader(g_shader_skybox_vert, EAShaderType::VertexShader));
+	skyboxShaders.push_back(&m_resourceManager->createShader(g_shader_skybox_pix, EAShaderType::PixelShader));
+	m_skyboxShaderPipeline = &m_resourceManager->createShaderPipeline(skyboxShaders);
+}
+
+void AGN::AAplication::render()
+{
+	// high level rendering
+	createDrawQueue();
+	m_drawCommander->sortCommandList();
+
+	// api specific rendering
+	m_renderAPI->getRenderer().render(*m_drawCommander);
+
+	// clear render buckets at the end of the frame (after data is uploaded to the GPU)
+	m_drawCommander->clearCommands();
+
 }
 
 void AGN::AAplication::createDrawQueue()
@@ -153,7 +191,7 @@ void AGN::AAplication::createDrawQueue()
 		uint8_t layer = (uint8_t)RenderLayer::Skybox;
 		uint8_t translucencyType = 0;				// TODO:
 		uint8_t cmd = 0;							// TODO: ?
-		uint16_t shaderPipelineId = m_meshShaderPipeline->getAId();
+		uint16_t shaderPipelineId = m_skyboxShaderPipeline->getAId();
 		uint32_t meshId = entity.getMesh()->getAId();
 		uint16_t materialId = entity.getMaterial()->getAId();
 		uint32_t depth = 0;							// TODO:
@@ -163,7 +201,7 @@ void AGN::AAplication::createDrawQueue()
 		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::DrawEntity, sortkey);
 		ADrawEntityData& data = drawCommand.data.entityData;
 		data.entity = &entity;
-		data.shaderPipeline = m_meshShaderPipeline;
+		data.shaderPipeline = m_skyboxShaderPipeline;
 	}
 
 	// TODO: make these static draw commands

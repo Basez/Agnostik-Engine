@@ -18,8 +18,6 @@ namespace AGN
 		virtual uint16_t getAId() = 0;
 		virtual void bind() = 0;
 
-		// TODO: change these to something more reasonable, seems kinda hardcoded
-		virtual void setStaticUniformFloat(const char* a_name, float a_value) = 0;
 	};
 
 	struct AShaderPipelineData

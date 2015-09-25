@@ -14,8 +14,10 @@ namespace AGN
 
 	private:
 		void update();
+		void render();
 		void createDrawQueue();
 		void loadShaders();
+		void updateMeshShaderProperties(float a_deltaTime);
 
 		class IARenderAPI* m_renderAPI;
 		class ASceneManager* m_sceneManager;

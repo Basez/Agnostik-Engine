@@ -85,7 +85,7 @@ void AGN::ARendererGL::drawEntity(ADrawCommand* a_command)
 	AMeshGL* mesh = dynamic_cast<AMeshGL*>(entity->getMesh());
 	AMaterial* material = dynamic_cast<AMaterial*>(entity->getMaterial());
 	AShaderPipelineGL* shaderPipeline = dynamic_cast<AShaderPipelineGL*>(a_command->data.entityData.shaderPipeline);
-
+	
 	// different shader? 
 	if (m_boundShaderPipeline == nullptr || m_boundShaderPipeline->getAId() != shaderPipeline->getAId())
 	{

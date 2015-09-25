@@ -57,6 +57,8 @@ void AGN::AWindowGL::onWindowEvent(SDL_Event a_event)
 	case SDL_WINDOWEVENT_RESIZED:
 		m_dimentions.x = a_event.window.data1;
 		m_dimentions.y = a_event.window.data2;
+		glViewport(0, 0, m_dimentions.x, m_dimentions.y);
+
 		break;
 
 	case SDL_WINDOWEVENT_EXPOSED:		// TODO: Repaint/render on window exposure?

@@ -24,6 +24,10 @@ namespace AGN
 		while ((errorType = glGetError()) != GL_NO_ERROR)
 		{
 			g_log.error("An OpenGL error occurred: %X", errorType);
+
+#ifdef AGN_DEBUG
+			assert(false);
+#endif
 		}
 	}
 
