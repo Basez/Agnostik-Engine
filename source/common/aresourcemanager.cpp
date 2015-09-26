@@ -1,6 +1,5 @@
 #include "asharedh.hpp"
 #include "aresourcemanager.hpp"
-#include "asharedh.hpp"
 #include "aaplication.hpp"
 #include "iarender_api.hpp"
 #include "iadevice.hpp"

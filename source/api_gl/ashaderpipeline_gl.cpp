@@ -40,7 +40,7 @@ AGN::AShaderPipelineGL::AShaderPipelineGL(const GLuint a_glprogramId, AShaderPip
 		// get index
 		GLint index = glGetUniformBlockIndex(m_glProgramId, blockName);
 
-		// get uniform names
+		// TODO: get uniform names
 		//glGetActiveUniformName()
 
 		// create object
@@ -103,7 +103,11 @@ GLint AGN::AShaderPipelineGL::getUniformIdByName(const char* a_name)
 	}
 
 	return uniformID;
+}
 
+bool AGN::AShaderPipelineGL::hasUniform(const char* a_name)
+{
+	return glGetUniformLocation(m_glProgramId, a_name) != -1;
 }
 
 void AGN::AShaderPipelineGL::setUniformBufferData(const char* a_name, void* a_data, size_t a_dataSize)
@@ -111,6 +115,16 @@ void AGN::AShaderPipelineGL::setUniformBufferData(const char* a_name, void* a_da
 	AUniformConstantBufferGL* uniformConstantBuffer = getUniformConstantBufferByName(a_name);
 
 	memcpy(uniformConstantBuffer->buffer, a_data, a_dataSize);
+}
+
+bool AGN::AShaderPipelineGL::hasUniformBuffer(const char* a_name)
+{
+	for (unsigned int i = 0; i < m_uniformBuffers.size(); i++)
+	{
+		if (strcmp(m_uniformBuffers[i]->name, a_name) == 0) return true;
+	}
+
+	return false;
 }
 
 struct AGN::AUniformConstantBufferGL* AGN::AShaderPipelineGL::getUniformConstantBufferByName(const char* a_name)

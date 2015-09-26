@@ -17,12 +17,11 @@
 #include "adrawcommand.hpp"
 
 // shaders
-// TODO: make crossplatform 
+// TODO: find crossplatform for these shaders. Perhaps let the pre-build step figure it out or generate both types in the same file?
 #include "shader_mesh_pix.hpp"
 #include "shader_mesh_vert.hpp"
 #include "shader_skybox_pix.hpp"
 #include "shader_skybox_vert.hpp"
-#include "ashaderpipeline_gl.hpp" // TODO: abstracttt
 
 AGN::AAplication appTemp = AGN::AAplication();
 AGN::AAplication& g_application = appTemp;
@@ -87,8 +86,6 @@ void AGN::AAplication::updateMeshShaderProperties(float a_deltaTime)
 	// change mesh light properties
 	// test code to update shader buffer
 	// TODO: Abstract this, currently very much hardcoded
-	AShaderPipelineGL* meshShaderGL = dynamic_cast<AShaderPipelineGL*>(m_meshShaderPipeline);
-
 	unsigned char buffer[48];
 
 	static const vec4 lightDirectionNorm(normalize(vec4(1, 1, 1, 1)));
@@ -109,7 +106,7 @@ void AGN::AAplication::updateMeshShaderProperties(float a_deltaTime)
 	memcpy(buffer + 16, lightColor, 4 * sizeof(float));
 	memcpy(buffer + 32, lightAmbient, 4 * sizeof(float));
 
-	meshShaderGL->setUniformBufferData("LightSettings", &buffer, 48);
+	m_meshShaderPipeline->setUniformBufferData("LightSettings", &buffer, 48);
 }
 
 void AGN::AAplication::loadShaders()
@@ -138,7 +135,6 @@ void AGN::AAplication::render()
 
 	// clear render buckets at the end of the frame (after data is uploaded to the GPU)
 	m_drawCommander->clearCommands();
-
 }
 
 void AGN::AAplication::createDrawQueue()

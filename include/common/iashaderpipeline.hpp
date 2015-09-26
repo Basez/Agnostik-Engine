@@ -17,6 +17,8 @@ namespace AGN
 
 		virtual uint16_t getAId() = 0;
 		virtual void bind() = 0;
+		virtual void setUniformBufferData(const char* a_name, void* a_data, size_t a_dataSize) = 0;
+		virtual bool hasUniformBuffer(const char* a_name) = 0;
 
 	};
 

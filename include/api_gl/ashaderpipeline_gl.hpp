@@ -19,14 +19,17 @@ namespace AGN
 		uint16_t getAId() { return m_aId; }
 
 		void bind() override;
+		void setUniformBufferData(const char* a_name, void* a_data, size_t a_dataSize) override;
+		virtual bool hasUniformBuffer(const char* a_name) override;
 
 		// TODO: change architecture after bind stuff works
 		GLuint getGlProgramId() { return m_glProgramId; }
 		GLint getUniformIdByName(const char* a_name);
-		void setUniformBufferData(const char* a_name, void* a_data, size_t a_dataSize);
+		bool hasUniform(const char* a_name);
 		struct AUniformConstantBufferGL* getUniformConstantBufferByName(const char* a_name);
 
 	private:
+
 		const uint16_t m_aId;				
 		const GLuint m_glProgramId;			
 		class IAShader* m_vertextShader;	

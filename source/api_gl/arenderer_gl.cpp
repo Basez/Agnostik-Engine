@@ -105,9 +105,14 @@ void AGN::ARendererGL::drawEntity(ADrawCommand* a_command)
 		ATextureGL* texturesToBind[1] = { diffuse };
 		bindTexturesToShader(shaderPipeline->getGlProgramId(), 1, texturesToBind);
 
-		// Material properties
-		glUniform4fv(shaderPipeline->getUniformIdByName("uMaterialEmissive"), 1, glm::value_ptr(g_black));
-		glUniform4fv(shaderPipeline->getUniformIdByName("uMaterialDiffuse"), 1, glm::value_ptr(g_white));
+		if (shaderPipeline->hasUniformBuffer("MaterialSettings"))
+		{
+			// TODO: get buffer offset, this is hardcoded
+			unsigned char buffer[32];
+			memcpy(buffer + 0, glm::value_ptr(g_black), 4 * sizeof(float)); // emissive
+			memcpy(buffer + 16, glm::value_ptr(g_white), 4 * sizeof(float)); // diffuse factor
+			shaderPipeline->setUniformBufferData("MaterialSettings", &buffer, 32);
+		}
 
 		m_boundMaterial = material;
 	}
@@ -130,10 +135,14 @@ void AGN::ARendererGL::drawEntity(ADrawCommand* a_command)
 
 		mat4 mvp = m_vp * modelMatrix;
 
+
 		// set entity specific data
 		glUniformMatrix4fv(shaderPipeline->getUniformIdByName("uModelViewProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(mvp));
-		glUniformMatrix4fv(shaderPipeline->getUniformIdByName("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
 
+		if (shaderPipeline->hasUniform("uModelMatrix"))
+		{
+			glUniformMatrix4fv(shaderPipeline->getUniformIdByName("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+		}
 	}
 
 	// render the entity

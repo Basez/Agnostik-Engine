@@ -11,8 +11,11 @@ uniform LightSettings
 	uniform vec4 uLightAmbient; // Global ambient contribution.
 };
 
-uniform vec4 uMaterialEmissive;
-uniform vec4 uMaterialDiffuse;
+uniform MaterialSettings
+{
+	uniform vec4 uMaterialEmissive;
+	uniform vec4 uMaterialDiffuse;
+};
 
 uniform sampler2D textureSampler0;	// Diffuse
 
