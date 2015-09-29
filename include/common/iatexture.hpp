@@ -26,10 +26,13 @@ namespace AGN
 
 	struct ATextureData
 	{
-		ATextureData() {
-			// ensure data is null when command is instantiated
-			memset(this, 0, sizeof(ATextureData));
-		}
+		ATextureData()
+			: width(0)
+			, height(0)
+			, components(0)
+			, buffer(nullptr)
+			, flags(0) {}
+			
 		std::string relativePath;
 		EATextureType type; 
 		int width;

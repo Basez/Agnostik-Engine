@@ -4,6 +4,20 @@
 
 using namespace glm;
 
+// TODO: Refactor
+namespace AGN
+{
+	size_t strlcpy(char *d, char const *s, size_t n)
+	{
+	    return snprintf(d, n, "%s", s);
+	}
+
+	size_t strlcat(char *d, char const *s, size_t n)
+	{
+	    return snprintf(d, n, "%s%s", d, s);
+	}	
+}
+
 AGN::AShaderPipelineGL::AShaderPipelineGL(const GLuint a_glprogramId, AShaderPipelineData& a_data)
 	: m_aId(a_data.aId)
 	, m_glProgramId(a_glprogramId)
@@ -45,7 +59,7 @@ AGN::AShaderPipelineGL::AShaderPipelineGL(const GLuint a_glprogramId, AShaderPip
 
 		// create object
 		AUniformConstantBufferGL* constantBuffer = new AUniformConstantBufferGL();
-		strcpy_s(constantBuffer->name, blockName);
+		AGN::strlcpy(constantBuffer->name, blockName, sizeof(blockName)); // TODO: Refactor
 		constantBuffer->index = index;
 		constantBuffer->size = blockSize;
 
