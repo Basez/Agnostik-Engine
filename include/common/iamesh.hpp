@@ -21,5 +21,10 @@ namespace AGN
 		std::vector<glm::vec3> tagents;
 		std::vector<glm::vec3> bitangent;
 		std::vector<glm::vec2> textureCoords;
+
+		class AMaterial* material;
+		//class IATexture* diffuse;
+		//class IATexture* normal;
+		//class IATexture* specular;
 	};
 }

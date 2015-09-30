@@ -48,7 +48,7 @@ AGN::IAMesh& AGN::AResourceManager::loadMesh(std::string a_relativePath, uint32_
 	// at this point we know the model doesn't exist yet; load the model
 	// create object that defines everything the model consists of
 	AMeshData* meshData = new AMeshData();
-	meshData->relativePath = a_relativePath;
+	//meshData->relativePath = a_relativePath;
 
 	unsigned int flags = additional_assimp_flags | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenNormals;
 	
@@ -139,6 +139,134 @@ AGN::IAMesh& AGN::AResourceManager::loadMesh(std::string a_relativePath, uint32_
 	m_loadedMeshes.push_back(newMesh);
 
 	return *newMesh;
+}
+
+
+class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::string a_relativePath, uint32_t additional_assimp_flags)
+{
+	unsigned int flags = additional_assimp_flags | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenNormals;
+
+	//if (!a_rightHandCoordinates)
+	//{
+	//	flags |= aiProcess_FlipWindingOrder;
+	//}
+
+	// get full path
+	string fullPath = g_configManager.getConfigProperty("path_models").append(a_relativePath);
+
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(fullPath.c_str(), flags);
+
+	// If the import failed, report it
+	if (!scene)
+	{
+		g_log.error("Error loading model! '%s' the issue: %s", a_relativePath.c_str(), importer.GetErrorString());
+	}
+
+
+	// create objects that defines everything the models consists of
+	AMaterialData* materialData = new AMaterialData[scene->mNumMaterials];
+
+	// start by loading the materials first
+	for (unsigned int i = 0; i < scene->mNumMaterials; i++)
+	{
+		const aiMaterial* assimpMaterial = scene->mMaterials[i];
+		int texIndex = 0;
+		aiString relativePath;  // filename
+		std::string texturesFolder = g_configManager.getConfigProperty("path_textures");
+
+		aiString materialName;
+		assimpMaterial->Get(AI_MATKEY_NAME, materialName);
+		materialData[i].name = materialName.C_Str();
+
+		// TEMP
+		int diffuseCount = assimpMaterial->GetTextureCount(aiTextureType_DIFFUSE);
+		int normalCount = assimpMaterial->GetTextureCount(aiTextureType_NORMALS);
+		int specularCount = assimpMaterial->GetTextureCount(aiTextureType_SPECULAR);
+
+		if (diffuseCount > 1 || normalCount > 1 || specularCount > 1)
+		{
+			g_log.warning("more than singular texture detected?");
+		}
+
+		// load textures
+		if (assimpMaterial->GetTexture(aiTextureType_DIFFUSE, texIndex, &relativePath) == AI_SUCCESS)
+		{
+			materialData[i].diffuseTexture = &loadTexture(relativePath.C_Str(), EATextureType::TEXTURE_2D);
+		}
+
+		if (assimpMaterial->GetTexture(aiTextureType_NORMALS, texIndex, &relativePath) == AI_SUCCESS)
+		{
+			materialData[i].normalTexture = &loadTexture(relativePath.C_Str(), EATextureType::TEXTURE_2D);
+		}
+
+		if (assimpMaterial->GetTexture(aiTextureType_SPECULAR, texIndex, &relativePath) == AI_SUCCESS)
+		{
+			materialData[i].specularTexture = &loadTexture(relativePath.C_Str(), EATextureType::TEXTURE_2D);
+		}
+
+		// TODO: Load properties!
+	}
+
+	// load actual materials
+	std::vector<AGN::AMaterial*> materials;
+	materials.reserve(scene->mNumMaterials);
+
+	for (int i = 0; i < scene->mNumMaterials; i++)
+	{
+		// create materials
+		materials.push_back(&createMaterial(materialData[i]));
+	}
+
+	// create objects that defines everything the models consists of
+	AMeshData* meshData = new AMeshData[scene->mNumMeshes];
+
+	const aiVector3D zeroVector(0.0f, 0.0f, 0.0f);
+	unsigned int vertexOffset = 0;
+	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
+	{
+		const aiMesh* loadedMesh = scene->mMeshes[i];
+		for (unsigned int j = 0; j < loadedMesh->mNumVertices; j++)
+		{
+			const aiVector3D* pPos = &(loadedMesh->mVertices[j]);
+			const aiVector3D* pNormal = &(loadedMesh->mNormals[j]);
+			const aiVector3D* pTexCoord = loadedMesh->HasTextureCoords(0) ? &(loadedMesh->mTextureCoords[0][j]) : &zeroVector;
+			//const aiVector3D* pTangents = &(loadedMesh->mTangents[j]);
+			//const aiVector3D* pBitangents = &(loadedMesh->mBitangents[j]);
+
+			meshData[i].positions.push_back(vec3(pPos->x, pPos->y, pPos->z));
+			meshData[i].normals.push_back(vec3(pNormal->x, pNormal->y, pNormal->z));
+			//m_tagents.push_back(vec3(pTangents->x, pTangents->y, pTangents->z));
+			//m_bitangent.push_back(vec3(pBitangents->x, pBitangents->y, pBitangents->z));
+			meshData[i].textureCoords.push_back(vec2(pTexCoord->x, pTexCoord->y));
+		}
+
+		for (unsigned int j = 0; j < loadedMesh->mNumFaces; j++)
+		{
+			const aiFace& face = loadedMesh->mFaces[j];
+			meshData[i].indicies.push_back(face.mIndices[0] + vertexOffset);
+			meshData[i].indicies.push_back(face.mIndices[1] + vertexOffset);
+			meshData[i].indicies.push_back(face.mIndices[2] + vertexOffset);
+		}
+
+		vertexOffset += loadedMesh->mNumVertices;
+
+
+		// TODO: add loaded materials to meshdata
+		meshData[i].material = materials[loadedMesh->mMaterialIndex];
+		//loadedMesh->mMaterialIndex
+	}
+
+	std::vector<AGN::IAMesh*> meshes;
+	meshes.reserve(scene->mNumMeshes);
+
+	for (int i = 0; i < scene->mNumMeshes; i++)
+	{
+		IAMesh* newMesh = m_device.createMesh(m_meshIdCount++, meshData);
+		meshes.push_back(newMesh);
+	}
+	
+	return meshes;
 }
 
 AGN::IATexture& AGN::AResourceManager::loadTexture(std::string a_relativePath, EATextureType a_textureType)

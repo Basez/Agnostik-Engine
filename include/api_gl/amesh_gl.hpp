@@ -30,26 +30,5 @@ namespace AGN
 		const uint8_t m_vboCount;
 
 		AMeshData* m_meshData;
-
-		//class Texture* m_textureDiffuse;
-		//class Texture* m_textureNormal;
-		//class Texture* m_textureSpecular;
-
-		/////////////////////
-		// shaders
-		//class Shader* m_shaderProgram;
-
-		// Model, View, Projection matrix uniform variable in shader program.
-		//GLint m_uniformMVP;
-		//GLint m_uniformColor;
-		//GLint m_uniformModelMatrix;
-		//GLint m_uniformClipPlane;
-		//GLint m_uniformClipOffset;
-
-		//GLint m_uniformLightDirection;
-		//GLint m_uniformLightColor;
-		//GLint m_uniformAmbient;
-		//GLint m_uniformMaterialEmissive;
-		//GLint m_uniformMaterialDiffuse;
 	};
 }

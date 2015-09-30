@@ -180,3 +180,21 @@ void AGN::ASceneManager::loadScrambledScene()
 	}
 	
 }
+
+void AGN::ASceneManager::loadSponza()
+{
+	AResourceManager& resourceManager = g_application.getResourceManager();
+
+	std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("sponza/sponza.obj");
+
+	// create materials
+	AMaterialData testMatData;
+	testMatData.name = "test_material";
+	testMatData.diffuseTexture = &resourceManager.loadTexture("test.png", EATextureType::TEXTURE_2D);
+	AMaterial& testMaterial = resourceManager.createMaterial(testMatData);
+
+	AEntity* sponzaEntity = new AEntity();
+	sponzaEntity->setMeshes(sponzaMeshes);
+	sponzaEntity->setPosition(vec3(0, 0, 0));
+	m_entities.push_back(sponzaEntity);
+}

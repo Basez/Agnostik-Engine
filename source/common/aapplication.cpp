@@ -42,7 +42,8 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 	m_sceneManager = new ASceneManager();
 	m_sceneManager->init();
 	//m_sceneManager->loadTestScene01();
-	m_sceneManager->loadScrambledScene();
+	//m_sceneManager->loadScrambledScene();
+	m_sceneManager->loadSponza();
 
 	m_renderAPI->getRenderer().setCamera(m_sceneManager->getCurrentCamera());
 

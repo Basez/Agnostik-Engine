@@ -12,6 +12,7 @@ namespace AGN
 		void update(float a_deltaTime);
 		void loadTestScene01();
 		void loadScrambledScene();
+		void loadSponza();
 
 		const std::vector<class AEntity*> getEntities() const { return m_entities; }
 		const std::vector<class AEntity*> getSkyboxEntities() const { return m_skyboxEntities; }
