@@ -45,117 +45,10 @@ void AGN::AResourceManager::loadDefaults()
 	m_defaultMaterial = &createMaterial(defaultMaterialData);
 }
 
-AGN::IAMesh& AGN::AResourceManager::loadMesh(std::string a_relativePath, uint32_t additional_assimp_flags)
-{
-	// check if it exists
-	for (unsigned int i = 0; i < m_loadedMeshes.size(); i++)
-	{
-		if (m_loadedMeshes[i]->getRelativePath().compare(a_relativePath) == 0)
-		{
-			return dynamic_cast<AGN::IAMesh&>(*m_loadedMeshes[i]);
-		}
-	}
-
-	// at this point we know the model doesn't exist yet; load the model
-	// create object that defines everything the model consists of
-	AMeshData* meshData = new AMeshData();
-	//meshData->relativePath = a_relativePath;
-
-	unsigned int flags = additional_assimp_flags | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenNormals;
-	
-	//if (!a_rightHandCoordinates)
-	//{
-	//	flags |= aiProcess_FlipWindingOrder;
-	//}
-	
-	// get full path
-	string fullPath = g_configManager.getConfigProperty("path_models").append(a_relativePath);
-
-	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(fullPath.c_str(), flags);
-
-	// If the import failed, report it
-	if (!scene)
-	{
-		g_log.error("Error loading model! '%s' the issue: %s", a_relativePath.c_str(), importer.GetErrorString());
-	}
-
-	const aiVector3D zeroVector(0.0f, 0.0f, 0.0f);
-	unsigned int vertexOffset = 0;
-	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
-	{
-		const aiMesh* loadedMesh = scene->mMeshes[i];
-		for (unsigned int j = 0; j < loadedMesh->mNumVertices; j++)
-		{
-			const aiVector3D* pPos = &(loadedMesh->mVertices[j]);
-			const aiVector3D* pNormal = &(loadedMesh->mNormals[j]);
-			const aiVector3D* pTexCoord = loadedMesh->HasTextureCoords(0) ? &(loadedMesh->mTextureCoords[0][j]) : &zeroVector;
-			//const aiVector3D* pTangents = &(loadedMesh->mTangents[j]);
-			//const aiVector3D* pBitangents = &(loadedMesh->mBitangents[j]);
-
-			
-			meshData->positions.push_back(vec3(pPos->x, pPos->y, pPos->z));
-			meshData->normals.push_back(vec3(pNormal->x, pNormal->y, pNormal->z));
-			//m_tagents.push_back(vec3(pTangents->x, pTangents->y, pTangents->z));
-			//m_bitangent.push_back(vec3(pBitangents->x, pBitangents->y, pBitangents->z));
-			meshData->textureCoords.push_back(vec2(pTexCoord->x, pTexCoord->y));
-		}
-
-		for (unsigned int j = 0; j < loadedMesh->mNumFaces; j++)
-		{
-			const aiFace& face = loadedMesh->mFaces[j];
-			meshData->indicies.push_back(face.mIndices[0] + vertexOffset);
-			meshData->indicies.push_back(face.mIndices[1] + vertexOffset);
-			meshData->indicies.push_back(face.mIndices[2] + vertexOffset);
-		}
-		vertexOffset += loadedMesh->mNumVertices;
-	}
-
-	/*
-	// TODO: load textures/materials into openGL via ShaderManager
-	for (unsigned int i = 0; i < scene->mNumMaterials; i++)
-	{
-		// TODO: TEXTURE LOADING, add to a queue?
-		const aiMaterial* material = scene->mMaterials[i];
-		int texIndex = 0;
-		aiString relativePath;  // filename
-		string finalPath = AGN::AOSUtils::getPathRelativeToPath(a_relativePath, relativePath.C_Str());
-
-		if (material->GetTexture(aiTextureType_DIFFUSE, texIndex, &relativePath) == AI_SUCCESS)
-		{
-			// TODO: TextureLoading?
-			//m_textureDiffuse = new BTexture(BTextureType::TEXTURE_2D, finalPath.c_str());
-			g_log.debug("finalPath.c_str(): %s", finalPath.c_str());
-		}
-
-		if (material->GetTexture(aiTextureType_NORMALS, texIndex, &relativePath) == AI_SUCCESS)
-		{
-			// TODO: TextureLoading?
-			//m_textureNormal = new BTexture(BTextureType::TEXTURE_2D, finalPath.c_str());
-			g_log.debug("finalPath.c_str(): %s", finalPath.c_str());
-		}
-
-		if (material->GetTexture(aiTextureType_SPECULAR, texIndex, &relativePath) == AI_SUCCESS)
-		{
-			// TODO: TextureLoading?
-			//m_textureSpecular = new BTexture(BTextureType::TEXTURE_2D, finalPath.c_str());
-			g_log.debug("finalPath.c_str(): %s", finalPath.c_str());
-		}
-		
-	}
-	*/
-
-	IAMesh* newMesh = m_device.createMesh(m_meshIdCount++, meshData);
-
-	m_loadedMeshes.push_back(newMesh);
-
-	return *newMesh;
-}
-
-
 class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::string a_relativePath, uint32_t additional_assimp_flags)
 {
 	unsigned int flags = additional_assimp_flags | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenNormals;
+	//unsigned int flags = additional_assimp_flags | aiProcess_GenNormals;
 	
 	//if (!a_rightHandCoordinates)
 	//{
@@ -164,6 +57,7 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 
 	flags |= aiProcess_OptimizeMeshes;
 	flags |= aiProcess_OptimizeGraph;
+	flags |= aiProcess_FlipUVs;
 
 	// get full path
 	string fullPath = g_configManager.getConfigProperty("path_models").append(a_relativePath);
@@ -256,37 +150,37 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 	AMeshData* meshData = new AMeshData[scene->mNumMeshes];
 
 	const aiVector3D zeroVector(0.0f, 0.0f, 0.0f);
-	unsigned int vertexOffset = 0;
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 	{
-		const aiMesh* loadedMesh = scene->mMeshes[i];
-		for (unsigned int j = 0; j < loadedMesh->mNumVertices; j++)
-		{
-			const aiVector3D* pPos = &(loadedMesh->mVertices[j]);
-			const aiVector3D* pNormal = &(loadedMesh->mNormals[j]);
-			const aiVector3D* pTexCoord = loadedMesh->HasTextureCoords(0) ? &(loadedMesh->mTextureCoords[0][j]) : &zeroVector;
-			//const aiVector3D* pTangents = &(loadedMesh->mTangents[j]);
-			//const aiVector3D* pBitangents = &(loadedMesh->mBitangents[j]);
+		const aiMesh& loadedMesh = *scene->mMeshes[i];
+		AMeshData& newMeshData = meshData[i];
+		newMeshData.relativePath = a_relativePath;
 
-			meshData[i].positions.push_back(vec3(pPos->x, pPos->y, pPos->z));
-			meshData[i].normals.push_back(vec3(pNormal->x, pNormal->y, pNormal->z));
+		for (unsigned int j = 0; j < loadedMesh.mNumVertices; j++)
+		{
+			const aiVector3D* pPos = &(loadedMesh.mVertices[j]);
+			const aiVector3D* pNormal = &(loadedMesh.mNormals[j]);
+			const aiVector3D* pTexCoord = loadedMesh.HasTextureCoords(0) ? &(loadedMesh.mTextureCoords[0][j]) : &zeroVector;
+			//const aiVector3D* pTangents = &(loadedMesh.mTangents[j]);
+			//const aiVector3D* pBitangents = &(loadedMesh.mBitangents[j]);
+
+			newMeshData.positions.push_back(vec3(pPos->x, pPos->y, pPos->z));
+			newMeshData.normals.push_back(vec3(pNormal->x, pNormal->y, pNormal->z));
 			//m_tagents.push_back(vec3(pTangents->x, pTangents->y, pTangents->z));
 			//m_bitangent.push_back(vec3(pBitangents->x, pBitangents->y, pBitangents->z));
-			meshData[i].textureCoords.push_back(vec2(pTexCoord->x, pTexCoord->y));
+			newMeshData.textureCoords.push_back(vec2(pTexCoord->x, pTexCoord->y));
 		}
 
-		for (unsigned int j = 0; j < loadedMesh->mNumFaces; j++)
+		for (unsigned int j = 0; j < loadedMesh.mNumFaces; j++)
 		{
-			const aiFace& face = loadedMesh->mFaces[j];
-			meshData[i].indicies.push_back(face.mIndices[0] + vertexOffset);
-			meshData[i].indicies.push_back(face.mIndices[1] + vertexOffset);
-			meshData[i].indicies.push_back(face.mIndices[2] + vertexOffset);
+			const aiFace& face = loadedMesh.mFaces[j];
+			newMeshData.indicies.push_back(face.mIndices[0]);
+			newMeshData.indicies.push_back(face.mIndices[1]);
+			newMeshData.indicies.push_back(face.mIndices[2]);
 		}
-
-		vertexOffset += loadedMesh->mNumVertices;
 
 		// add loaded materials to meshdata
-		meshData[i].material = materials[loadedMesh->mMaterialIndex];
+		newMeshData.material = materials[loadedMesh.mMaterialIndex];
 	}
 
 	std::vector<AGN::IAMesh*> meshes;

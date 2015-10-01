@@ -51,6 +51,7 @@ void AGN::ASceneManager::update(float a_deltaTime)
 
 void AGN::ASceneManager::loadTestScene01()
 {
+	/*
 	AResourceManager& resourceManager = g_application.getResourceManager();
 
 	IAMesh& sibenixMesh = resourceManager.loadMesh("sibenik/sibenik.obj");
@@ -104,11 +105,12 @@ void AGN::ASceneManager::loadTestScene01()
 	crateEntity->setMesh(&crateMesh);
 	crateEntity->setMaterial(&crateMaterial);
 	crateEntity->setPosition(vec3(2,2,2));
-	m_entities.push_back(crateEntity);
+	m_entities.push_back(crateEntity);*/
 }
 
 void AGN::ASceneManager::loadScrambledScene()
 {
+	/*
 	AResourceManager& resourceManager = g_application.getResourceManager();
 
 	IAMesh& crateMesh = resourceManager.loadMesh("crate_001.dae", aiProcess_FlipUVs);
@@ -178,7 +180,7 @@ void AGN::ASceneManager::loadScrambledScene()
 			}
 		}
 	}
-	
+	*/
 }
 
 void AGN::ASceneManager::loadSponza()
@@ -186,9 +188,11 @@ void AGN::ASceneManager::loadSponza()
 	AResourceManager& resourceManager = g_application.getResourceManager();
 
 	// load meshes
-	std::vector<IAMesh*> skyboxMeshes = resourceManager.loadMeshCollection("skybox_old.obj");
 	//std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("sponza/sponza.obj");
-	std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("triangles.obj");
+	std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("sibenik/sibenik.obj");
+	
+	//std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("triangles.obj");
+	std::vector<IAMesh*> skyboxMeshes = resourceManager.loadMeshCollection("skybox_old.obj");
 
 	// create materials
 	AMaterialData testMatData;

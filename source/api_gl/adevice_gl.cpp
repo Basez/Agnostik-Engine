@@ -21,8 +21,8 @@ AGN::IAMesh* AGN::ADeviceGL::createMesh(const uint16_t a_aId, AGN::AMeshData* a_
 {
 	// upload the data to the GL Driver and GFX card
 	uint32_t vao = -1;
-	uint8_t vboCount = 4;
-	uint32_t *vbos = new uint32_t[4]();
+	const uint8_t vboCount = 4;
+	uint32_t *vbos = new uint32_t[vboCount]();
 
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);

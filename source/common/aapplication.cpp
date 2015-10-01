@@ -77,6 +77,9 @@ void AGN::AAplication::update()
 	float deltaTime = float(time - lastTime) / 1000.0f;
 	lastTime = time;
 
+	// limit deltatime
+	if (deltaTime > 1.0f) deltaTime = 1.0f;
+
 	// logic
 	m_sceneManager->update(deltaTime);
 
