@@ -1,6 +1,6 @@
 #include "asharedh.hpp"
 #include "awindow_gl.hpp"
-#include "afileutils.hpp"
+#include "aosutils.hpp"
 
 AGN::AWindowGL::AWindowGL(glm::ivec2 a_dimentions)
 	: m_dimentions(a_dimentions)
@@ -17,7 +17,7 @@ AGN::AWindowGL::AWindowGL(glm::ivec2 a_dimentions)
 #elif AGN_RELEASE
 	windowName = std::string("Agnostik - RELEASE");
 #else
-	windowName = AGN::AFileUtils::getExecutableName();
+	windowName = AGN::AOSUtils::getExecutableName();
 #endif
 
 	m_sdlWindow = SDL_CreateWindow(windowName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, a_dimentions.x, a_dimentions.y, flags);

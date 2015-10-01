@@ -4,7 +4,6 @@
 #include "iarender_api.hpp"
 #include "iadevice.hpp"
 #include "aconfigmanager.hpp"
-#include "afileutils.hpp"
 #include "iatexture.hpp"
 #include "iamesh.hpp"
 #include "amaterial.hpp"
@@ -108,7 +107,7 @@ AGN::IAMesh& AGN::AResourceManager::loadMesh(std::string a_relativePath, uint32_
 		const aiMaterial* material = scene->mMaterials[i];
 		int texIndex = 0;
 		aiString relativePath;  // filename
-		string finalPath = AFileUtils::getPathRelativeToPath(a_relativePath, relativePath.C_Str());
+		string finalPath = AGN::AOSUtils::getPathRelativeToPath(a_relativePath, relativePath.C_Str());
 
 		if (material->GetTexture(aiTextureType_DIFFUSE, texIndex, &relativePath) == AI_SUCCESS)
 		{

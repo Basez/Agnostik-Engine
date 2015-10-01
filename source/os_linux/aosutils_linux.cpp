@@ -1,5 +1,5 @@
 #include "asharedh.hpp" 
-#include "afileutils.hpp"
+#include "aosutils.hpp"
 #include <dirent.h>
 #include <unistd.h>
 #include <limits.h>
@@ -7,12 +7,12 @@
 
 using namespace std;
 
-int AGN::AFileUtils::getLastlowFileChangeTime(std::string a_filename)
+int AGN::AOSUtils::getLastlowFileChangeTime(std::string a_filename)
 {
 	return -1; // TODO:
 }
 
-int AGN::AFileUtils::getFileSizeBytes(std::string a_filename)
+int AGN::AOSUtils::getFileSizeBytes(std::string a_filename)
 {
 	return -1; // TODO:
 }
@@ -20,7 +20,7 @@ int AGN::AFileUtils::getFileSizeBytes(std::string a_filename)
 /**
  * Strips the given file path of its name and returns that directory 
  */
-std::string AGN::AFileUtils::getDirectoryOfPath(std::string a_path)
+std::string AGN::AOSUtils::getDirectoryOfPath(std::string a_path)
 {
 	string pathAsString = a_path;
 
@@ -36,13 +36,13 @@ std::string AGN::AFileUtils::getDirectoryOfPath(std::string a_path)
 	return "";
 }
 
-std::string AGN::AFileUtils::getUpDirectory(std::string a_path)
+std::string AGN::AOSUtils::getUpDirectory(std::string a_path)
 {
 	int index = (int)a_path.find_last_of("/"); // find last 2 '\\' (final folder)
 	return a_path.substr(0, index).c_str();
 }
 
-std::string AGN::AFileUtils::getPathRelativeToPath(std::string a_originPath, std::string a_relativeToOrigin)
+std::string AGN::AOSUtils::getPathRelativeToPath(std::string a_originPath, std::string a_relativeToOrigin)
 {
 	string relativePath = "";
 	relativePath += getDirectoryOfPath(a_originPath);	// start with directory of origin
@@ -52,7 +52,7 @@ std::string AGN::AFileUtils::getPathRelativeToPath(std::string a_originPath, std
 	return relativePath;
 }
 
-std::string AGN::AFileUtils::findFile(std::string a_file, std::string a_startFolder, int a_deepLevel, int a_upLevel)
+std::string AGN::AOSUtils::findFile(std::string a_file, std::string a_startFolder, int a_deepLevel, int a_upLevel)
 {
 	DIR *dir;
 	struct dirent *ent;
@@ -75,7 +75,7 @@ std::string AGN::AFileUtils::findFile(std::string a_file, std::string a_startFol
 				{
 					// append string
 					string folderFullPath = string(string(a_startFolder.c_str()) + string("\\") + string(ent->d_name)).c_str();
-					string fileABitDeeper = AGN::AFileUtils::findFile(a_file.c_str(), folderFullPath.c_str(), a_deepLevel - 1, 0); // from this point can only go deeper (not up)
+					string fileABitDeeper = AGN::AOSUtils::findFile(a_file.c_str(), folderFullPath.c_str(), a_deepLevel - 1, 0); // from this point can only go deeper (not up)
 					if (fileABitDeeper.size() > 0)
 					{
 						// FOUND IT IN A DEEPER FOLDER
@@ -109,7 +109,7 @@ std::string AGN::AFileUtils::findFile(std::string a_file, std::string a_startFol
 	if (a_upLevel > 0)
 	{
 		string upFolderPath = getUpDirectory(a_startFolder.c_str());
-		string fileAbitUp = AGN::AFileUtils::findFile(a_file.c_str(), upFolderPath.c_str(), 0, a_upLevel - 1); // from this point can only go upper (not deeper)
+		string fileAbitUp = AGN::AOSUtils::findFile(a_file.c_str(), upFolderPath.c_str(), 0, a_upLevel - 1); // from this point can only go upper (not deeper)
 
 		if (fileAbitUp.size() > 0)
 		{
@@ -122,7 +122,7 @@ std::string AGN::AFileUtils::findFile(std::string a_file, std::string a_startFol
 	return "";
 }
 
-std::string AGN::AFileUtils::getCurrentFolder()
+std::string AGN::AOSUtils::getCurrentFolder()
 {
  	char buffer[PATH_MAX] = {0};
 	char szTmp[32];
@@ -137,7 +137,18 @@ std::string AGN::AFileUtils::getCurrentFolder()
 	return fullPath;
 }
 
-std::string AGN::AFileUtils::getExecutableName(bool a_includeType)
+std::string AGN::AOSUtils::getExecutableName(bool a_includeType)
 {
 	return ""; // TODO:
 }
+
+size_t AGN::AOSUtils::cStringCopy(char *a_destination, char const *a_source, size_t a_sizeBytes)
+{
+	return snprintf(a_destination, a_sizeBytes, "%s", a_source);
+}
+
+size_t AGN::AOSUtils::cStringConcatenate(char *a_destination, char const *a_source, size_t a_sizeBytes)
+{
+	return snprintf(a_destination, a_sizeBytes, "%s%s", a_destination, a_source);
+}
+

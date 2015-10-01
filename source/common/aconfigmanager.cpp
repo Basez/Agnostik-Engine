@@ -1,6 +1,6 @@
 #include "asharedh.hpp"
 #include "aconfigmanager.hpp"
-#include "afileutils.hpp"
+#include "aosutils.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -14,7 +14,7 @@ bool AGN::AConfigManager::parseConfigFile(std::string a_configFile)
 {
 	g_log.info("parsing config file..");
 
-	string configFileFolder = AFileUtils::getDirectoryOfPath(a_configFile); // (aka root folder)
+	string configFileFolder = AGN::AOSUtils::getDirectoryOfPath(a_configFile); // (aka root folder)
 
 	std::ifstream file;
 	file.open(a_configFile, std::ifstream::in);

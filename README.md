@@ -24,7 +24,7 @@ TODO:
 - Add 'PATH=$PATH:/c/Python27'  to bottom of all .bash_profile files inside cygwin folder structure so cygwin can find python
 - Add "C:\Python27" to the PATH environment variable
 - Python should now be working on cygwin64, test by opening cygwin and type  python -V (should display the version number)
-- Download and extract scons 2.3.6
+- Download and extract scons 2.4.0
 - Install scons by navigating to the extracted folder inside cygwin, and calling the "python setup.py install" command
 - Create file called 'scons' (no extensions, just "scons") in C:/Python27 (python installation folder)
 - add 'exec scons.bat "$@"' to it to be able to run scons from cygwin. check this link: http://www.scons.org/wiki/SConsAndCygwin. Also make sure scons.bat is inside the Python27 folder!
