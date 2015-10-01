@@ -11,10 +11,10 @@ namespace AGN
 	public:
 		AResourceManager(class IADevice& a_device);
 
+		void loadDefaults();
 		
 		class IAMesh& loadMesh(std::string a_relativePath, uint32_t additional_assimp_flags = 0);
 		class std::vector<class IAMesh*> loadMeshCollection(std::string a_relativePath, uint32_t additional_assimp_flags = 0);
-
 		class IATexture& loadTexture(std::string a_relativePath, EATextureType a_textureType);
 
 		class IAShader& createShader(const char* a_shaderSource, EAShaderType a_shaderType);
@@ -34,5 +34,7 @@ namespace AGN
 		uint16_t m_textureIdCount;
 		uint16_t m_materialIdCount;
 		uint16_t m_shaderPipelineIdCount;
+
+		class AMaterial* m_defaultMaterial;
 	};
 }

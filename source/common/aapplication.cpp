@@ -36,6 +36,8 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 	m_renderAPI->init();
 	
 	m_resourceManager = new AResourceManager(m_renderAPI->getDevice());
+	m_resourceManager->loadDefaults();
+	loadShaders();
 
 	m_drawCommander = new ADrawCommander();
 
@@ -47,7 +49,6 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 
 	m_renderAPI->getRenderer().setCamera(m_sceneManager->getCurrentCamera());
 
-	loadShaders();
 
 	while (!m_quit)
 	{
@@ -118,7 +119,6 @@ void AGN::AAplication::loadShaders()
 	meshShaders.push_back(&m_resourceManager->createShader(g_shader_mesh_pix, EAShaderType::PixelShader));
 	m_meshShaderPipeline = &m_resourceManager->createShaderPipeline(meshShaders);
 
-	// TODO: put back after uniform buffers are in
 	std::vector<AGN::IAShader*> skyboxShaders;
 	skyboxShaders.push_back(&m_resourceManager->createShader(g_shader_skybox_vert, EAShaderType::VertexShader));
 	skyboxShaders.push_back(&m_resourceManager->createShader(g_shader_skybox_pix, EAShaderType::PixelShader));
@@ -177,28 +177,42 @@ void AGN::AAplication::createDrawQueue()
 		data.clearColor = 0x00FF00;
 	}
 
-	// fill commander with skybox draw entity commands
 	const std::vector<AEntity*> skyboxEntities = m_sceneManager->getSkyboxEntities();
 	for (unsigned int i = 0; i < skyboxEntities.size(); i++)
 	{
 		AEntity& entity = *skyboxEntities[i];
 
-		// create sortkey
-		uint8_t renderPhase = (uint8_t)RenderPhase::FullscreenViewport;
-		uint8_t layer = (uint8_t)RenderLayer::Skybox;
-		uint8_t translucencyType = 0;				// TODO:
-		uint8_t cmd = 0;							// TODO: ?
-		uint16_t shaderPipelineId = m_skyboxShaderPipeline->getAId();
-		uint32_t meshId = entity.getMesh()->getAId();
-		uint16_t materialId = entity.getMaterial()->getAId();
-		uint32_t depth = 0;							// TODO:
+		// calculate model matrix
+		mat4 translation = glm::translate(entity.getPosition());
+		mat4 rotation = toMat4(entity.getRotation());
+		mat4 scaling = scale(entity.getScale());
+		mat4 modelMatrix = translation * rotation * scaling;
 
-		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, shaderPipelineId, meshId, materialId, depth);
+		for (unsigned int j = 0; j < entity.getMeshes().size(); j++)
+		{
+			IAMesh* mesh = entity.getMeshes()[j];
+			AMaterial* material = mesh->getMaterial();
 
-		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::DrawEntity, sortkey);
-		ADrawEntityData& data = drawCommand.data.entityData;
-		data.entity = &entity;
-		data.shaderPipeline = m_skyboxShaderPipeline;
+			// create sortkey
+			uint8_t renderPhase = (uint8_t)RenderPhase::FullscreenViewport;
+			uint8_t layer = (uint8_t)RenderLayer::Skybox;
+			uint8_t translucencyType = 0;				// TODO:
+			uint8_t cmd = 0;							// TODO: ?
+			uint16_t shaderPipelineId = m_skyboxShaderPipeline->getAId();
+			uint32_t meshId = mesh->getAId();
+			uint16_t materialId = material->getAId();
+			uint32_t depth = 0;							// TODO:
+			uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, shaderPipelineId, meshId, materialId, depth);
+
+			ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::DrawEntity, sortkey);
+			ADrawEntityData& data = drawCommand.data.entityData;
+			data.shaderPipeline = m_skyboxShaderPipeline;
+			data.material = material;
+			data.mesh = mesh;
+
+			// store matrix as float array (for the union data type to work)
+			memcpy(&data.modelMatrixArray[0], glm::value_ptr(modelMatrix), sizeof(data.modelMatrixArray));
+		}
 	}
 
 	// TODO: make these static draw commands
@@ -218,7 +232,7 @@ void AGN::AAplication::createDrawQueue()
 		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::ClearBuffer, sortkey);
 		AClearBufferData& data = drawCommand.data.clearcolorData;
 		data.buffersToClear = GL_DEPTH_BUFFER_BIT; // TODO: OpenGL specific? shouldnt be here
-		data.clearColor = 0x00FF00;
+		data.clearColor = 0x000000;
 	}
 
 	// fill commander with entity draw entity commands
@@ -227,22 +241,37 @@ void AGN::AAplication::createDrawQueue()
 	{
 		AEntity& entity = *entities[i];
 
-		// create sortkey
-		uint8_t renderPhase = (uint8_t)RenderPhase::FullscreenViewport;
-		uint8_t layer = (uint8_t)RenderLayer::Entities;
-		uint8_t translucencyType = 0;				// TODO:
-		uint8_t cmd = 0;							// TODO: ?
-		uint16_t shaderPipelineId = m_meshShaderPipeline->getAId();
-		uint32_t meshId = entity.getMesh()->getAId();
-		uint16_t materialId = entity.getMaterial()->getAId();
-		uint32_t depth = 0;							// TODO:
+		// calculate model matrix
+		mat4 translation = glm::translate(entity.getPosition());
+		mat4 rotation = toMat4(entity.getRotation());
+		mat4 scaling = scale(entity.getScale());
+		mat4 modelMatrix = translation * rotation * scaling;
 
-		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, shaderPipelineId, meshId, materialId, depth);
+		for (unsigned int j = 0; j < entity.getMeshes().size(); j++)
+		{
+			IAMesh* mesh = entity.getMeshes()[j];
+			AMaterial* material = mesh->getMaterial();
 
-		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::DrawEntity, sortkey);
-		ADrawEntityData& data = drawCommand.data.entityData;
-		data.entity = &entity;
-		data.shaderPipeline = m_meshShaderPipeline;
+			// create sortkey
+			uint8_t renderPhase = (uint8_t)RenderPhase::FullscreenViewport;
+			uint8_t layer = (uint8_t)RenderLayer::Entities;
+			uint8_t translucencyType = 0;				// TODO:
+			uint8_t cmd = 0;							// TODO: ?
+			uint16_t shaderPipelineId = m_meshShaderPipeline->getAId();
+			uint32_t meshId = mesh->getAId();
+			uint16_t materialId = material->getAId();
+			uint32_t depth = 0;							// TODO:
+			uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, shaderPipelineId, meshId, materialId, depth);
+
+			ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::DrawEntity, sortkey);
+			ADrawEntityData& data = drawCommand.data.entityData;
+			data.shaderPipeline = m_meshShaderPipeline;
+			data.material = material;
+			data.mesh = mesh;
+
+			// store matrix as float array (for the union data type to work)
+			memcpy(&data.modelMatrixArray[0], glm::value_ptr(modelMatrix), sizeof(data.modelMatrixArray));
+		}
 	}
 }
 

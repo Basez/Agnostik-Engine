@@ -10,6 +10,8 @@ namespace AGN
 		virtual ~IAMesh() {}
 		virtual std::string getRelativePath() = 0;
 		virtual uint16_t getAId() = 0;
+		virtual class AMaterial* getMaterial() = 0;
+		virtual void setMaterial(class AMaterial* a_material) = 0;
 	};
 
 	struct AMeshData

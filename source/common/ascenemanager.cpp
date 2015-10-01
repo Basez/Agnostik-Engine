@@ -185,7 +185,10 @@ void AGN::ASceneManager::loadSponza()
 {
 	AResourceManager& resourceManager = g_application.getResourceManager();
 
-	std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("sponza/sponza.obj");
+	// load meshes
+	std::vector<IAMesh*> skyboxMeshes = resourceManager.loadMeshCollection("skybox_old.obj");
+	//std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("sponza/sponza.obj");
+	std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("triangles.obj");
 
 	// create materials
 	AMaterialData testMatData;
@@ -193,8 +196,22 @@ void AGN::ASceneManager::loadSponza()
 	testMatData.diffuseTexture = &resourceManager.loadTexture("test.png", EATextureType::TEXTURE_2D);
 	AMaterial& testMaterial = resourceManager.createMaterial(testMatData);
 
+	AMaterialData skyboxMatData;
+	skyboxMatData.name = "skybox_material";
+	skyboxMatData.diffuseTexture = &resourceManager.loadTexture("skybox/full.jpg", EATextureType::TEXTURE_2D);
+	AMaterial& skyboxMaterial = resourceManager.createMaterial(skyboxMatData);
+	skyboxMeshes[0]->setMaterial(&skyboxMaterial);
+
+
+	// create entities
 	AEntity* sponzaEntity = new AEntity();
 	sponzaEntity->setMeshes(sponzaMeshes);
 	sponzaEntity->setPosition(vec3(0, 0, 0));
 	m_entities.push_back(sponzaEntity);
+
+	AEntity* skyboxEntity = new AEntity();
+	skyboxEntity->setMeshes(skyboxMeshes);
+	skyboxEntity->setPosition(vec3(0, 0, 0));
+	m_skyboxEntities.push_back(skyboxEntity);
+
 }

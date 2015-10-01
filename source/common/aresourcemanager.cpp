@@ -8,6 +8,7 @@
 #include "iamesh.hpp"
 #include "amaterial.hpp"
 #include "iashader.hpp"
+#include "aosutils.hpp"
 
 // assimp
 #include <assimp/Importer.hpp>
@@ -28,10 +29,21 @@ AGN::AResourceManager::AResourceManager(class IADevice& a_device)
 	, m_textureIdCount(0)
 	, m_materialIdCount(0)
 	, m_shaderPipelineIdCount(0)
+	, m_defaultMaterial(nullptr)
 {
 
 }
 
+void AGN::AResourceManager::loadDefaults()
+{
+	// create default material
+	std::string defaultMaterialTexturePath = g_configManager.getConfigProperty("default_material");
+
+	AMaterialData defaultMaterialData;
+	defaultMaterialData.name = "DefaultMaterial";
+	defaultMaterialData.diffuseTexture = &loadTexture(defaultMaterialTexturePath.c_str(), EATextureType::TEXTURE_2D);
+	m_defaultMaterial = &createMaterial(defaultMaterialData);
+}
 
 AGN::IAMesh& AGN::AResourceManager::loadMesh(std::string a_relativePath, uint32_t additional_assimp_flags)
 {
@@ -144,11 +156,14 @@ AGN::IAMesh& AGN::AResourceManager::loadMesh(std::string a_relativePath, uint32_
 class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::string a_relativePath, uint32_t additional_assimp_flags)
 {
 	unsigned int flags = additional_assimp_flags | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenNormals;
-
+	
 	//if (!a_rightHandCoordinates)
 	//{
 	//	flags |= aiProcess_FlipWindingOrder;
 	//}
+
+	flags |= aiProcess_OptimizeMeshes;
+	flags |= aiProcess_OptimizeGraph;
 
 	// get full path
 	string fullPath = g_configManager.getConfigProperty("path_models").append(a_relativePath);
@@ -178,7 +193,9 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 		assimpMaterial->Get(AI_MATKEY_NAME, materialName);
 		materialData[i].name = materialName.C_Str();
 
-		// TEMP
+		// skip default materials (assigned by assimp whenever an obj doesnt have a material attached to an obj)
+		if (strcmp(materialName.C_Str(), "DefaultMaterial") == 0) continue;
+
 		int diffuseCount = assimpMaterial->GetTextureCount(aiTextureType_DIFFUSE);
 		int normalCount = assimpMaterial->GetTextureCount(aiTextureType_NORMALS);
 		int specularCount = assimpMaterial->GetTextureCount(aiTextureType_SPECULAR);
@@ -186,6 +203,16 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 		if (diffuseCount > 1 || normalCount > 1 || specularCount > 1)
 		{
 			g_log.warning("more than singular texture detected?");
+		}
+
+		if (diffuseCount < 1)
+		{
+			g_log.warning("Material without diffuse texture detected! %s", materialName.C_Str());
+
+			// set to default material
+			// TODO: support diffuseless materials
+			materialData[i].name = "DefaultMaterial";
+			continue;
 		}
 
 		// load textures
@@ -214,7 +241,15 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 	for (int i = 0; i < scene->mNumMaterials; i++)
 	{
 		// create materials
-		materials.push_back(&createMaterial(materialData[i]));
+		if (materialData[i].name.compare("DefaultMaterial") == 0)
+		{
+			// already loaded default material
+			materials.push_back(m_defaultMaterial);
+		}
+		else
+		{
+			materials.push_back(&createMaterial(materialData[i]));
+		}
 	}
 
 	// create objects that defines everything the models consists of
@@ -250,10 +285,8 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 
 		vertexOffset += loadedMesh->mNumVertices;
 
-
-		// TODO: add loaded materials to meshdata
+		// add loaded materials to meshdata
 		meshData[i].material = materials[loadedMesh->mMaterialIndex];
-		//loadedMesh->mMaterialIndex
 	}
 
 	std::vector<AGN::IAMesh*> meshes;
@@ -261,7 +294,7 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 
 	for (int i = 0; i < scene->mNumMeshes; i++)
 	{
-		IAMesh* newMesh = m_device.createMesh(m_meshIdCount++, meshData);
+		IAMesh* newMesh = m_device.createMesh(m_meshIdCount++, &meshData[i]);
 		meshes.push_back(newMesh);
 	}
 	

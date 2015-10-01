@@ -13,6 +13,8 @@
 #include "aentity.hpp"
 #include "ashaderpipeline_gl.hpp"
 
+#include <glm/gtc/type_ptr.hpp>
+
 using namespace glm;
 
 static const vec4 g_white(1);
@@ -81,10 +83,10 @@ void AGN::ARendererGL::render(AGN::ADrawCommander& a_drawCommander)
 
 void AGN::ARendererGL::drawEntity(ADrawCommand* a_command)
 {
-	AEntity* entity = a_command->data.entityData.entity;
-	AMeshGL* mesh = dynamic_cast<AMeshGL*>(entity->getMesh());
-	AMaterial* material = dynamic_cast<AMaterial*>(entity->getMaterial());
-	AShaderPipelineGL* shaderPipeline = dynamic_cast<AShaderPipelineGL*>(a_command->data.entityData.shaderPipeline);
+	ADrawEntityData& data = a_command->data.entityData;
+	AMeshGL* mesh = dynamic_cast<AMeshGL*>(data.mesh);
+	AMaterial* material = dynamic_cast<AMaterial*>(data.material);
+	AShaderPipelineGL* shaderPipeline = dynamic_cast<AShaderPipelineGL*>(data.shaderPipeline);
 	
 	// different shader? 
 	if (m_boundShaderPipeline == nullptr || m_boundShaderPipeline->getAId() != shaderPipeline->getAId())
@@ -127,14 +129,9 @@ void AGN::ARendererGL::drawEntity(ADrawCommand* a_command)
 	// Set object individual uniforms
 	// This will be executed for every entity that is rendered
 	{
-		// calculate model matrix
-		mat4 translation = glm::translate(entity->getPosition());
-		mat4 rotation = toMat4(entity->getRotation());
-		mat4 scaling = scale(entity->getScale());
-		mat4 modelMatrix = translation * rotation * scaling;
-
+		// retrieve model matrix from array in struct
+		glm::mat4 modelMatrix = glm::make_mat4(data.modelMatrixArray);
 		mat4 mvp = m_vp * modelMatrix;
-
 
 		// set entity specific data
 		glUniformMatrix4fv(shaderPipeline->getUniformIdByName("uModelViewProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(mvp));
