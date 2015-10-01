@@ -11,10 +11,11 @@ uniform LightSettings
 	uniform vec4 uLightAmbient; // Global ambient contribution.
 };
 
-uniform MaterialSettings
+uniform MaterialProperties
 {
-	uniform vec4 uMaterialEmissive;
 	uniform vec4 uMaterialDiffuse;
+	uniform vec4 uMaterialAmbient;
+	
 };
 
 uniform sampler2D textureSampler0;	// Diffuse
@@ -28,7 +29,7 @@ void main()
 	float NdotL = max( dot( N, uLightDirection ), 0 );
 	vec4 Diffuse =  NdotL * uLightColor * uMaterialDiffuse;
 	 
-	vec4 lighting = Diffuse + uMaterialEmissive + uLightAmbient;
+	vec4 lighting = Diffuse + uMaterialAmbient + uLightAmbient;
 	vec4 finalColor = lighting * texture( textureSampler0, v2f_texcoord );
 	
 	out_color = finalColor;

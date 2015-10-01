@@ -95,16 +95,26 @@ void AGN::AAplication::updateMeshShaderProperties(float a_deltaTime)
 
 	static const vec4 lightDirectionNorm(normalize(vec4(1, 1, 1, 1)));
 
-	static float colorAmount = 0;
-	static int direction = 1;
-	colorAmount += a_deltaTime * direction;
+	static vec3 colorChange = vec3(0.1f, 0.3f, 0.5f);
+	static int rDir = 1;
+	static int gDir = -1;
+	static int bDir = 1;
+	colorChange.r += a_deltaTime * rDir * 0.2f;
+	colorChange.g += a_deltaTime * gDir * 0.2f;
+	colorChange.b += a_deltaTime * bDir * 0.2f;
 
-	if (direction == 1 && colorAmount > 1.0f) direction = -1;
-	if (direction == -1 && colorAmount < 0.0f) direction = 1;
+	if (rDir == 1 && colorChange.r > 0.6f) rDir = -1;
+	if (rDir == -1 && colorChange.r < 0.0f) rDir = 1; 
 
-	float lightAmbient[] = { colorAmount, 0.2f, 0.2f, 0.2f };
-	float lightColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	if (gDir == 1 && colorChange.g > 0.6f) gDir = -1; 
+	if (gDir == -1 && colorChange.g < 0.0f) gDir = 1;
+
+	if (bDir == 1 && colorChange.b > 0.6f) bDir = -1; 
+	if (bDir == -1 && colorChange.b < 0.0f) bDir = 1;
+
 	float lightDirection[] = { lightDirectionNorm[0], lightDirectionNorm[1], lightDirectionNorm[2], lightDirectionNorm[3] };
+	float lightColor[] = { 0.5f, 0.5f, 0.5f, 0.0f };
+	float lightAmbient[] = { colorChange.r, colorChange.g, colorChange.b, 0.0f };
 
 	// TODO: get buffer offset
 	memcpy(buffer + 0, lightDirection, 4 * sizeof(float));

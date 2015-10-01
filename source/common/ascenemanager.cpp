@@ -14,8 +14,6 @@
 
 #include <assimp/postprocess.h>
 
-
-
 using namespace glm;
 
 AGN::ASceneManager::ASceneManager()
@@ -188,8 +186,8 @@ void AGN::ASceneManager::loadSponza()
 	AResourceManager& resourceManager = g_application.getResourceManager();
 
 	// load meshes
-	//std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("sponza/sponza.obj");
-	std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("sibenik/sibenik.obj");
+	std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("sponza/sponza.obj");
+	//std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("sibenik/sibenik.obj");
 	
 	//std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("triangles.obj");
 	std::vector<IAMesh*> skyboxMeshes = resourceManager.loadMeshCollection("skybox_old.obj");
@@ -206,7 +204,6 @@ void AGN::ASceneManager::loadSponza()
 	AMaterial& skyboxMaterial = resourceManager.createMaterial(skyboxMatData);
 	skyboxMeshes[0]->setMaterial(&skyboxMaterial);
 
-
 	// create entities
 	AEntity* sponzaEntity = new AEntity();
 	sponzaEntity->setMeshes(sponzaMeshes);
@@ -217,5 +214,4 @@ void AGN::ASceneManager::loadSponza()
 	skyboxEntity->setMeshes(skyboxMeshes);
 	skyboxEntity->setPosition(vec3(0, 0, 0));
 	m_skyboxEntities.push_back(skyboxEntity);
-
 }

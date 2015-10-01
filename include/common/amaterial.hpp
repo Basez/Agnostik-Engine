@@ -34,12 +34,23 @@ namespace AGN
 			, diffuseTexture(nullptr)
 			, normalTexture(nullptr)
 			, specularTexture(nullptr)
+			, diffuseColor(glm::vec3(1.0f))
+			, specularColor(glm::vec3(0.0f))
+			, ambientColor(glm::vec3(0.0f))
+			, transparency(1.0f)
 		{}
 
-		std::string name; // required
-		class IATexture* diffuseTexture; // required
+		std::string name;
+		class IATexture* diffuseTexture;
 		class IATexture* normalTexture;
 		class IATexture* specularTexture;
+
+		// material properties
+		glm::vec3 diffuseColor;
+		glm::vec3 specularColor;
+		glm::vec3 ambientColor;
+		float transparency;
+
 	};
 
 	

@@ -79,7 +79,6 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 	for (unsigned int i = 0; i < scene->mNumMaterials; i++)
 	{
 		const aiMaterial* assimpMaterial = scene->mMaterials[i];
-		int texIndex = 0;
 		aiString relativePath;  // filename
 		std::string texturesFolder = g_configManager.getConfigProperty("path_textures");
 
@@ -106,26 +105,37 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 			// set to default material
 			// TODO: support diffuseless materials
 			materialData[i].name = "DefaultMaterial";
-			continue;
 		}
 
 		// load textures
-		if (assimpMaterial->GetTexture(aiTextureType_DIFFUSE, texIndex, &relativePath) == AI_SUCCESS)
+		if (assimpMaterial->GetTexture(aiTextureType_DIFFUSE, NULL, &relativePath) == AI_SUCCESS)
 		{
 			materialData[i].diffuseTexture = &loadTexture(relativePath.C_Str(), EATextureType::TEXTURE_2D);
 		}
 
-		if (assimpMaterial->GetTexture(aiTextureType_NORMALS, texIndex, &relativePath) == AI_SUCCESS)
+		if (assimpMaterial->GetTexture(aiTextureType_NORMALS, NULL, &relativePath) == AI_SUCCESS)
 		{
 			materialData[i].normalTexture = &loadTexture(relativePath.C_Str(), EATextureType::TEXTURE_2D);
 		}
 
-		if (assimpMaterial->GetTexture(aiTextureType_SPECULAR, texIndex, &relativePath) == AI_SUCCESS)
+		if (assimpMaterial->GetTexture(aiTextureType_SPECULAR, NULL, &relativePath) == AI_SUCCESS)
 		{
 			materialData[i].specularTexture = &loadTexture(relativePath.C_Str(), EATextureType::TEXTURE_2D);
 		}
 
-		// TODO: Load properties!
+		// color  properties
+		aiColor3D diffuseColor(0.f, 0.f, 0.f);
+		aiColor3D specularColor(0.f, 0.f, 0.f);
+		aiColor3D ambientColor(0.f, 0.f, 0.f);
+		assimpMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor);
+		assimpMaterial->Get(AI_MATKEY_COLOR_SPECULAR, specularColor);
+		assimpMaterial->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor);
+		materialData->diffuseColor = vec3(diffuseColor.r, diffuseColor.g, diffuseColor.b);
+		materialData->specularColor = vec3(specularColor.r, specularColor.g, specularColor.b);
+		materialData->ambientColor = vec3(ambientColor.r, ambientColor.g, ambientColor.b);
+
+		// misc properties
+		assimpMaterial->Get(AI_MATKEY_OPACITY, materialData->transparency);
 	}
 
 	// load actual materials
@@ -166,8 +176,8 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 
 			newMeshData.positions.push_back(vec3(pPos->x, pPos->y, pPos->z));
 			newMeshData.normals.push_back(vec3(pNormal->x, pNormal->y, pNormal->z));
-			//m_tagents.push_back(vec3(pTangents->x, pTangents->y, pTangents->z));
-			//m_bitangent.push_back(vec3(pBitangents->x, pBitangents->y, pBitangents->z));
+			//newMeshData.tangents.push_back(vec3(pTangents->x, pTangents->y, pTangents->z));
+			//newMeshData.bitangents.push_back(vec3(pBitangents->x, pBitangents->y, pBitangents->z));
 			newMeshData.textureCoords.push_back(vec2(pTexCoord->x, pTexCoord->y));
 		}
 

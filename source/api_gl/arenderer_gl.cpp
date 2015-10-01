@@ -107,13 +107,15 @@ void AGN::ARendererGL::drawEntity(ADrawCommand* a_command)
 		ATextureGL* texturesToBind[1] = { diffuse };
 		bindTexturesToShader(shaderPipeline->getGlProgramId(), 1, texturesToBind);
 
-		if (shaderPipeline->hasUniformBuffer("MaterialSettings"))
+		if (shaderPipeline->hasUniformBuffer("MaterialProperties"))
 		{
+			// TODO: Retrieve material properties!
+			
 			// TODO: get buffer offset, this is hardcoded
 			unsigned char buffer[32];
-			memcpy(buffer + 0, glm::value_ptr(g_black), 4 * sizeof(float)); // emissive
-			memcpy(buffer + 16, glm::value_ptr(g_white), 4 * sizeof(float)); // diffuse factor
-			shaderPipeline->setUniformBufferData("MaterialSettings", &buffer, 32);
+			memcpy(buffer + 0, glm::value_ptr(g_white), 4 * sizeof(float)); // material diffuse
+			memcpy(buffer + 16, glm::value_ptr(g_black), 4 * sizeof(float)); // material ambient
+			shaderPipeline->setUniformBufferData("MaterialProperties", &buffer, 32);
 		}
 
 		m_boundMaterial = material;
