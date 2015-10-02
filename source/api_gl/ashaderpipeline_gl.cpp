@@ -116,6 +116,10 @@ void AGN::AShaderPipelineGL::setUniformBufferData(const char* a_name, void* a_da
 	AUniformConstantBufferGL* uniformConstantBuffer = getUniformConstantBufferByName(a_name);
 
 	memcpy(uniformConstantBuffer->buffer, a_data, a_dataSize);
+
+	// bind & upload buffer
+	glBindBuffer(GL_UNIFORM_BUFFER, uniformConstantBuffer->uboHandle);
+	glBufferData(GL_UNIFORM_BUFFER, uniformConstantBuffer->size, uniformConstantBuffer->buffer, GL_DYNAMIC_DRAW);
 }
 
 bool AGN::AShaderPipelineGL::hasUniformBuffer(const char* a_name)

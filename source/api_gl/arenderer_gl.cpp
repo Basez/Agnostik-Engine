@@ -19,7 +19,6 @@ using namespace glm;
 
 static const vec4 g_white(1);
 static const vec4 g_black(0);
-static const vec4 g_ambient(0.2f, 0.2f, 0.2f, 1.0f);
 
 AGN::ARendererGL::ARendererGL()
 	: m_currentCamera(nullptr)

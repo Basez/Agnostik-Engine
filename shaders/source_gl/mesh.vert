@@ -1,5 +1,5 @@
 // mesh.vert
-#version 330 core
+#version 400 core
  
 layout(location=0) in vec3 in_position;				// mesh specific
 layout(location=2) in vec3 in_normal;				// mesh specific

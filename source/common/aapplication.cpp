@@ -95,29 +95,18 @@ void AGN::AAplication::updateMeshShaderProperties(float a_deltaTime)
 	// TODO: Abstract this, currently very much hardcoded
 	unsigned char buffer[48];
 
-	static const vec4 lightDirectionNorm(normalize(vec4(1, 1, 1, 1)));
+	static float rotationY = 0.0f;
+	rotationY += a_deltaTime * 45.0f;
+	
+	const vec3 lightDirectionNorm = glm::rotate(normalize(vec3(0.5f, 1.0f, 0.5f)), glm::radians(rotationY), vec3(0, 1, 0));
 
-	static vec3 colorChange = vec3(0.1f, 0.3f, 0.5f);
-	static ivec3 dir = ivec3(1, -1, 1);
+	//g_log.debug("lightDirectionNorm: x:%f - y:%f - z:%f", lightDirectionNorm.x, lightDirectionNorm.y, lightDirectionNorm.z);
 
-	colorChange.r += a_deltaTime * dir.r * 0.2f;
-	colorChange.g += a_deltaTime * dir.g * 0.2f;
-	colorChange.b += a_deltaTime * dir.b * 0.2f;
+	float lightDirection[4] = { lightDirectionNorm.x, lightDirectionNorm.y, lightDirectionNorm.z, 0.0f };
+	float lightColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float lightAmbient[4] = { 0.2f, 0.2f, 0.2f, 0.2f };
 
-	if (dir.r == 1 && colorChange.r > 0.6f) dir.r = -1;
-	if (dir.r == -1 && colorChange.r < 0.0f) dir.r = 1;
-
-	if (dir.g == 1 && colorChange.g > 0.6f) dir.g = -1;
-	if (dir.g == -1 && colorChange.g < 0.0f) dir.g = 1;
-
-	if (dir.b == 1 && colorChange.b > 0.6f) dir.b = -1;
-	if (dir.b == -1 && colorChange.b < 0.0f) dir.b = 1;
-
-	float lightDirection[] = { lightDirectionNorm[0], lightDirectionNorm[1], lightDirectionNorm[2], lightDirectionNorm[3] };
-	float lightColor[] = { 0.5f, 0.5f, 0.5f, 0.0f };
-	float lightAmbient[] = { colorChange.r, colorChange.g, colorChange.b, 0.0f };
-
-	// TODO: get buffer offset
+	// TODO: get buffer offset?
 	memcpy(buffer + 0, lightDirection, 4 * sizeof(float));
 	memcpy(buffer + 16, lightColor, 4 * sizeof(float));
 	memcpy(buffer + 32, lightAmbient, 4 * sizeof(float));

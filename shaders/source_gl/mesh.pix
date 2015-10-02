@@ -1,21 +1,20 @@
 // mesh.pix
-#version 330 core
+#version 400 core
  
 in vec4 v2f_normalW; 	// Surface normal in world space.
 in vec2 v2f_texcoord;
  
-uniform LightSettings
+layout(binding = 0) uniform LightSettings
 {
 	uniform vec4 uLightDirection; // Light's direction in world space.
 	uniform vec4 uLightColor; // Light's diffuse and specular contribution.
 	uniform vec4 uLightAmbient; // Global ambient contribution.
 };
 
-uniform MaterialProperties
+layout(binding = 1) uniform MaterialProperties
 {
 	uniform vec4 uMaterialDiffuse;
 	uniform vec4 uMaterialAmbient;
-	
 };
 
 uniform sampler2D textureSampler0;	// Diffuse
