@@ -10,7 +10,7 @@ using namespace AGN;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	g_log.init(EALogTimeType::RunningTime, (int)EALoggerOutputType::Window | (int)EALoggerOutputType::OutputDebug);
+	g_log.init(EALogTimeType::RunningTime, (uint8_t)EALoggerOutputType::Window | (uint8_t)EALoggerOutputType::OutputDebug);
 
 	int* testIntPointer = nullptr;
 	g_log.debug("pointer size: %i", sizeof(testIntPointer));

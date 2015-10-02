@@ -35,8 +35,6 @@ namespace AGN
 	// TODO: now it is simply accessing the data irregularly
 	struct ADrawEntityData
 	{
-		// TODO: remove entity reference, we just need position right?
-		//class AEntity* entity;
 		class IAShaderPipeline* shaderPipeline;
 		class IAMesh* mesh;
 		class AMaterial* material;

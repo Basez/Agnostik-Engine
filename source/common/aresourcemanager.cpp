@@ -34,6 +34,36 @@ AGN::AResourceManager::AResourceManager(class IADevice& a_device)
 
 }
 
+AGN::AResourceManager::~AResourceManager()
+{
+	// TODO: Delete Meshes
+	while (m_materials.size() > 0)
+	{
+		delete m_materials[0];
+		m_materials.erase(m_materials.begin());
+	}
+	
+	while (m_loadedTextures.size() > 0)
+	{
+		delete m_loadedTextures[0];
+		m_loadedTextures.erase(m_loadedTextures.begin());
+	}
+	
+	while (m_shaderpipelines.size() > 0)
+	{
+		delete m_shaderpipelines[0];
+		m_shaderpipelines.erase(m_shaderpipelines.begin());
+	}
+
+	while (m_shaders.size() > 0)
+	{
+		delete m_shaders[0];
+		m_shaders.erase(m_shaders.begin());
+	}
+
+
+}
+
 void AGN::AResourceManager::loadDefaults()
 {
 	// create default material
@@ -43,21 +73,33 @@ void AGN::AResourceManager::loadDefaults()
 	defaultMaterialData.name = "DefaultMaterial";
 	defaultMaterialData.diffuseTexture = &loadTexture(defaultMaterialTexturePath.c_str(), EATextureType::TEXTURE_2D);
 	m_defaultMaterial = &createMaterial(defaultMaterialData);
+
+	// TODO:
+	//loadMaterial("default.mtl");
 }
+
+/*
+std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMaterial(std::string a_relativePath)
+{
+	string fullPath = g_configManager.getConfigProperty("path_materials").append(a_relativePath);
+}*/
 
 class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::string a_relativePath, uint32_t additional_assimp_flags)
 {
-	unsigned int flags = additional_assimp_flags | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenNormals;
-	//unsigned int flags = additional_assimp_flags | aiProcess_GenNormals;
-	
+	unsigned int flags = additional_assimp_flags;
+	flags |= aiProcess_SortByPType;
+	flags |= aiProcess_JoinIdenticalVertices;	// Joins identical vertex data sets within all meshes
+	flags |= aiProcess_Triangulate;				// triangulate the mesh
+	flags |= aiProcess_CalcTangentSpace;		// calculate tangents & bitangents
+	flags |= aiProcess_GenNormals;				// calculate normals
+	flags |= aiProcess_OptimizeMeshes;			// reduce the number of meshes, thus number of drawcalls
+	flags |= aiProcess_OptimizeGraph;			// optimize the scene hierarchy, combine groups etc
+	flags |= aiProcess_FlipUVs;					// Flip UV's // TODO: dependent on GFX API?
+
 	//if (!a_rightHandCoordinates)
 	//{
 	//	flags |= aiProcess_FlipWindingOrder;
 	//}
-
-	flags |= aiProcess_OptimizeMeshes;
-	flags |= aiProcess_OptimizeGraph;
-	flags |= aiProcess_FlipUVs;
 
 	// get full path
 	string fullPath = g_configManager.getConfigProperty("path_models").append(a_relativePath);
@@ -70,7 +112,6 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 	{
 		g_log.error("Error loading model! '%s' the issue: %s", a_relativePath.c_str(), importer.GetErrorString());
 	}
-
 
 	// create objects that defines everything the models consists of
 	AMaterialData* materialData = new AMaterialData[scene->mNumMaterials];
@@ -142,7 +183,7 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 	std::vector<AGN::AMaterial*> materials;
 	materials.reserve(scene->mNumMaterials);
 
-	for (int i = 0; i < scene->mNumMaterials; i++)
+	for (unsigned int i = 0; i < scene->mNumMaterials; i++)
 	{
 		// create materials
 		if (materialData[i].name.compare("DefaultMaterial") == 0)
@@ -165,6 +206,8 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 		const aiMesh& loadedMesh = *scene->mMeshes[i];
 		AMeshData& newMeshData = meshData[i];
 		newMeshData.relativePath = a_relativePath;
+
+
 
 		for (unsigned int j = 0; j < loadedMesh.mNumVertices; j++)
 		{
@@ -196,7 +239,7 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 	std::vector<AGN::IAMesh*> meshes;
 	meshes.reserve(scene->mNumMeshes);
 
-	for (int i = 0; i < scene->mNumMeshes; i++)
+	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 	{
 		IAMesh* newMesh = m_device.createMesh(m_meshIdCount++, &meshData[i]);
 		meshes.push_back(newMesh);

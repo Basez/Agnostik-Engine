@@ -33,6 +33,11 @@ namespace AGN
 			, buffer(nullptr)
 			, flags(0) {}
 			
+		~ATextureData()
+		{
+			if (buffer != nullptr) delete buffer;
+		}
+
 		std::string relativePath;
 		EATextureType type; 
 		int width;

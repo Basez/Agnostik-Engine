@@ -8,12 +8,14 @@ namespace AGN
 	{
 	public:
 		ATextureGL(const uint16_t a_id, ATextureData* a_textureData, GLuint a_glId);
-		std::string getRelativePath();
+		~ATextureGL() override;
 
+		std::string getRelativePath();
 		static GLenum getGlTypeByTextureType(EATextureType a_type);
 		void pullBuffer();
 		void pushBuffer();
 		//void readProperties();
+
 		uint16_t getId() override { return m_id; }
 		GLuint getGlId() { return m_glId; }
 		GLenum getGlType() { return m_glType; }

@@ -43,11 +43,6 @@ void AGN::ALoggerWin::createConsole()
 	freopen_s(&g_pCout, "conout$", "w", stdout);
 	freopen_s(&g_pCout, "conout$", "w", stderr);
 
-	// connect stdin/out/err
-	//freopen("conin$", "r", stdin);
-	//freopen("conout$", "w", stdout);
-	//freopen("conout$", "w", stderr);
-
 	g_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 }
 

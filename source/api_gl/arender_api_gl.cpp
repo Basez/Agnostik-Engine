@@ -13,6 +13,8 @@ AGN::ARenderAPIGL::ARenderAPIGL()
 	, m_device(nullptr)
 	, m_renderer(nullptr)
 {
+	m_device = new ADeviceGL();
+	m_renderer = new ARendererGL();
 }
 
 void AGN::ARenderAPIGL::init()
@@ -30,12 +32,7 @@ void AGN::ARenderAPIGL::init()
 	glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
 	g_log.info("GL extensions count: %i", numExtensions);
 
-	// create device; class that initializes resources
-	m_device = new ADeviceGL();
 	m_device->init();
-
-	//  create renderer (class that parses the renderqueue and renders them)
-	m_renderer = new ARendererGL();
 	m_renderer->init();
 
 	enableVSync(g_configManager.getConfigPropertyAsBool("vsync"));

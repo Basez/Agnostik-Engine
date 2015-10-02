@@ -88,7 +88,7 @@ std::string AGN::AOSUtils::findFile(std::string a_file, std::string a_startFolde
 
 	if ((dir = opendir(a_startFolder.c_str())) != NULL)
 	{
-		/* print all the files and directories within directory */
+		// print all the files and directories within directory
 		while ((ent = readdir(dir)) != NULL)
 		{
 			// skip windows .. folders (what are these??)
@@ -107,14 +107,14 @@ std::string AGN::AOSUtils::findFile(std::string a_file, std::string a_startFolde
 					string fileABitDeeper = AGN::AOSUtils::findFile(a_file.c_str(), folderFullPath.c_str(), a_deepLevel - 1, 0); // from this point can only go deeper (not up)
 					if (fileABitDeeper.size() > 0)
 					{
-						// FOUND IT IN A DEEPER FOLDER
+						// Found file in a deeper folder
 						return fileABitDeeper;
 					}
 				}
 			}
 			else if (strcmp(ent->d_name, a_file.c_str()) == 0)
 			{
-				//Log.debug("FOUND THE FILE");
+				//Log.debug("Found the file");
 				std::string foundFile = ent->d_name;
 				closedir(dir);
 
@@ -123,7 +123,7 @@ std::string AGN::AOSUtils::findFile(std::string a_file, std::string a_startFolde
 			}
 			else
 			{
-				//Log.debug("nope: %s", ent->d_name);
+				//Log.debug("not the file: %s", ent->d_name);
 			}
 		}
 		closedir(dir);
@@ -142,7 +142,7 @@ std::string AGN::AOSUtils::findFile(std::string a_file, std::string a_startFolde
 
 		if (fileAbitUp.size() > 0)
 		{
-			// FOUND IT IN A HIGHER UP FOLDER
+			// found the file in a higher up folder
 			return fileAbitUp;
 		}
 	}

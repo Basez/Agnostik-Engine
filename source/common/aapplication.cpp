@@ -65,7 +65,9 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 
 void AGN::AAplication::cleanup()
 {
-	m_renderAPI = nullptr;
+	delete m_sceneManager;
+	delete m_drawCommander;
+	delete m_resourceManager;
 }
 
 void AGN::AAplication::update()
@@ -96,21 +98,20 @@ void AGN::AAplication::updateMeshShaderProperties(float a_deltaTime)
 	static const vec4 lightDirectionNorm(normalize(vec4(1, 1, 1, 1)));
 
 	static vec3 colorChange = vec3(0.1f, 0.3f, 0.5f);
-	static int rDir = 1;
-	static int gDir = -1;
-	static int bDir = 1;
-	colorChange.r += a_deltaTime * rDir * 0.2f;
-	colorChange.g += a_deltaTime * gDir * 0.2f;
-	colorChange.b += a_deltaTime * bDir * 0.2f;
+	static ivec3 dir = ivec3(1, -1, 1);
 
-	if (rDir == 1 && colorChange.r > 0.6f) rDir = -1;
-	if (rDir == -1 && colorChange.r < 0.0f) rDir = 1; 
+	colorChange.r += a_deltaTime * dir.r * 0.2f;
+	colorChange.g += a_deltaTime * dir.g * 0.2f;
+	colorChange.b += a_deltaTime * dir.b * 0.2f;
 
-	if (gDir == 1 && colorChange.g > 0.6f) gDir = -1; 
-	if (gDir == -1 && colorChange.g < 0.0f) gDir = 1;
+	if (dir.r == 1 && colorChange.r > 0.6f) dir.r = -1;
+	if (dir.r == -1 && colorChange.r < 0.0f) dir.r = 1;
 
-	if (bDir == 1 && colorChange.b > 0.6f) bDir = -1; 
-	if (bDir == -1 && colorChange.b < 0.0f) bDir = 1;
+	if (dir.g == 1 && colorChange.g > 0.6f) dir.g = -1;
+	if (dir.g == -1 && colorChange.g < 0.0f) dir.g = 1;
+
+	if (dir.b == 1 && colorChange.b > 0.6f) dir.b = -1;
+	if (dir.b == -1 && colorChange.b < 0.0f) dir.b = 1;
 
 	float lightDirection[] = { lightDirectionNorm[0], lightDirectionNorm[1], lightDirectionNorm[2], lightDirectionNorm[3] };
 	float lightColor[] = { 0.5f, 0.5f, 0.5f, 0.0f };

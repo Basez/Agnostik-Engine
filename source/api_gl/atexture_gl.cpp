@@ -10,10 +10,12 @@ AGN::ATextureGL::ATextureGL(const uint16_t a_id, ATextureData* a_textureData, GL
 	setTextureParams(a_textureData->flags);
 
 	// upload to gpu
-	if (m_textureData->buffer != nullptr)
-	{
-		pushBuffer();
-	}
+	if (m_textureData->buffer != nullptr) pushBuffer();
+}
+
+AGN::ATextureGL::~ATextureGL()
+{
+	delete m_textureData;
 }
 
 std::string AGN::ATextureGL::getRelativePath()

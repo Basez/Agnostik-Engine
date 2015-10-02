@@ -186,8 +186,8 @@ void AGN::ASceneManager::loadSponza()
 	AResourceManager& resourceManager = g_application.getResourceManager();
 
 	// load meshes
-	std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("sponza/sponza.obj");
-	//std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("sibenik/sibenik.obj");
+	//std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("sponza/sponza.obj");
+	std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("sibenik/sibenik.obj");
 	
 	//std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("triangles.obj");
 	std::vector<IAMesh*> skyboxMeshes = resourceManager.loadMeshCollection("skybox_old.obj");
