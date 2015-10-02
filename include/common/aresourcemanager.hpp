@@ -21,7 +21,7 @@ namespace AGN
 
 		class IAShader& createShader(const char* a_shaderSource, EAShaderType a_shaderType);
 		class IAShaderPipeline& createShaderPipeline(std::vector<class IAShader*> a_shaders);
-		class AMaterial& createMaterial(struct AMaterialData& a_data);
+		class AMaterial& createMaterial(std::string a_name);
 
 	private:
 		std::vector<class IAMesh*> m_loadedMeshes;

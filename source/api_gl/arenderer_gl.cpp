@@ -97,23 +97,28 @@ void AGN::ARendererGL::drawEntity(ADrawCommand* a_command)
 	// different material? 
 	if (m_boundMaterial == nullptr || m_boundMaterial->getAId() != material->getAId())
 	{
-		// TODO: make dynamic?
-		ATextureGL* diffuse = dynamic_cast<ATextureGL*>(material->getDiffuseTexture());
-		ATextureGL* normal = dynamic_cast<ATextureGL*>(material->getNormalTexture());		// TODO:
-		ATextureGL* specular = dynamic_cast<ATextureGL*>(material->getSpecularTexture());	// TODO:
+		ATextureGL* diffuse = dynamic_cast<ATextureGL*>(material->diffuseTexture);
+		ATextureGL* normal = dynamic_cast<ATextureGL*>(material->normalTexture);		// TODO:
+		ATextureGL* specular = dynamic_cast<ATextureGL*>(material->specularTexture);	// TODO:
 
+		// TODO: refactor
 		//GLuint texturesToBind[3] = { m_textureDiffuse, m_textureNormal, m_textureSpecular };
-		ATextureGL* texturesToBind[1] = { diffuse };
-		bindTexturesToShader(shaderPipeline->getGlProgramId(), 1, texturesToBind);
+		if (diffuse != nullptr)
+		{
+			ATextureGL* texturesToBind[1] = { diffuse };
+			bindTexturesToShader(shaderPipeline->getGlProgramId(), 1, texturesToBind);
+		}
+		
 
 		if (shaderPipeline->hasUniformBuffer("MaterialProperties"))
 		{
-			// TODO: Retrieve material properties!
-			
 			// TODO: get buffer offset, this is hardcoded
-			unsigned char buffer[32];
-			memcpy(buffer + 0, glm::value_ptr(g_white), 4 * sizeof(float)); // material diffuse
-			memcpy(buffer + 16, glm::value_ptr(g_black), 4 * sizeof(float)); // material ambient
+			unsigned char buffer[40];
+			memcpy(buffer + 0, glm::value_ptr(material->diffuseColor), sizeof(material->diffuseColor)); // material diffuse
+			memcpy(buffer + 12, glm::value_ptr(material->specularColor), sizeof(material->specularColor)); // material specular
+			memcpy(buffer + 24, glm::value_ptr(material->ambientColor), sizeof(material->ambientColor)); // material ambient
+			memcpy(buffer + 36, &material->transparency, sizeof(material->transparency)); // material transparency // TODO: check if this is correct
+
 			shaderPipeline->setUniformBufferData("MaterialProperties", &buffer, 32);
 		}
 

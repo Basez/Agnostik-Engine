@@ -62,20 +62,14 @@ void AGN::ASceneManager::loadScrambledScene()
 	std::vector<IAMesh*> skyboxMeshCollection = resourceManager.loadMeshCollection("skybox_fixed.obj");
 
 	// create materials
-	AMaterialData testMatData;
-	testMatData.name = "test_material";
-	testMatData.diffuseTexture = &resourceManager.loadTexture("test.png", EATextureType::TEXTURE_2D);
-	AMaterial& testMaterial = resourceManager.createMaterial(testMatData);
+	AMaterial& testMaterial = resourceManager.createMaterial("test_material");
+	testMaterial.diffuseTexture = &resourceManager.loadTexture("test.png", EATextureType::TEXTURE_2D);
 
-	AMaterialData crateMatData;
-	crateMatData.name = "crate_material";
-	crateMatData.diffuseTexture = &resourceManager.loadTexture("market_props_crate_1_texture.png", EATextureType::TEXTURE_2D);
-	AMaterial& crateMaterial = resourceManager.createMaterial(crateMatData);
+	AMaterial& crateMaterial = resourceManager.createMaterial("crate_material");
+	crateMaterial.diffuseTexture = &resourceManager.loadTexture("market_props_crate_1_texture.png", EATextureType::TEXTURE_2D);
 
-	AMaterialData skyboxMatData;
-	skyboxMatData.name = "skybox_material";
-	skyboxMatData.diffuseTexture = &resourceManager.loadTexture("skybox/full.jpg", EATextureType::TEXTURE_2D);
-	AMaterial& skyboxMaterial = resourceManager.createMaterial(skyboxMatData);
+	AMaterial& skyboxMaterial = resourceManager.createMaterial("skybox_material");
+	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full.jpg", EATextureType::TEXTURE_2D);
 
 	crateMeshCollection[0]->setMaterial(&crateMaterial);
 	suzanneMeshCollection[0]->setMaterial(&testMaterial);
@@ -129,19 +123,18 @@ void AGN::ASceneManager::loadSponza()
 	// load meshes
 	//std::vector<IAMesh*> sponzaMeshCollection = resourceManager.loadMeshCollection("sponza/sponza.obj");
 	std::vector<IAMesh*> sponzaMeshCollection = resourceManager.loadMeshCollection("sibenik/sibenik.obj");
-	
 	std::vector<IAMesh*> skyboxMeshCollection = resourceManager.loadMeshCollection("skybox_fixed.obj");
 
 	// create materials
-	AMaterialData testMatData;
-	testMatData.name = "test_material";
-	testMatData.diffuseTexture = &resourceManager.loadTexture("test.png", EATextureType::TEXTURE_2D);
-	AMaterial& testMaterial = resourceManager.createMaterial(testMatData);
+	AMaterial& testMaterial = resourceManager.createMaterial("test_material");
+	testMaterial.diffuseTexture = &resourceManager.loadTexture("test.png", EATextureType::TEXTURE_2D);
 
-	AMaterialData skyboxMatData;
-	skyboxMatData.name = "skybox_material";
-	skyboxMatData.diffuseTexture = &resourceManager.loadTexture("skybox/full.jpg", EATextureType::TEXTURE_2D);
-	AMaterial& skyboxMaterial = resourceManager.createMaterial(skyboxMatData);
+	AMaterial& crateMaterial = resourceManager.createMaterial("crate_material");
+	crateMaterial.diffuseTexture = &resourceManager.loadTexture("market_props_crate_1_texture.png", EATextureType::TEXTURE_2D);
+
+	AMaterial& skyboxMaterial = resourceManager.createMaterial("skybox_material");
+	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full.jpg", EATextureType::TEXTURE_2D);
+
 	skyboxMeshCollection[0]->setMaterial(&skyboxMaterial);
 
 	// create entities

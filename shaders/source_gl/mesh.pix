@@ -13,8 +13,10 @@ layout(binding = 0) uniform LightSettings
 
 layout(binding = 1) uniform MaterialProperties
 {
-	uniform vec4 uMaterialDiffuse;
-	uniform vec4 uMaterialAmbient;
+	uniform vec3 uMaterialDiffuseColor;
+	uniform vec3 uMaterialSpecularColor;
+	uniform vec3 uMaterialAmbientColor;
+	uniform float uMaterialTransparency;
 };
 
 uniform sampler2D textureSampler0;	// Diffuse
@@ -26,9 +28,10 @@ void main()
 	// Compute the diffuse term.
 	vec4 N = normalize( v2f_normalW );
 	float NdotL = max( dot( N, uLightDirection ), 0 );
-	vec4 Diffuse =  NdotL * uLightColor * uMaterialDiffuse;
-	 
-	vec4 lighting = Diffuse + uMaterialAmbient + uLightAmbient;
+	vec4 Diffuse =  NdotL * uLightColor * vec4(uMaterialDiffuseColor, 1.0f);
+	
+	// vec4 lighting = Diffuse + vec4(uMaterialAmbientColor, 0.0f) + uLightAmbient;
+	vec4 lighting = Diffuse + vec4(uMaterialAmbientColor, 0.0f) + uLightAmbient + (vec4(uMaterialSpecularColor, 0.0f) * 0.001f);
 	vec4 finalColor = lighting * texture( textureSampler0, v2f_texcoord );
 	
 	out_color = finalColor;

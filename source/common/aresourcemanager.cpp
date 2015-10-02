@@ -69,20 +69,15 @@ void AGN::AResourceManager::loadDefaults()
 	// create default material
 	std::string defaultMaterialTexturePath = g_configManager.getConfigProperty("default_material");
 
-	AMaterialData defaultMaterialData;
-	defaultMaterialData.name = "DefaultMaterial";
-	defaultMaterialData.diffuseTexture = &loadTexture(defaultMaterialTexturePath.c_str(), EATextureType::TEXTURE_2D);
-	m_defaultMaterial = &createMaterial(defaultMaterialData);
-
-	// TODO:
-	//loadMaterial("default.mtl");
+	m_defaultMaterial = &createMaterial("DefaultMaterial");
+	m_defaultMaterial->diffuseColor = vec3(1.0f, 1.0f, 1.0f);
+	m_defaultMaterial->specularColor = vec3(0.0f, 0.0f, 0.0f);
+	m_defaultMaterial->ambientColor = vec3(0.0f, 0.0f, 0.0f);
+	m_defaultMaterial->transparency = 0.0f;
+	m_defaultMaterial->diffuseTexture = &loadTexture(defaultMaterialTexturePath.c_str(), EATextureType::TEXTURE_2D);;
+	m_defaultMaterial->normalTexture = nullptr;
+	m_defaultMaterial->specularTexture = nullptr;
 }
-
-/*
-std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMaterial(std::string a_relativePath)
-{
-	string fullPath = g_configManager.getConfigProperty("path_materials").append(a_relativePath);
-}*/
 
 class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::string a_relativePath, uint32_t additional_assimp_flags)
 {
@@ -114,7 +109,8 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 	}
 
 	// create objects that defines everything the meshes consists of
-	AMaterialData* materialData = new AMaterialData[scene->mNumMaterials];
+	std::vector<AGN::AMaterial*> materials;
+	materials.reserve(scene->mNumMaterials);
 
 	// start by loading the materials first
 	for (unsigned int i = 0; i < scene->mNumMaterials; i++)
@@ -125,7 +121,9 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 
 		aiString materialName;
 		assimpMaterial->Get(AI_MATKEY_NAME, materialName);
-		materialData[i].name = materialName.C_Str();
+
+		AGN::AMaterial& newMaterial = createMaterial(materialName.C_Str());
+		materials.push_back(&newMaterial);
 
 		// skip default materials (assigned by assimp whenever an obj doesnt have a material attached to an obj)
 		if (strcmp(materialName.C_Str(), "DefaultMaterial") == 0) continue;
@@ -142,26 +140,22 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 		if (diffuseCount < 1)
 		{
 			g_log.warning("Material without diffuse texture detected! %s", materialName.C_Str());
-
-			// set to default material
-			// TODO: support diffuseless materials
-			materialData[i].name = "DefaultMaterial";
 		}
 
 		// load textures
 		if (assimpMaterial->GetTexture(aiTextureType_DIFFUSE, NULL, &relativePath) == AI_SUCCESS)
 		{
-			materialData[i].diffuseTexture = &loadTexture(relativePath.C_Str(), EATextureType::TEXTURE_2D);
+			newMaterial.diffuseTexture = &loadTexture(relativePath.C_Str(), EATextureType::TEXTURE_2D);
 		}
 
 		if (assimpMaterial->GetTexture(aiTextureType_NORMALS, NULL, &relativePath) == AI_SUCCESS)
 		{
-			materialData[i].normalTexture = &loadTexture(relativePath.C_Str(), EATextureType::TEXTURE_2D);
+			newMaterial.normalTexture = &loadTexture(relativePath.C_Str(), EATextureType::TEXTURE_2D);
 		}
 
 		if (assimpMaterial->GetTexture(aiTextureType_SPECULAR, NULL, &relativePath) == AI_SUCCESS)
 		{
-			materialData[i].specularTexture = &loadTexture(relativePath.C_Str(), EATextureType::TEXTURE_2D);
+			newMaterial.specularTexture = &loadTexture(relativePath.C_Str(), EATextureType::TEXTURE_2D);
 		}
 
 		// color  properties
@@ -171,30 +165,12 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 		assimpMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor);
 		assimpMaterial->Get(AI_MATKEY_COLOR_SPECULAR, specularColor);
 		assimpMaterial->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor);
-		materialData->diffuseColor = vec3(diffuseColor.r, diffuseColor.g, diffuseColor.b);
-		materialData->specularColor = vec3(specularColor.r, specularColor.g, specularColor.b);
-		materialData->ambientColor = vec3(ambientColor.r, ambientColor.g, ambientColor.b);
+		newMaterial.diffuseColor = vec3(diffuseColor.r, diffuseColor.g, diffuseColor.b);
+		newMaterial.specularColor = vec3(specularColor.r, specularColor.g, specularColor.b);
+		newMaterial.ambientColor = vec3(ambientColor.r, ambientColor.g, ambientColor.b);
 
 		// misc properties
-		assimpMaterial->Get(AI_MATKEY_OPACITY, materialData->transparency);
-	}
-
-	// load actual materials
-	std::vector<AGN::AMaterial*> materials;
-	materials.reserve(scene->mNumMaterials);
-
-	for (unsigned int i = 0; i < scene->mNumMaterials; i++)
-	{
-		// create materials
-		if (materialData[i].name.compare("DefaultMaterial") == 0)
-		{
-			// already loaded default material
-			materials.push_back(m_defaultMaterial);
-		}
-		else
-		{
-			materials.push_back(&createMaterial(materialData[i]));
-		}
+		assimpMaterial->Get(AI_MATKEY_OPACITY, newMaterial.transparency);
 	}
 
 	// create objects that defines everything the models consists of
@@ -206,8 +182,6 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 		const aiMesh& loadedMesh = *scene->mMeshes[i];
 		AMeshData& newMeshData = meshData[i];
 		newMeshData.relativePath = a_relativePath;
-
-
 
 		for (unsigned int j = 0; j < loadedMesh.mNumVertices; j++)
 		{
@@ -315,18 +289,19 @@ AGN::IAShaderPipeline& AGN::AResourceManager::createShaderPipeline(std::vector<A
 	return *newShaderPipeline;
 }
 
-AGN::AMaterial& AGN::AResourceManager::createMaterial(AGN::AMaterialData& a_data)
+AGN::AMaterial& AGN::AResourceManager::createMaterial(std::string a_name)
 {
 	// check if it exists
 	for (unsigned int i = 0; i < m_materials.size(); i++)
 	{
-		if (m_materials[i]->getName().compare(a_data.name) == 0)
+		if (m_materials[i]->getName().compare(a_name) == 0)
 		{
+			g_log.warning("Material with name: %s already exists", a_name.c_str());
 			return dynamic_cast<AGN::AMaterial&>(*m_materials[i]);
 		}
 	}
 	
-	AMaterial* newMaterial = new AMaterial(m_materialIdCount++, a_data);
+	AMaterial* newMaterial = new AMaterial(m_materialIdCount++, a_name);
 
 	m_materials.push_back(newMaterial);
 
