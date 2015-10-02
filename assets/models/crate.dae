@@ -3,7 +3,7 @@
   <asset>
     <contributor>
       <author>Roel Megens</author>
-      <authoring_tool>Maya2014 x64 | ColladaMaya v3.04C PhyreEngine(TM) 3.8.0.0</authoring_tool>
+      <authoring_tool></authoring_tool>
       <comments>Collada Maya Export Options: bakeTransforms=0;exportPolygonMeshes=1;relativePaths=1;bakeLighting=0;isSampling=0;
 curveConstrainSampling=0;removeStaticCurves=1;exportCameraAsLookat=0;
 exportLights=1;exportCameras=1;exportJointsAndSkin=1;
@@ -12,7 +12,7 @@ exportNormals=1;exportTexCoords=1;
 exportVertexColors=1;exportVertexColorsAnimation=0;exportTangents=0;
 exportTexTangents=1;exportConstraints=1;exportPhysics=1;exportXRefs=1;instanceDuplicateCurves=0;
 dereferenceXRefs=0;cameraXFov=0;cameraYFov=1</comments>
-      <source_data>file:///D:/Documenten/School/NHTV/Year2/Gamelab4/SVN/art/models_working/props/market_props.ma</source_data>
+      <source_data></source_data>
     </contributor>
     <created>2014-06-25T13:49:58Z</created>
     <modified>2014-06-25T13:49:59Z</modified>
@@ -83,7 +83,7 @@ dereferenceXRefs=0;cameraXFov=0;cameraYFov=1</comments>
   </library_physics_scenes>
   <library_images>
     <image id="file46" name="file46">
-      <init_from>../textures/market_props_crate_1_texture.png</init_from>
+      <init_from>market_props_crate_1_texture.png</init_from>
       <extra>
         <technique profile="MAYA">
           <dgnode_type>kFile</dgnode_type>
@@ -92,7 +92,7 @@ dereferenceXRefs=0;cameraXFov=0;cameraYFov=1</comments>
       </extra>
     </image>
     <image id="file32" name="file32">
-      <init_from>../textures/market_props_crate_1_normals.png</init_from>
+      <init_from>market_props_crate_1_normals.png</init_from>
       <extra>
         <technique profile="MAYA">
           <dgnode_type>kFile</dgnode_type>
@@ -101,7 +101,7 @@ dereferenceXRefs=0;cameraXFov=0;cameraYFov=1</comments>
       </extra>
     </image>
     <image id="file33" name="file33">
-      <init_from>../textures/market_props_crate_1_specular.png</init_from>
+      <init_from>market_props_crate_1_specular.png</init_from>
       <extra>
         <technique profile="MAYA">
           <dgnode_type>kFile</dgnode_type>
@@ -484,11 +484,14 @@ dereferenceXRefs=0;cameraXFov=0;cameraYFov=1</comments>
                 </instance_material>
               </technique_common>
             </bind_material>
-            <extra>
-              <technique profile="PHYRE">
-                <object_render_properties castsShadows="1" receiveShadows="1" visibleInReflections="1" visibleInRefractions="1" motionBlurEnabled="1"/>
-              </technique>
-            </extra>
+			<extra>
+			  <technique profile="MAYA">
+				<dynamic_attributes>
+				  <blendRigidBodytx1 short_name="blendRigidBodytx1" type="float">0</blendRigidBodytx1>
+				  <blendRigidBodyrx1 short_name="blendRigidBodyrx1" type="float">0</blendRigidBodyrx1>
+				</dynamic_attributes>
+			  </technique>
+			</extra>
           </instance_geometry>
         </node>
         <extra>

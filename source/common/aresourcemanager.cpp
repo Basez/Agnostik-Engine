@@ -113,7 +113,7 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 		g_log.error("Error loading model! '%s' the issue: %s", a_relativePath.c_str(), importer.GetErrorString());
 	}
 
-	// create objects that defines everything the models consists of
+	// create objects that defines everything the meshes consists of
 	AMaterialData* materialData = new AMaterialData[scene->mNumMaterials];
 
 	// start by loading the materials first
@@ -236,16 +236,16 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 		newMeshData.material = materials[loadedMesh.mMaterialIndex];
 	}
 
-	std::vector<AGN::IAMesh*> meshes;
-	meshes.reserve(scene->mNumMeshes);
+	std::vector<AGN::IAMesh*> meshCollection;
+	meshCollection.reserve(scene->mNumMeshes);
 
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 	{
 		IAMesh* newMesh = m_device.createMesh(m_meshIdCount++, &meshData[i]);
-		meshes.push_back(newMesh);
+		meshCollection.push_back(newMesh);
 	}
 	
-	return meshes;
+	return meshCollection;
 }
 
 AGN::IATexture& AGN::AResourceManager::loadTexture(std::string a_relativePath, EATextureType a_textureType)

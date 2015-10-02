@@ -10,9 +10,7 @@ namespace AGN
 
 		void init();
 		void update(float a_deltaTime);
-		void loadTestScene01();
-		void loadScrambledScene();
-		void loadSponza();
+		void loadScene();
 
 		const std::vector<class AEntity*> getEntities() const { return m_entities; }
 		const std::vector<class AEntity*> getSkyboxEntities() const { return m_skyboxEntities; }
@@ -20,9 +18,11 @@ namespace AGN
 		class ACamera* getCurrentCamera() { return m_camera; }
 
 	private:
+		void loadScrambledScene();
+		void loadSponza();
+
 		std::vector<class AEntity*> m_entities; 
 		std::vector<class AEntity*> m_skyboxEntities;
-
 		class ACamera* m_camera;
 		class ACameraController* m_cameraController;
 	};

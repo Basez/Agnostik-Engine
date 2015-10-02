@@ -35,6 +35,12 @@ void AGN::ASceneManager::init()
 	m_cameraController = new ACameraController(*m_camera, false);
 }
 
+void AGN::ASceneManager::loadScene()
+{
+	//loadScrambledScene();
+	loadSponza();
+}
+
 void AGN::ASceneManager::update(float a_deltaTime)
 {
 	m_cameraController->update(a_deltaTime);
@@ -47,73 +53,13 @@ void AGN::ASceneManager::update(float a_deltaTime)
 	}
 }
 
-void AGN::ASceneManager::loadTestScene01()
-{
-	/*
-	AResourceManager& resourceManager = g_application.getResourceManager();
-
-	IAMesh& sibenixMesh = resourceManager.loadMesh("sibenik/sibenik.obj");
-	IAMesh& crateMesh = resourceManager.loadMesh("crate_001.dae", aiProcess_FlipUVs);
-	IAMesh& suzanneMesh = resourceManager.loadMesh("suzanne.obj");
-	IAMesh& triangleMesh = resourceManager.loadMesh("triangle.obj");
-	IAMesh& cubeMesh = resourceManager.loadMesh("cube.obj");
-	IAMesh& skyboxMesh = resourceManager.loadMesh("skybox.obj");
-
-	// create materials
-	AMaterialData testMatData;
-	testMatData.name = "testMaterial";
-	testMatData.diffuseTexture = &resourceManager.loadTexture("test.png", EATextureType::TEXTURE_2D);
-	AMaterial& testMaterial = resourceManager.createMaterial(testMatData);
-
-	AMaterialData crateMatData;
-	crateMatData.name = "crateMaterial";
-	crateMatData.diffuseTexture = &resourceManager.loadTexture("market_props_crate_1_texture.png", EATextureType::TEXTURE_2D);
-	AMaterial& crateMaterial = resourceManager.createMaterial(crateMatData);
-
-	// create the triangle I entity;
-	AEntity* triangleEntityA = new AEntity();
-	triangleEntityA->setMesh(&triangleMesh);
-	triangleEntityA->setMaterial(&testMaterial);
-	triangleEntityA->setPosition(vec3(-5, 0, 0));
-	m_entities.push_back(triangleEntityA);
-
-	// create the suzanna entity;
-	AEntity* suzanneEntity = new AEntity();
-	suzanneEntity->setMesh(&suzanneMesh);
-	suzanneEntity->setMaterial(&testMaterial);
-	suzanneEntity->setPosition(vec3(0, 0, 0));
-	m_entities.push_back(suzanneEntity);
-
-	// create the cube entity;
-	AEntity* cubeEntity = new AEntity();
-	cubeEntity->setMesh(&cubeMesh);
-	cubeEntity->setMaterial(&testMaterial);
-	cubeEntity->setPosition(vec3(5, 0, 0));
-	m_entities.push_back(cubeEntity);
-
-	// create the triangle II entity;
-	AEntity* triangleEntityB = new AEntity();
-	triangleEntityB->setMesh(&triangleMesh);
-	triangleEntityB->setMaterial(&testMaterial);
-	triangleEntityB->setPosition(vec3(5, 0, 0));
-	m_entities.push_back(triangleEntityB);
-
-	// create crate entities
-	AEntity* crateEntity = new AEntity();
-	crateEntity->setMesh(&crateMesh);
-	crateEntity->setMaterial(&crateMaterial);
-	crateEntity->setPosition(vec3(2,2,2));
-	m_entities.push_back(crateEntity);*/
-}
-
 void AGN::ASceneManager::loadScrambledScene()
 {
-	/*
 	AResourceManager& resourceManager = g_application.getResourceManager();
 
-	IAMesh& crateMesh = resourceManager.loadMesh("crate_001.dae", aiProcess_FlipUVs);
-	IAMesh& suzanneMesh = resourceManager.loadMesh("suzanne.obj");
-	IAMesh& skyboxMesh = resourceManager.loadMesh("skybox_old.obj");
+	std::vector<IAMesh*> crateMeshCollection = resourceManager.loadMeshCollection("crate.dae");
+	std::vector<IAMesh*> suzanneMeshCollection = resourceManager.loadMeshCollection("suzanne.obj");
+	std::vector<IAMesh*> skyboxMeshCollection = resourceManager.loadMeshCollection("skybox_fixed.obj");
 
 	// create materials
 	AMaterialData testMatData;
@@ -131,21 +77,17 @@ void AGN::ASceneManager::loadScrambledScene()
 	skyboxMatData.diffuseTexture = &resourceManager.loadTexture("skybox/full.jpg", EATextureType::TEXTURE_2D);
 	AMaterial& skyboxMaterial = resourceManager.createMaterial(skyboxMatData);
 
+	crateMeshCollection[0]->setMaterial(&crateMaterial);
+	suzanneMeshCollection[0]->setMaterial(&testMaterial);
+	skyboxMeshCollection[0]->setMaterial(&skyboxMaterial);
+
 	// Skybox entity
 	AEntity* skyboxEntity = new AEntity();
-	skyboxEntity->setMesh(&skyboxMesh);
+	skyboxEntity->setMeshCollection(skyboxMeshCollection);
 	skyboxEntity->setMaterial(&skyboxMaterial);
-	//skyboxEntity->setShaderPipeline(&skyboxShaderPipeline);
 	skyboxEntity->setPosition(vec3(0, 0, 0));
 	skyboxEntity->setScale(vec3(10, 10, 10));
 	m_skyboxEntities.push_back(skyboxEntity);
-
-	// crate
-	AEntity* crateEntity = new AEntity();
-	crateEntity->setMesh(&crateMesh);
-	crateEntity->setMaterial(&crateMaterial);
-	crateEntity->setPosition(vec3(0, 0, 0));
-	m_entities.push_back(crateEntity);
 
 	// create crate entities
 	int index = 0;
@@ -160,7 +102,7 @@ void AGN::ASceneManager::loadScrambledScene()
 				{
 					// crate
 					AEntity* crateEntity = new AEntity();
-					crateEntity->setMesh(&crateMesh);
+					crateEntity->setMeshCollection(crateMeshCollection);
 					crateEntity->setMaterial(&crateMaterial);
 					crateEntity->setPosition(vec3(x * 2, y * 2, z * 2));
 					m_entities.push_back(crateEntity);
@@ -169,7 +111,7 @@ void AGN::ASceneManager::loadScrambledScene()
 				{
 					// suzanne
 					AEntity* suzanneEntity = new AEntity();
-					suzanneEntity->setMesh(&suzanneMesh);
+					suzanneEntity->setMeshCollection(suzanneMeshCollection);
 					suzanneEntity->setMaterial(&testMaterial);
 					suzanneEntity->setPosition(vec3(x * 2, y * 2, z * 2));
 					m_entities.push_back(suzanneEntity);
@@ -178,7 +120,6 @@ void AGN::ASceneManager::loadScrambledScene()
 			}
 		}
 	}
-	*/
 }
 
 void AGN::ASceneManager::loadSponza()
@@ -186,11 +127,10 @@ void AGN::ASceneManager::loadSponza()
 	AResourceManager& resourceManager = g_application.getResourceManager();
 
 	// load meshes
-	//std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("sponza/sponza.obj");
-	std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("sibenik/sibenik.obj");
+	//std::vector<IAMesh*> sponzaMeshCollection = resourceManager.loadMeshCollection("sponza/sponza.obj");
+	std::vector<IAMesh*> sponzaMeshCollection = resourceManager.loadMeshCollection("sibenik/sibenik.obj");
 	
-	//std::vector<IAMesh*> sponzaMeshes = resourceManager.loadMeshCollection("triangles.obj");
-	std::vector<IAMesh*> skyboxMeshes = resourceManager.loadMeshCollection("skybox_old.obj");
+	std::vector<IAMesh*> skyboxMeshCollection = resourceManager.loadMeshCollection("skybox_fixed.obj");
 
 	// create materials
 	AMaterialData testMatData;
@@ -202,16 +142,16 @@ void AGN::ASceneManager::loadSponza()
 	skyboxMatData.name = "skybox_material";
 	skyboxMatData.diffuseTexture = &resourceManager.loadTexture("skybox/full.jpg", EATextureType::TEXTURE_2D);
 	AMaterial& skyboxMaterial = resourceManager.createMaterial(skyboxMatData);
-	skyboxMeshes[0]->setMaterial(&skyboxMaterial);
+	skyboxMeshCollection[0]->setMaterial(&skyboxMaterial);
 
 	// create entities
 	AEntity* sponzaEntity = new AEntity();
-	sponzaEntity->setMeshes(sponzaMeshes);
+	sponzaEntity->setMeshCollection(sponzaMeshCollection);
 	sponzaEntity->setPosition(vec3(0, 0, 0));
 	m_entities.push_back(sponzaEntity);
 
 	AEntity* skyboxEntity = new AEntity();
-	skyboxEntity->setMeshes(skyboxMeshes);
+	skyboxEntity->setMeshCollection(skyboxMeshCollection);
 	skyboxEntity->setPosition(vec3(0, 0, 0));
 	m_skyboxEntities.push_back(skyboxEntity);
 }

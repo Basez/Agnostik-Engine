@@ -43,12 +43,9 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 
 	m_sceneManager = new ASceneManager();
 	m_sceneManager->init();
-	//m_sceneManager->loadTestScene01();
-	//m_sceneManager->loadScrambledScene();
-	m_sceneManager->loadSponza();
+	m_sceneManager->loadScene();
 
 	m_renderAPI->getRenderer().setCamera(m_sceneManager->getCurrentCamera());
-
 
 	while (!m_quit)
 	{
@@ -191,9 +188,9 @@ void AGN::AAplication::createDrawQueue()
 		mat4 scaling = scale(entity.getScale());
 		mat4 modelMatrix = translation * rotation * scaling;
 
-		for (unsigned int j = 0; j < entity.getMeshes().size(); j++)
+		for (unsigned int j = 0; j < entity.getMeshCollection().size(); j++)
 		{
-			IAMesh* mesh = entity.getMeshes()[j];
+			IAMesh* mesh = entity.getMeshCollection()[j];
 			AMaterial* material = mesh->getMaterial();
 
 			// create sortkey
@@ -250,9 +247,9 @@ void AGN::AAplication::createDrawQueue()
 		mat4 scaling = scale(entity.getScale());
 		mat4 modelMatrix = translation * rotation * scaling;
 
-		for (unsigned int j = 0; j < entity.getMeshes().size(); j++)
+		for (unsigned int j = 0; j < entity.getMeshCollection().size(); j++)
 		{
-			IAMesh* mesh = entity.getMeshes()[j];
+			IAMesh* mesh = entity.getMeshCollection()[j];
 			AMaterial* material = mesh->getMaterial();
 
 			// create sortkey
