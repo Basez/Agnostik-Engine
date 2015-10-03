@@ -17,10 +17,13 @@ AGN::ARenderAPIGL::ARenderAPIGL()
 	m_renderer = new ARendererGL();
 }
 
-void AGN::ARenderAPIGL::init()
+bool AGN::ARenderAPIGL::init()
 {
-	initOpenGL();
-	initGlew();
+	if (!initOpenGL() || !initGlew())
+	{
+		// issue occured during initializing OpenGL context
+		return false;
+	}
 
 	// Log info about initialized openGL
 	g_log.info("Initialized OpenGL version : %s", glGetString(GL_VERSION));
@@ -40,14 +43,17 @@ void AGN::ARenderAPIGL::init()
 	m_initialized = true;
 
 	AGN::getOpenGLError();
+
+	return true;
 }
 
-void AGN::ARenderAPIGL::initOpenGL()
+bool AGN::ARenderAPIGL::initOpenGL()
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
 	{
 		auto error = SDL_GetError();
 		g_log.error("error: %s", error);
+		return false;
 	}
 
 	// TODO: implement TTF 
@@ -83,9 +89,11 @@ void AGN::ARenderAPIGL::initOpenGL()
 	glEnable(GL_CULL_FACE);
 
 	AGN::getOpenGLError();
+
+	return true;
 }
 
-void AGN::ARenderAPIGL::initGlew()
+bool AGN::ARenderAPIGL::initGlew()
 {
 	glewExperimental = GL_TRUE;
 
@@ -93,7 +101,7 @@ void AGN::ARenderAPIGL::initGlew()
 	if (status != GLEW_OK)
 	{
 		g_log.error("Error initializing GLEW");
-		return;
+		return false;
 	}
 
 	// Check for 3.3 support.
@@ -104,7 +112,12 @@ void AGN::ARenderAPIGL::initGlew()
 	if (!GLEW_VERSION_3_3)
 	{
 		g_log.error("MISSING 3.3 required version support not present.");
-		return;
+
+		const char* errorHeader = "Unsupported OpenGL Version";
+		char errorMessageC[1024] = "Cannot initialize OpenGL 3.3, this device is running: OpenGL ";
+		AGN::cStringConcatenate(errorMessageC, reinterpret_cast<const char*>(glGetString(GL_VERSION)), sizeof(errorMessageC));
+		m_window->showMessageBox(errorHeader, errorMessageC);
+		return false;
 	}
 
 	GLenum errorType = GL_NO_ERROR;
@@ -112,6 +125,8 @@ void AGN::ARenderAPIGL::initGlew()
 	{
 		g_log.warning("An OpenGL error occurred during GLEW initialization: %X It is safe to ignore this issue", errorType);
 	}
+
+	return true;
 }
 
 AGN::IAWindow& AGN::ARenderAPIGL::getWindow()

@@ -9,8 +9,8 @@ namespace AGN
 	public:
 		ARendererGL();
 		void init() override;
-		void render(class AGN::ADrawCommander& a_drawCommander) override;
-		void setCamera(class AGN::ACamera* a_camera) override { m_currentCamera = a_camera; }
+		void render(class ADrawCommander& a_drawCommander) override;
+		void setCamera(class ACamera* a_camera) override { m_currentCamera = a_camera; }
 
 	private:
 		void drawEntity(struct ADrawCommand* a_command);

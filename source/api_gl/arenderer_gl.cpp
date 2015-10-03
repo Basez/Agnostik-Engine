@@ -108,8 +108,7 @@ void AGN::ARendererGL::drawEntity(ADrawCommand* a_command)
 			ATextureGL* texturesToBind[1] = { diffuse };
 			bindTexturesToShader(shaderPipeline->getGlProgramId(), 1, texturesToBind);
 		}
-		
-
+	
 		if (shaderPipeline->hasUniformBuffer("MaterialProperties"))
 		{
 			// TODO: get buffer offset, this is hardcoded

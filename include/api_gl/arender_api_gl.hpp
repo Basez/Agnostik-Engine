@@ -9,7 +9,7 @@ namespace AGN
 	public:
 		ARenderAPIGL();
 
-		void init() override;
+		bool init() override;
 		void enableVSync(bool a_value) override;
 		void handleEvents() override;
 
@@ -20,8 +20,8 @@ namespace AGN
 		void logAvailableGLExtensions();
 
 	private:
-		void initOpenGL();
-		void initGlew();
+		bool initOpenGL();
+		bool initGlew();
 
 		bool m_initialized;
 		class AWindowGL* m_window;

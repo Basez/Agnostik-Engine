@@ -26,3 +26,17 @@
 #include "iainput.hpp"
 #include "asharedapi.hpp" // different per API 
 
+
+// TODO: move to its own class
+namespace AGN
+{
+	static size_t cStringCopy(char *a_destination, char const *a_source, size_t a_sizeBytes)
+	{
+		return snprintf(a_destination, a_sizeBytes, "%s", a_source);
+	}
+
+	static size_t cStringConcatenate(char *a_destination, char const *a_source, size_t a_sizeBytes)
+	{
+		return snprintf(a_destination, a_sizeBytes, "%s%s", a_destination, a_source);
+	}
+}

@@ -46,7 +46,7 @@ AGN::AShaderPipelineGL::AShaderPipelineGL(const GLuint a_glprogramId, AShaderPip
 
 		// create object
 		AUniformConstantBufferGL* constantBuffer = new AUniformConstantBufferGL();
-		AGN::AOSUtils::cStringCopy(constantBuffer->name, blockName, sizeof(blockName));
+		AGN::cStringCopy(constantBuffer->name, blockName, sizeof(blockName));
 		constantBuffer->index = index;
 		constantBuffer->size = blockSize;
 

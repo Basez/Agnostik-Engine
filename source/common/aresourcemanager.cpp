@@ -9,6 +9,7 @@
 #include "amaterial.hpp"
 #include "iashader.hpp"
 #include "aosutils.hpp"
+#include "iashaderpipeline.hpp"
 
 // assimp
 #include <assimp/Importer.hpp>
@@ -289,6 +290,10 @@ AGN::IAShaderPipeline& AGN::AResourceManager::createShaderPipeline(std::vector<A
 	return *newShaderPipeline;
 }
 
+/** 
+	Create a material with the supplied name.
+	If a material with that name already exists the existing material gets returned
+*/
 AGN::AMaterial& AGN::AResourceManager::createMaterial(std::string a_name)
 {
 	// check if it exists

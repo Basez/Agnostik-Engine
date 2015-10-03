@@ -14,7 +14,7 @@ namespace AGN
 		virtual class IAMesh* createMesh(const uint16_t a_aId, struct AMeshData* a_meshData) = 0;
 		virtual class IATexture* createTexture(const uint16_t a_aId, struct ATextureData* a_textureData) = 0;
 		virtual class IAShader* createShader(const uint16_t a_aId, const char* a_shaderSource, EAShaderType a_type) = 0;
-		virtual class IAShaderPipeline* createShaderPipeline(const uint16_t a_aId, std::vector<AGN::IAShader*> a_shaders) = 0;
+		virtual class IAShaderPipeline* createShaderPipeline(const uint16_t a_aId, std::vector<IAShader*> a_shaders) = 0;
 	};
 
 }

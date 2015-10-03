@@ -22,8 +22,10 @@ AGN::AWindowGL::AWindowGL(glm::ivec2 a_dimentions)
 
 	m_sdlWindow = SDL_CreateWindow(windowName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, a_dimentions.x, a_dimentions.y, flags);
 
-	if (m_sdlWindow == nullptr)
+	if (!m_sdlWindow)
+	{
 		SDL_ShowSimpleMessageBox(0, "Window init error", SDL_GetError(), m_sdlWindow);
+	}
 
 	glViewport(0, 0, a_dimentions.x, a_dimentions.y);
 }
@@ -61,8 +63,8 @@ void AGN::AWindowGL::onWindowEvent(SDL_Event a_event)
 
 		break;
 
-	case SDL_WINDOWEVENT_EXPOSED:		// TODO: Repaint/render on window exposure?
-										//SDL_RenderPresent(g_renderer);
+	case SDL_WINDOWEVENT_EXPOSED:		
+		// Repaint/render on window exposure?
 		break;
 
 	case SDL_WINDOWEVENT_ENTER:
@@ -96,4 +98,3 @@ void AGN::AWindowGL::onWindowEvent(SDL_Event a_event)
 
 	// TODO: check if default values of booleans are correct! (m_keyboardFocus/m_mouseOnScreen/m_minimized)
 }
-

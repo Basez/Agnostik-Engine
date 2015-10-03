@@ -12,8 +12,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
 	g_log.init(EALogTimeType::RunningTime, (uint8_t)EALoggerOutputType::Window | (uint8_t)EALoggerOutputType::OutputDebug);
 
-	int* testIntPointer = nullptr;
-	g_log.debug("pointer size: %i", sizeof(testIntPointer));
+	g_log.debug("pointer size check: %i", sizeof(int*));
 
 	// load configurations
 	std::string currentFolder = AGN::AOSUtils::getCurrentFolder();

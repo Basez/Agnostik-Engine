@@ -17,9 +17,9 @@ int AGN::AOSUtils::getLastlowFileChangeTime(std::string a_filename)
 	return findData.ftLastWriteTime.dwLowDateTime;
 }
 
-/************************************************************************/
-/*  Returns filesize of given file in bytes                             */
-/************************************************************************/
+/**
+	Returns file size of given file in bytes
+*/
 int AGN::AOSUtils::getFileSizeBytes(std::string a_filename)
 {
 	streampos fsize = 0;
@@ -33,9 +33,9 @@ int AGN::AOSUtils::getFileSizeBytes(std::string a_filename)
 	return (int)fsize;
 }
 
-/************************************************************************/
-/* Strips the given file path of its name and returns that directory    */
-/************************************************************************/
+/**
+	Strips the given file path of its name and returns that directory
+*/
 std::string AGN::AOSUtils::getDirectoryOfPath(std::string a_path)
 {
 	std::string pathAsString = a_path;
@@ -52,33 +52,13 @@ std::string AGN::AOSUtils::getDirectoryOfPath(std::string a_path)
 	return "";
 }
 
-/************************************************************************/
-/* Returns the path 1 directory up                                      */
-/************************************************************************/
+/**
+	Returns the path 1 directory up
+*/
 std::string AGN::AOSUtils::getUpDirectory(std::string a_path)
 {
 	int index = (int)a_path.find_last_of("\\\\"); // find last 2 '\\' (final folder)
 	return a_path.substr(0, index).c_str();
-}
-
-/************************************************************************
-// TODO: clear up this function, also remove the "../" stuff and actually remove the directories! (makes it more cross-platform I guess)
-
-a_originPath		=	"data/models/crate_001.dae"
-a_relativeToOrigin	=	"../textures/market_props_crate_1_texture.png"
-
-Converted to:
-
-relativePath		=	"data/models/../textures/market_props_crate_1_texture.png"
-/************************************************************************/
-std::string AGN::AOSUtils::getPathRelativeToPath(std::string a_originPath, std::string a_relativeToOrigin)
-{
-	string relativePath = "";
-	relativePath += getDirectoryOfPath(a_originPath);	// start with directory of origin
-	relativePath += "/";
-	relativePath += a_relativeToOrigin;
-
-	return relativePath;
 }
 
 std::string AGN::AOSUtils::findFile(std::string a_file, std::string a_startFolder, int a_deepLevel, int a_upLevel)
@@ -172,14 +152,4 @@ std::string AGN::AOSUtils::getExecutableName(bool a_includeType)
 	string nameWithoutType = nameWithType.substr(0, nameWithType.find_last_of(".exe") - 3);
 
 	return nameWithoutType.c_str();
-}
-
-size_t AGN::AOSUtils::cStringCopy(char *a_destination, char const *a_source, size_t a_sizeBytes)
-{
-	return strcpy_s(a_destination, a_sizeBytes, a_source);
-}
-
-size_t AGN::AOSUtils::cStringConcatenate(char *a_destination, char const *a_source, size_t a_sizeBytes)
-{
-	return strcat_s(a_destination, a_sizeBytes, a_source);
 }

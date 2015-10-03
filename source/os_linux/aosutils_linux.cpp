@@ -141,14 +141,3 @@ std::string AGN::AOSUtils::getExecutableName(bool a_includeType)
 {
 	return ""; // TODO:
 }
-
-size_t AGN::AOSUtils::cStringCopy(char *a_destination, char const *a_source, size_t a_sizeBytes)
-{
-	return snprintf(a_destination, a_sizeBytes, "%s", a_source);
-}
-
-size_t AGN::AOSUtils::cStringConcatenate(char *a_destination, char const *a_source, size_t a_sizeBytes)
-{
-	return snprintf(a_destination, a_sizeBytes, "%s%s", a_destination, a_source);
-}
-

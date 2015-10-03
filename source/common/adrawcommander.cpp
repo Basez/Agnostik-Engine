@@ -28,28 +28,6 @@ AGN::ADrawCommander::ADrawCommander()
 
 AGN::ADrawCommand& AGN::ADrawCommander::addDrawCommand(AGN::EADrawCommandType a_type, uint64_t a_sortKey) // TODO: key as argument?
 {
-	/*
-	// TEST CODE
-	for (int i = 0; i < 99; i++)
-	{
-		uint8_t renderPhase = 0;
-		uint8_t layer = 0;
-		uint8_t translucencyType = 0;
-		uint8_t cmd = 0;
-		uint16_t meshId = 0;
-		uint16_t materialId = i;
-		uint32_t depth = 0;
-
-		uint64_t sortKey = getSortKey(renderPhase,
-			layer,
-			translucencyType,
-			cmd,
-			meshId,
-			materialId,
-			depth);
-	}
-	*/
-
 	// TODO: use pooling?
 	ADrawCommand* drawCommandMesh = new ADrawCommand(a_sortKey, a_type);
 	m_drawCommands.push_back(drawCommandMesh);
@@ -71,7 +49,6 @@ std::vector<AGN::ADrawCommand*> AGN::ADrawCommander::getSortedDrawCommands()
 
 void AGN::ADrawCommander::clearCommands()
 {
-	// TODO: delete commands & clear vectors
 	while (m_drawCommands.size() > 0)
 	{
 		delete m_drawCommands[0];

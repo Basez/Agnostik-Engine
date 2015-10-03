@@ -33,7 +33,11 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 	m_renderAPI = a_renderAPI;
 	m_quit = false;
 
-	m_renderAPI->init();
+	if (!m_renderAPI->init())
+	{
+		// Something went wrong with initialization
+		return;
+	}
 	
 	m_resourceManager = new AResourceManager(m_renderAPI->getDevice());
 	m_resourceManager->loadDefaults();

@@ -30,8 +30,8 @@ void AGN::ALoggerWin::init(EALogTimeType a_timeType, uint8_t a_outputTypes)
 	m_timeType = a_timeType;
 
 	m_startTickCount = (float)GetTickCount();
-
-	if (m_outputTypes & (int)EALoggerOutputType::Window) createConsole();
+	
+	if (m_outputTypes & static_cast<int>(EALoggerOutputType::Window)) createConsole();
 }
 
 void AGN::ALoggerWin::createConsole()
@@ -141,7 +141,6 @@ void AGN::ALoggerWin::error(const char *a_info, ...)
 	}
 
 	log(messageLog);
-
 }
 
 void AGN::ALoggerWin::log(const char *a_log)
