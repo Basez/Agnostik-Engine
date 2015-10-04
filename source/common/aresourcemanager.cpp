@@ -184,6 +184,7 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 		AMeshData& newMeshData = meshData[i];
 		newMeshData.relativePath = a_relativePath;
 
+		vec3 max(-99999.0f), min(99999.0f);
 		for (unsigned int j = 0; j < loadedMesh.mNumVertices; j++)
 		{
 			const aiVector3D* pPos = &(loadedMesh.mVertices[j]);
@@ -197,7 +198,18 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 			//newMeshData.tangents.push_back(vec3(pTangents->x, pTangents->y, pTangents->z));
 			//newMeshData.bitangents.push_back(vec3(pBitangents->x, pBitangents->y, pBitangents->z));
 			newMeshData.textureCoords.push_back(vec2(pTexCoord->x, pTexCoord->y));
+
+			// calculate max and minimum (for outer most vertices)
+			if (pPos->x < min.x) min.x = pPos->x;
+			if (pPos->y < min.y) min.y = pPos->y;
+			if (pPos->z < min.z) min.z = pPos->z;
+
+			if (pPos->x > max.x) max.x = pPos->x;
+			if (pPos->y > max.y) max.y = pPos->y;
+			if (pPos->z > max.z) max.z = pPos->z;
 		}
+
+		newMeshData.centerpoint = min + (max - min) * 0.5f;
 
 		for (unsigned int j = 0; j < loadedMesh.mNumFaces; j++)
 		{

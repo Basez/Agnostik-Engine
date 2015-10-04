@@ -24,7 +24,6 @@ namespace AGN
 		struct ADrawCommand& addDrawCommand(EADrawCommandType a_type, uint64_t a_sortKey);
 		std::vector<struct ADrawCommand*> getSortedDrawCommands();
 
-	private:
 		// num of bits each sort key property is occupying
 		enum class SortKeyBitAmount
 		{
@@ -50,6 +49,7 @@ namespace AGN
 			Layer = 58,
 			RenderPhase = 61
 		};
+	private:
 
 		std::vector<struct ADrawCommand*> m_drawCommands;
 	};

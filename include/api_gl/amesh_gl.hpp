@@ -21,6 +21,9 @@ namespace AGN
 		uint32_t getVao() const { return m_vao; }
 		uint32_t getIndexCount() const { return (uint32_t)m_meshData->indicies.size();  }
 		class AMaterial* getMaterial() override { return m_meshData->material; }
+		glm::vec3 getCenterPoint() override { return m_meshData->centerpoint; }
+
+
 		void setMaterial(class AMaterial* a_material) override { m_meshData->material = a_material; }
 
 		enum class EAMeshGLAttribute

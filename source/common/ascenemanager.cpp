@@ -37,8 +37,8 @@ void AGN::ASceneManager::init()
 
 void AGN::ASceneManager::loadScene()
 {
-	//loadScrambledScene();
-	loadSponza();
+	loadScrambledScene();
+	//loadSponza();
 }
 
 void AGN::ASceneManager::update(float a_deltaTime)
@@ -69,7 +69,7 @@ void AGN::ASceneManager::loadScrambledScene()
 	crateMaterial.diffuseTexture = &resourceManager.loadTexture("market_props_crate_1_texture.png", EATextureType::TEXTURE_2D);
 
 	AMaterial& skyboxMaterial = resourceManager.createMaterial("skybox_material");
-	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full.jpg", EATextureType::TEXTURE_2D);
+	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", EATextureType::TEXTURE_2D);
 
 	crateMeshCollection[0]->setMaterial(&crateMaterial);
 	suzanneMeshCollection[0]->setMaterial(&testMaterial);
@@ -85,11 +85,11 @@ void AGN::ASceneManager::loadScrambledScene()
 
 	// create crate entities
 	int index = 0;
-	for (int x = 0; x < 10; x++)
+	for (int x = 0; x < 1; x++)
 	{
-		for (int y = 0; y < 10; y++)
+		for (int y = 0; y < 1; y++)
 		{
-			for (int z = 0; z < 10; z++)
+			for (int z = 0; z < 500; z++)
 			{
 				// interchange crates & suzannes (worst case scenario in terms of sorting/nosorting)
 				if ((++index % 2) == 1)
@@ -98,7 +98,7 @@ void AGN::ASceneManager::loadScrambledScene()
 					AEntity* crateEntity = new AEntity();
 					crateEntity->setMeshCollection(crateMeshCollection);
 					crateEntity->setMaterial(&crateMaterial);
-					crateEntity->setPosition(vec3(x * 2, y * 2, z * 2));
+					crateEntity->setPosition(vec3(x * 2, y * 2, z * -2));
 					m_entities.push_back(crateEntity);
 				}
 				else
@@ -107,7 +107,7 @@ void AGN::ASceneManager::loadScrambledScene()
 					AEntity* suzanneEntity = new AEntity();
 					suzanneEntity->setMeshCollection(suzanneMeshCollection);
 					suzanneEntity->setMaterial(&testMaterial);
-					suzanneEntity->setPosition(vec3(x * 2, y * 2, z * 2));
+					suzanneEntity->setPosition(vec3(x * 2, y * 2, z * -2));
 					m_entities.push_back(suzanneEntity);
 				}
 				
@@ -121,8 +121,8 @@ void AGN::ASceneManager::loadSponza()
 	AResourceManager& resourceManager = g_application.getResourceManager();
 
 	// load meshes
-	//std::vector<IAMesh*> sponzaMeshCollection = resourceManager.loadMeshCollection("sponza/sponza.obj");
-	std::vector<IAMesh*> sponzaMeshCollection = resourceManager.loadMeshCollection("sibenik/sibenik.obj");
+	std::vector<IAMesh*> sponzaMeshCollection = resourceManager.loadMeshCollection("sponza/sponza.obj");
+	//std::vector<IAMesh*> sponzaMeshCollection = resourceManager.loadMeshCollection("sibenik/sibenik.obj");
 	std::vector<IAMesh*> skyboxMeshCollection = resourceManager.loadMeshCollection("skybox_fixed.obj");
 
 	// create materials
@@ -133,8 +133,8 @@ void AGN::ASceneManager::loadSponza()
 	crateMaterial.diffuseTexture = &resourceManager.loadTexture("market_props_crate_1_texture.png", EATextureType::TEXTURE_2D);
 
 	AMaterial& skyboxMaterial = resourceManager.createMaterial("skybox_material");
-	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full.jpg", EATextureType::TEXTURE_2D);
-
+	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", EATextureType::TEXTURE_2D);
+	skyboxMaterial.diffuseTexture->setTextureParams((unsigned int)EATextureRenderFlags::USE_CLAMP);
 	skyboxMeshCollection[0]->setMaterial(&skyboxMaterial);
 
 	// create entities

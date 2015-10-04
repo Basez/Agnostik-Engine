@@ -14,6 +14,8 @@ namespace AGN
 		static GLenum getGlTypeByTextureType(EATextureType a_type);
 		void pullBuffer();
 		void pushBuffer();
+		void setTextureParams(unsigned int a_flags = 0) override;
+
 		//void readProperties();
 
 		uint16_t getId() override { return m_id; }
@@ -21,7 +23,6 @@ namespace AGN
 		GLenum getGlType() { return m_glType; }
 
 	private:
-		void setTextureParams(unsigned int a_flags = 0);
 
 		const uint16_t m_id;
 		ATextureData* m_textureData;

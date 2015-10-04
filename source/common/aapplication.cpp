@@ -15,6 +15,7 @@
 #include "aresourcemanager.hpp"
 #include "adrawcommander.hpp"
 #include "adrawcommand.hpp"
+#include "acamera.hpp"
 
 // shaders
 // TODO: find crossplatform for these shaders. Perhaps let the pre-build step figure it out or generate both types in the same file?
@@ -164,7 +165,6 @@ void AGN::AAplication::createDrawQueue()
 	// TODO: make these static draw commands
 	// PREDRAW clear buffer
 	{
-		// create sortkey
 		uint8_t renderPhase = (uint8_t)RenderPhase::PreDraw;
 		uint8_t layer = 0;
 		uint8_t translucencyType = 0;
@@ -222,7 +222,6 @@ void AGN::AAplication::createDrawQueue()
 	// TODO: make these static draw commands
 	// Clear Z Buffer after skybox
 	{
-		// create sortkey
 		uint8_t renderPhase = (uint8_t)RenderPhase::FullscreenViewport;
 		uint8_t layer = (uint8_t)RenderLayer::PreEntities;
 		uint8_t translucencyType = 0;
@@ -239,23 +238,48 @@ void AGN::AAplication::createDrawQueue()
 		data.clearColor = 0x000000;
 	}
 
-	// fill commander with entity draw entity commands
+	/*
+	// get depths of every entity
+	std::vector<float> depthVector;
+	float maxDepth = 0.0f;
+	glm::vec3 camPosition = m_sceneManager->getCurrentCamera()->getPosition();
+	const uint32_t maxDepthEntries = static_cast<uint32_t>(1) << static_cast<uint32_t>(ADrawCommander::SortKeyBitAmount::Depth);
+
 	const std::vector<AEntity*> entities = m_sceneManager->getEntities();
 	for (unsigned int i = 0; i < entities.size(); i++)
 	{
-		AEntity& entity = *entities[i];
+		const AEntity& entity = *entities[i];
+		for (unsigned int j = 0; j < entity.getMeshCollection().size(); j++)
+		{
+			IAMesh& mesh = *entity.getMeshCollection()[j];
 
+			// calculate depth to camera
+			const glm::vec3 diff = (entities[i]->getPosition() + mesh.getCenterPoint()) - camPosition;
+			float dp = glm::dot(diff, diff);
+			depthVector.push_back(dp);
+
+			if (dp > maxDepth) maxDepth = dp;
+		}
+	}*/
+
+
+	// fill commander with entity draw entity commands
+	const std::vector<AEntity*> entities = m_sceneManager->getEntities();
+	for (unsigned int i = 0, depthVectorIndex = 0; i < entities.size(); i++)
+	{
+		AEntity& entity = *entities[i];
+		
 		// calculate model matrix
 		mat4 translation = glm::translate(entity.getPosition());
 		mat4 rotation = toMat4(entity.getRotation());
 		mat4 scaling = scale(entity.getScale());
 		mat4 modelMatrix = translation * rotation * scaling;
 
-		for (unsigned int j = 0; j < entity.getMeshCollection().size(); j++)
+		for (unsigned int j = 0; j < entity.getMeshCollection().size(); j++, depthVectorIndex++)
 		{
 			IAMesh* mesh = entity.getMeshCollection()[j];
 			AMaterial* material = mesh->getMaterial();
-
+			 
 			// create sortkey
 			uint8_t renderPhase = (uint8_t)RenderPhase::FullscreenViewport;
 			uint8_t layer = (uint8_t)RenderLayer::Entities;
@@ -264,9 +288,9 @@ void AGN::AAplication::createDrawQueue()
 			uint16_t shaderPipelineId = m_meshShaderPipeline->getAId();
 			uint32_t meshId = mesh->getAId();
 			uint16_t materialId = material->getAId();
-			uint32_t depth = 0;							// TODO:
+			uint32_t depth = 0;//(depthVector[depthVectorIndex] / (maxDepth+1)) * maxDepthEntries;
 			uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, shaderPipelineId, meshId, materialId, depth);
-
+			
 			ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::DrawEntity, sortkey);
 			ADrawEntityData& data = drawCommand.data.entityData;
 			data.shaderPipeline = m_meshShaderPipeline;
