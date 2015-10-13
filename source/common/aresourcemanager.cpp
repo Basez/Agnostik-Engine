@@ -117,7 +117,7 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 	for (unsigned int i = 0; i < scene->mNumMaterials; i++)
 	{
 		const aiMaterial* assimpMaterial = scene->mMaterials[i];
-		aiString relativePath;  // filename
+		aiString relativePath = aiString();  // filename
 		std::string texturesFolder = g_configManager.getConfigProperty("path_textures");
 
 		aiString materialName;
@@ -144,17 +144,17 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 		}
 
 		// load textures
-		if (assimpMaterial->GetTexture(aiTextureType_DIFFUSE, NULL, &relativePath) == AI_SUCCESS)
+		if (assimpMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &relativePath) == AI_SUCCESS)
 		{
 			newMaterial.diffuseTexture = &loadTexture(relativePath.C_Str(), EATextureType::TEXTURE_2D);
 		}
 
-		if (assimpMaterial->GetTexture(aiTextureType_NORMALS, NULL, &relativePath) == AI_SUCCESS)
+		if (assimpMaterial->GetTexture(aiTextureType_NORMALS, 0, &relativePath) == AI_SUCCESS)
 		{
 			newMaterial.normalTexture = &loadTexture(relativePath.C_Str(), EATextureType::TEXTURE_2D);
 		}
 
-		if (assimpMaterial->GetTexture(aiTextureType_SPECULAR, NULL, &relativePath) == AI_SUCCESS)
+		if (assimpMaterial->GetTexture(aiTextureType_SPECULAR, 0, &relativePath) == AI_SUCCESS)
 		{
 			newMaterial.specularTexture = &loadTexture(relativePath.C_Str(), EATextureType::TEXTURE_2D);
 		}

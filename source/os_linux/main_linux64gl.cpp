@@ -1,8 +1,9 @@
 #include "asharedh.hpp"
 #include "aaplication.hpp"
 #include "arender_api_gl.hpp"
-#include "afileutils.hpp"
 #include "aconfigmanager.hpp"
+#include "aosutils.hpp"
+
 using namespace AGN;
 
 int main(int /*argc*/, char* /*argv*/[])
@@ -13,9 +14,9 @@ int main(int /*argc*/, char* /*argv*/[])
 	g_log.debug("pointer size: %i", sizeof(testIntPointer));
 	
 	// load configurations
-	std::string currentFolder = AFileUtils::getCurrentFolder();
-	std::string configFile = AFileUtils::findFile("config.ini", currentFolder.c_str(), 3, 3);
-	std::string rootFolder = AFileUtils::getDirectoryOfPath(configFile);
+	std::string currentFolder = AOSUtils::getCurrentFolder();
+	std::string configFile = AOSUtils::findFile("config.ini", currentFolder.c_str(), 3, 3);
+	std::string rootFolder = AOSUtils::getDirectoryOfPath(configFile);
 	g_configManager.parseConfigFile(configFile);
 
 	IARenderAPI* renderAPI = new ARenderAPIGL();

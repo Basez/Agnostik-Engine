@@ -42,16 +42,6 @@ std::string AGN::AOSUtils::getUpDirectory(std::string a_path)
 	return a_path.substr(0, index).c_str();
 }
 
-std::string AGN::AOSUtils::getPathRelativeToPath(std::string a_originPath, std::string a_relativeToOrigin)
-{
-	string relativePath = "";
-	relativePath += getDirectoryOfPath(a_originPath);	// start with directory of origin
-	relativePath += "/";
-	relativePath += a_relativeToOrigin;
-
-	return relativePath;
-}
-
 std::string AGN::AOSUtils::findFile(std::string a_file, std::string a_startFolder, int a_deepLevel, int a_upLevel)
 {
 	DIR *dir;

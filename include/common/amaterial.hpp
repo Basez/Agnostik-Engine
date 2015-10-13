@@ -8,7 +8,7 @@ namespace AGN
 	class AMaterial
 	{
 	public:
-		AGN::AMaterial::AMaterial(const uint16_t a_aId, std::string a_name)
+		AMaterial(const uint16_t a_aId, std::string a_name)
 			: m_aId(a_aId)
 			, m_name(a_name)
 			, diffuseTexture(nullptr)

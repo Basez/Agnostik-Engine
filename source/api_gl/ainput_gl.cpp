@@ -122,7 +122,9 @@ bool AGN::AInputGL::getMouseUp(AGN::AGN_MOUSECODE a_mouseButton)
 
 bool AGN::AInputGL::getMouse(AGN::AGN_MOUSECODE a_mouseButton)
 {
-	return ((SDL_GetMouseState(NULL, NULL)&SDL_BUTTON((uint8_t)a_mouseButton)) == SDL_BUTTON((uint8_t)a_mouseButton));
+	uint32_t mouseState = SDL_GetMouseState(NULL, NULL)&SDL_BUTTON((uint8_t)a_mouseButton);
+	uint32_t buttonState = SDL_BUTTON((uint32_t)a_mouseButton);
+	return (mouseState == buttonState);
 }
 
 bool AGN::AInputGL::getCapslock()
