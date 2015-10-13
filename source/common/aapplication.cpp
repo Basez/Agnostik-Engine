@@ -76,8 +76,8 @@ void AGN::AAplication::update()
 {
 	// calculate delatTime
 	// TODO: Cross-Platform!
-	static Uint32 lastTime = 0;
-	Uint32 time = SDL_GetTicks();
+	static uint32_t lastTime = 0;
+	uint32_t time = SDL_GetTicks();
 	float deltaTime = float(time - lastTime) / 1000.0f;
 	lastTime = time;
 

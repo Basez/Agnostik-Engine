@@ -26,10 +26,10 @@ Export('buildname')
 
 if buildname == 'win64gl':    
     SConscript('project_files/SConscript_win64gl')
-elif buildname == 'win64dx':
-	SConscript('project_files/SConscript_win64dx')
 elif buildname == 'linux64gl':
 	SConscript('project_files/SConscript_linux64gl')
+elif buildname == 'win64dx11':
+	SConscript('project_files/SConscript_win64dx11')
 else:
     print "Warning: No valid Build selected! check config.ini"
 
@@ -53,7 +53,7 @@ if env.GetOption('clean'):
 	Execute(Delete('project_files/obj/', must_exist=0))
 	Execute(Delete('genfiles/', must_exist=0))
 	# delete shaders
-	Execute(Delete('shaders/output_dx', must_exist=0))
+	Execute(Delete('shaders/output_dx11', must_exist=0))
 	Execute(Delete('shaders/output_gl/', must_exist=0))
 	# delete visual studio output files
 	Execute(Delete('build/' + buildname + '/agnostik_debug.ilk', must_exist=0))

@@ -10,8 +10,9 @@ print "Executing MSVC SConscript..."
 print "rootDir: " + rootDir
 print "buildname: " + buildname
 
-#execute shader generation script for OpenGL
-SConscript('../shaders/SConscript_generate_gl_shaders')
+#TODO:
+#execute shader generation script for DX11
+SConscript('../shaders/SConscript_generate_dx11_shaders')
 
 # Compiler & Linker commands
 env.AppendUnique(CXXFLAGS=Split("/EHsc"))				# specify compiler unwind semantics
@@ -22,11 +23,11 @@ env['CCPDBFLAGS'] = '/Z7 /Fd${TARGET}.pdb'				# Generate pdb for code debugging 
 
 # specify include folder & libs folder
 libPaths= ['../libs/win64']
-additionalIncludes = ['../include/common', '../include/api_gl', '../include/os_win', '../libs/win64/include', '../shaders/output_gl']
+additionalIncludes = ['../include/common', '../include/api_dx11', '../include/os_win', '../libs/win64/include', '../shaders/output_dx11']
 env.Append(CPPPATH = additionalIncludes)					
 
 #specify main entrypoint cpp
-buildEntrypoint = 'main_win64gl.cpp'
+buildEntrypoint = 'main_win64dx11.cpp'
 
 ##############################################################################
 ### Create release env
@@ -37,23 +38,21 @@ envRelease.AppendUnique(CPPDEFINES = ['AGN_RELEASE'])
 
 # set variant dirs (temp folders)	
 envRelease.VariantDir('../genfiles/gen-common-release', '../source/common', duplicate=0)		# specify intermediate folder for generated .obj files
-envRelease.VariantDir('../genfiles/gen-api_gl-release', '../source/api_gl', duplicate=0)
+envRelease.VariantDir('../genfiles/gen-api_dx11-release', '../source/api_dx11', duplicate=0)
 envRelease.VariantDir('../genfiles/gen-os_win-release', '../source/os_win', duplicate=0)
 envRelease.VariantDir('../genfiles/gen-build-release', '../source/', duplicate=0)
 
 # Gather all cpp files
 objsCommonRelease = [file for file in envRelease.Glob('../genfiles/gen-common-release/*.cpp')]
-objsAPIRelease = [file for file in envRelease.Glob('../genfiles/gen-api_gl-release/*.cpp')]
+objsAPIRelease = [file for file in envRelease.Glob('../genfiles/gen-api_dx11-release/*.cpp')]
 objsOSRelease = [file for file in envRelease.Glob('../genfiles/gen-os_win-release/*.cpp')]
 objsBuildRelease = ['../genfiles/gen-build-release/' + buildEntrypoint]
 
- 
 # specify release libs
-releaseLibNames=['SDL2', 'SDL2main', 'glew32', 'OpenGL32', 'glu32', 'assimp']
+releaseLibNames=['d3d11','dxgi','d3dcompiler','winmm','assimp', 'user32', 'dxguid']
 
 # create program
 applicationProgramRelease = envRelease.Program(source = objsBuildRelease + objsCommonRelease + objsAPIRelease + objsOSRelease, target = "../build/"+buildname+"/agnostik_release", LIBS = releaseLibNames, LIBPATH = libPaths)
-
 
 ##############################################################################
 ### create debug env
@@ -67,18 +66,18 @@ envDebug.AppendUnique(CPPDEFINES = ['AGN_DEBUG'])
 
 #envDebug['PDB']='${TARGET.base}.pdb'													# not sure what this does or why its required?
 envDebug.VariantDir('../genfiles/gen-common-debug', '../source/common', duplicate=0)		# specify intermediate folder for generated .obj files
-envDebug.VariantDir('../genfiles/gen-api_gl-debug', '../source/api_gl', duplicate=0)
+envDebug.VariantDir('../genfiles/gen-api_dx11-debug', '../source/api_dx11', duplicate=0)
 envDebug.VariantDir('../genfiles/gen-os_win-debug', '../source/os_win', duplicate=0)
 envDebug.VariantDir('../genfiles/gen-build-debug', '../source/', duplicate=0)
 
 # Gather all cpp files
 objsCommonDebug = [file for file in envDebug.Glob('../genfiles/gen-common-debug/*.cpp')]
-objsAPIDebug = [file for file in envDebug.Glob('../genfiles/gen-api_gl-debug/*.cpp')]
+objsAPIDebug = [file for file in envDebug.Glob('../genfiles/gen-api_dx11-debug/*.cpp')]
 objsOSDebug = [file for file in envDebug.Glob('../genfiles/gen-os_win-debug/*.cpp')]
 objsBuildDebug = ['../genfiles/gen-build-debug/' + buildEntrypoint]
-
+		 
 #specify debug libs
-debugLibNames=['SDL2', 'SDL2main', 'glew32', 'OpenGL32', 'glu32', 'assimp']
+debugLibNames=['d3d11','dxgi','d3dcompiler','winmm','assimp', 'user32', 'dxguid']
 
 # create debug program
 applicationProgramDebug = envDebug.Program(source = objsBuildDebug + objsCommonDebug + objsAPIDebug + objsOSDebug, target = "../build/"+buildname+"/agnostik_debug", LIBS = debugLibNames, LIBPATH = libPaths)
@@ -87,11 +86,11 @@ applicationProgramDebug = envDebug.Program(source = objsBuildDebug + objsCommonD
 # generate msvs project  # MSVSProject OR MSVSSolution
 project = env.MSVSProject(target = 'agnostik_' + buildname + env['MSVSPROJECTSUFFIX'],
                 srcs = (Glob('../source/common/*.cpp', strings=True) +					## add all cpp files
-						Glob('../source/api_gl/*.cpp', strings=True) +
+						Glob('../source/api_dx11/*.cpp', strings=True) +
 						Glob('../source/os_win/*.cpp', strings=True)) +
 						['../source' + buildEntrypoint],
                 incs = (Glob('../include/common/*.hpp', strings=True) +					## add all hpp files
-						Glob('../include/api_gl/*.hpp', strings=True) +
+						Glob('../include/api_dx11/*.hpp', strings=True) +
 						Glob('../include/os_win/*.hpp', strings=True)),						
 				buildtarget = applicationProgramDebug + applicationProgramRelease,
 				variant = ['debug', 'release'],

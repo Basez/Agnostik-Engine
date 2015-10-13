@@ -47,6 +47,9 @@ env.Install(installDir, rootDir + "/libs_linux/libassimp.so.3")
 env.Alias('install', installDir)
 """
 
+#specify main entrypoint cpp
+buildEntrypoint = 'main_linux64gl.cpp'
+
 ##############################################################################
 # Create release env
 envRelease = env.Clone()
@@ -55,13 +58,15 @@ envRelease.AppendUnique(CPPDEFINES = ['AGN_RELEASE'])
 envRelease.VariantDir('../genfiles/gen-common-release', '../source/common', duplicate=0)		# specify intermediate folder for generated .obj files
 envRelease.VariantDir('../genfiles/gen-api_gl-release', '../source/api_gl', duplicate=0)
 envRelease.VariantDir('../genfiles/gen-os_linux-release', '../source/os_linux', duplicate=0)
+envRelease.VariantDir('../genfiles/gen-build-release', '../source/', duplicate=0)
 
-envRelease.AppendUnique(CXXFLAGS=['-O3'])	 								# Level 3 optimizations (release only)
+envRelease.AppendUnique(CXXFLAGS=['-O3'])	 													# Level 3 optimizations (release only)
 
 # Gather all cpp files
 objsCommonRelease = [file for file in envRelease.Glob('../genfiles/gen-common-release/*.cpp')]
 objsAPIRelease = [file for file in envRelease.Glob('../genfiles/gen-api_gl-release/*.cpp')]
 objsOSRelease = [file for file in envRelease.Glob('../genfiles/gen-os_linux-release/*.cpp')]
+objsBuildRelease = ['../genfiles/gen-build-release/' + buildEntrypoint]
 
 """
 # debug/test to display files included 
@@ -74,7 +79,7 @@ for x in range(0, len(objsCommonRelease)):
 releaseLibNames=['SDL2', 'SDL2main', 'GL', 'GLU', 'GLEW', 'assimp']
 
 # create program
-applicationProgramRelease = envRelease.Program(source = objsCommonRelease + objsAPIRelease + objsOSRelease, target = "../build/"+buildname+"/agnostik_release", LIBS = releaseLibNames, LIBPATH = libPaths)
+applicationProgramRelease = envRelease.Program(source = objsBuildRelease + objsCommonRelease + objsAPIRelease + objsOSRelease, target = "../build/"+buildname+"/agnostik_release", LIBS = releaseLibNames, LIBPATH = libPaths)
 
 ##############################################################################
 # Create debug env
@@ -86,17 +91,19 @@ envDebug.Append(CPPDEFINES = ['AGN_DEBUG'])
 envDebug.VariantDir('../genfiles/gen-common-debug', '../source/common', duplicate=0)		# specify intermediate folder for generated .obj files
 envDebug.VariantDir('../genfiles/gen-api_gl-debug', '../source/api_gl', duplicate=0)
 envDebug.VariantDir('../genfiles/gen-os_linux-debug', '../source/os_linux', duplicate=0)
+envDebug.VariantDir('../genfiles/gen-build-debug', '../source/', duplicate=0)
 
 # Gather all cpp files
 objsCommonDebug = [file for file in envDebug.Glob('../genfiles/gen-common-debug/*.cpp')]
 objsAPIDebug = [file for file in envDebug.Glob('../genfiles/gen-api_gl-debug/*.cpp')]
 objsOSDebug = [file for file in envDebug.Glob('../genfiles/gen-os_linux-debug/*.cpp')]
+objsBuildDebug = ['../genfiles/gen-build-debug/' + buildEntrypoint]
 
 #specify release libs
 debugLibNames=['SDL2', 'SDL2main', 'GL', 'GLU', 'GLEW', 'assimp']
 
 # create program
-applicationProgramDebug = envDebug.Program(source = objsCommonDebug + objsAPIDebug + objsOSDebug, target = "../build/"+buildname+"/agnostik_debug", LIBS = debugLibNames, LIBPATH = libPaths)
+applicationProgramDebug = envDebug.Program(source = objsBuildDebug + objsCommonDebug + objsAPIDebug + objsOSDebug, target = "../build/"+buildname+"/agnostik_debug", LIBS = debugLibNames, LIBPATH = libPaths)
 
 ##############################################################################
 Export('env')			# export var to scons main
