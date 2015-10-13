@@ -19,3 +19,4 @@ build/linux64gl/agnostik_release
 build/linux64gl/agnostik_debug
 genfilesgen-common-debugaapplication.dwo
 shaders/output_gl/
+shaders/output_dx11/

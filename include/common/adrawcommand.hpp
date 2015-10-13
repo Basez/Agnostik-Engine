@@ -41,6 +41,12 @@ namespace AGN
 		float modelMatrixArray[16];
 	};
 
+	enum class ADrawBufferType
+	{
+		COLOR = 1, 
+		DEPTH = 2
+	};
+
 	struct AClearBufferData
 	{
 		uint32_t clearColor;

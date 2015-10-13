@@ -87,8 +87,8 @@ applicationProgramDebug = envDebug.Program(source = objsBuildDebug + objsCommonD
 project = env.MSVSProject(target = 'agnostik_' + buildname + env['MSVSPROJECTSUFFIX'],
                 srcs = (Glob('../source/common/*.cpp', strings=True) +					## add all cpp files
 						Glob('../source/api_dx11/*.cpp', strings=True) +
-						Glob('../source/os_win/*.cpp', strings=True)) +
-						['../source' + buildEntrypoint],
+						Glob('../source/os_win/*.cpp', strings=True) +
+						Glob('../source/'+ buildEntrypoint, strings=True)),
                 incs = (Glob('../include/common/*.hpp', strings=True) +					## add all hpp files
 						Glob('../include/api_dx11/*.hpp', strings=True) +
 						Glob('../include/os_win/*.hpp', strings=True)),						

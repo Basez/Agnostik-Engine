@@ -16,6 +16,8 @@ namespace AGN
 		void drawEntity(struct ADrawCommand* a_command);
 		void bindTexturesToShader(GLuint a_shaderProgram, GLuint a_textureCount, class ATextureGL** a_textureArray);
 
+		uint32_t getGlEnumBuffers(uint32_t a_agnostikEnums);
+
 		class ACamera* m_currentCamera;
 		glm::mat4 m_vp;
 

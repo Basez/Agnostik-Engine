@@ -1,5 +1,6 @@
 #include "asharedh.hpp"
 #include "aaplication.hpp"
+#include <chrono>
 
 #include "iarender_api.hpp"
 #include "iawindow.hpp"
@@ -75,18 +76,18 @@ void AGN::AAplication::cleanup()
 void AGN::AAplication::update()
 {
 	// calculate delatTime
-	// TODO: Cross-Platform!
-	static uint32_t lastTime = 0;
-	uint32_t time = SDL_GetTicks();
-	float deltaTime = float(time - lastTime) / 1000.0f;
-	lastTime = time;
-
+	static std::chrono::steady_clock clock;
+	static auto lastTime = clock.now();
+	auto currentTime = clock.now();
+	std::chrono::duration<float> timeDifference = currentTime - lastTime;
+	float deltaTime = timeDifference.count();
+	lastTime = currentTime;
+	
 	// limit deltatime
 	if (deltaTime > 1.0f) deltaTime = 1.0f;
 
 	// logic
 	m_sceneManager->update(deltaTime);
-
 	updateMeshShaderProperties(deltaTime);
 }
 
@@ -177,8 +178,10 @@ void AGN::AAplication::createDrawQueue()
 		
 		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::ClearBuffer, sortkey);
 		AClearBufferData& data = drawCommand.data.clearcolorData;
-		data.buffersToClear = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT; // TODO: OpenGL specific? shouldnt be here
+		data.buffersToClear = (uint32_t)ADrawBufferType::COLOR | (uint32_t)ADrawBufferType::DEPTH;
 		data.clearColor = 0x00FF00;
+
+		
 	}
 
 	const std::vector<AEntity*> skyboxEntities = m_sceneManager->getSkyboxEntities();
@@ -234,7 +237,7 @@ void AGN::AAplication::createDrawQueue()
 
 		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::ClearBuffer, sortkey);
 		AClearBufferData& data = drawCommand.data.clearcolorData;
-		data.buffersToClear = GL_DEPTH_BUFFER_BIT; // TODO: OpenGL specific? shouldnt be here
+		data.buffersToClear = (uint32_t)ADrawBufferType::DEPTH;
 		data.clearColor = 0x000000;
 	}
 

@@ -63,7 +63,7 @@ void AGN::ARendererGL::render(AGN::ADrawCommander& a_drawCommander)
 			float a, r, g, b;
 			PixelUtils::getARGBFloat(command->data.clearcolorData.clearColor, a, r, g, b);
 			glClearColor(r, g, b, 1.0f);
-			glClear(command->data.clearcolorData.buffersToClear);
+			glClear(getGlEnumBuffers(command->data.clearcolorData.buffersToClear));
 			break;
 
 		case EADrawCommandType::DrawEntity:
@@ -188,4 +188,14 @@ void AGN::ARendererGL::bindTexturesToShader(GLuint a_shaderProgram, GLuint a_tex
 		glBindTexture(glType, a_textureArray[i]->getGlId());
 		glUniform1i(uniformSampler, i);
 	}
+}
+
+uint32_t AGN::ARendererGL::getGlEnumBuffers(uint32_t a_agnostikEnums)
+{
+	uint32_t accumilatedBuffer = 0;
+
+	if (a_agnostikEnums & (uint32_t)ADrawBufferType::COLOR) accumilatedBuffer |= GL_COLOR_BUFFER_BIT;
+	if (a_agnostikEnums & (uint32_t)ADrawBufferType::DEPTH) accumilatedBuffer |= GL_DEPTH_BUFFER_BIT;
+
+	return accumilatedBuffer;
 }
