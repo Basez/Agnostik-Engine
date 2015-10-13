@@ -1,9 +1,11 @@
 // mesh.pix
-#version 400 core
+#version 420 core
  
-in vec4 v2f_normalW; 	// Surface normal in world space.
+in vec4 v2f_normalWS; 	// Surface normal in world space.
+in vec4 v2f_tangentWS;
+in vec4 v2f_bitangentWS;
 in vec2 v2f_texcoord;
- 
+
 layout(binding = 0) uniform LightSettings
 {
 	uniform vec4 uLightDirection; // Light's direction in world space.
@@ -26,7 +28,7 @@ layout (location=0) out vec4 out_color;
 void main()
 {	
 	// Compute the diffuse term.
-	vec4 N = normalize( v2f_normalW );
+	vec4 N = normalize( v2f_normalWS );
 	float NdotL = max( dot( N, uLightDirection ), 0 );
 	vec4 Diffuse =  NdotL * uLightColor * vec4(uMaterialDiffuseColor, 1.0f);
 	

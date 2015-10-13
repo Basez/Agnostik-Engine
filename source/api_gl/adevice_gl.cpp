@@ -109,7 +109,7 @@ AGN::IAShader* AGN::ADeviceGL::createShader(const uint16_t a_aId, const char* a_
 		GLchar* infoLog = new GLchar[logLength];
 		glGetShaderInfoLog(shaderGlId, logLength, NULL, infoLog);
 
-		g_log.error(infoLog);
+		g_log.error("Error during shader parsing: %s", infoLog);
 
 		delete infoLog;
 

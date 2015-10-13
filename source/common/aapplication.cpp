@@ -288,7 +288,7 @@ void AGN::AAplication::createDrawQueue()
 			uint16_t shaderPipelineId = m_meshShaderPipeline->getAId();
 			uint32_t meshId = mesh->getAId();
 			uint16_t materialId = material->getAId();
-			uint32_t depth = 0;//(depthVector[depthVectorIndex] / (maxDepth+1)) * maxDepthEntries;
+			uint32_t depth = 0;//(depthVector[depthVectorIndex] / (maxDepth+1)) * maxDepthEntries; // add sorted depth
 			uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, shaderPipelineId, meshId, materialId, depth);
 			
 			ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::DrawEntity, sortkey);

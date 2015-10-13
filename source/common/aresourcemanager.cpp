@@ -187,26 +187,26 @@ class std::vector<AGN::IAMesh*> AGN::AResourceManager::loadMeshCollection(std::s
 		vec3 max(-99999.0f), min(99999.0f);
 		for (unsigned int j = 0; j < loadedMesh.mNumVertices; j++)
 		{
-			const aiVector3D* pPos = &(loadedMesh.mVertices[j]);
-			const aiVector3D* pNormal = &(loadedMesh.mNormals[j]);
-			const aiVector3D* pTexCoord = loadedMesh.HasTextureCoords(0) ? &(loadedMesh.mTextureCoords[0][j]) : &zeroVector;
-			//const aiVector3D* pTangents = &(loadedMesh.mTangents[j]);
-			//const aiVector3D* pBitangents = &(loadedMesh.mBitangents[j]);
+			const aiVector3D* loadedPos = &(loadedMesh.mVertices[j]);
+			const aiVector3D* loadedNormal = &(loadedMesh.mNormals[j]);
+			const aiVector3D* loadedTexCoord = loadedMesh.HasTextureCoords(0) ? &(loadedMesh.mTextureCoords[0][j]) : &zeroVector;
+			const aiVector3D* loadedTangents = &(loadedMesh.mTangents[j]);
+			const aiVector3D* loadedBitangents = &(loadedMesh.mBitangents[j]);
 
-			newMeshData.positions.push_back(vec3(pPos->x, pPos->y, pPos->z));
-			newMeshData.normals.push_back(vec3(pNormal->x, pNormal->y, pNormal->z));
-			//newMeshData.tangents.push_back(vec3(pTangents->x, pTangents->y, pTangents->z));
-			//newMeshData.bitangents.push_back(vec3(pBitangents->x, pBitangents->y, pBitangents->z));
-			newMeshData.textureCoords.push_back(vec2(pTexCoord->x, pTexCoord->y));
+			newMeshData.positions.push_back(vec3(loadedPos->x, loadedPos->y, loadedPos->z));
+			newMeshData.normals.push_back(vec3(loadedNormal->x, loadedNormal->y, loadedNormal->z));
+			newMeshData.tangents.push_back(vec3(loadedTangents->x, loadedTangents->y, loadedTangents->z));
+			newMeshData.bitangents.push_back(vec3(loadedBitangents->x, loadedBitangents->y, loadedBitangents->z));
+			newMeshData.textureCoords.push_back(vec2(loadedTexCoord->x, loadedTexCoord->y));
 
 			// calculate max and minimum (for outer most vertices)
-			if (pPos->x < min.x) min.x = pPos->x;
-			if (pPos->y < min.y) min.y = pPos->y;
-			if (pPos->z < min.z) min.z = pPos->z;
+			if (loadedPos->x < min.x) min.x = loadedPos->x;
+			if (loadedPos->y < min.y) min.y = loadedPos->y;
+			if (loadedPos->z < min.z) min.z = loadedPos->z;
 
-			if (pPos->x > max.x) max.x = pPos->x;
-			if (pPos->y > max.y) max.y = pPos->y;
-			if (pPos->z > max.z) max.z = pPos->z;
+			if (loadedPos->x > max.x) max.x = loadedPos->x;
+			if (loadedPos->y > max.y) max.y = loadedPos->y;
+			if (loadedPos->z > max.z) max.z = loadedPos->z;
 		}
 
 		newMeshData.centerpoint = min + (max - min) * 0.5f;

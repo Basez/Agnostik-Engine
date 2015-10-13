@@ -1,9 +1,11 @@
 // skybox.vert
-#version 400 core
+#version 420 core
  
 layout(location=0) in vec3 in_position;				// mesh specific
-layout(location=2) in vec3 in_normal;				// mesh specific
-layout(location=8) in vec2 in_texcoord;				// mesh specific
+layout(location=1) in vec3 in_normal;				// mesh specific
+layout(location=2) in vec3 in_tangent;				// mesh specific
+layout(location=3) in vec3 in_bitangent;			// mesh specific
+layout(location=4) in vec2 in_texcoord;				// mesh specific
  
 out vec2 v2f_texcoord;
  

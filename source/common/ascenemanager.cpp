@@ -65,20 +65,15 @@ void AGN::ASceneManager::loadScrambledScene()
 	AMaterial& testMaterial = resourceManager.createMaterial("test_material");
 	testMaterial.diffuseTexture = &resourceManager.loadTexture("test.png", EATextureType::TEXTURE_2D);
 
-	AMaterial& crateMaterial = resourceManager.createMaterial("crate_material");
-	crateMaterial.diffuseTexture = &resourceManager.loadTexture("market_props_crate_1_texture.png", EATextureType::TEXTURE_2D);
-
 	AMaterial& skyboxMaterial = resourceManager.createMaterial("skybox_material");
 	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", EATextureType::TEXTURE_2D);
 
-	crateMeshCollection[0]->setMaterial(&crateMaterial);
 	suzanneMeshCollection[0]->setMaterial(&testMaterial);
 	skyboxMeshCollection[0]->setMaterial(&skyboxMaterial);
 
 	// Skybox entity
 	AEntity* skyboxEntity = new AEntity();
 	skyboxEntity->setMeshCollection(skyboxMeshCollection);
-	skyboxEntity->setMaterial(&skyboxMaterial);
 	skyboxEntity->setPosition(vec3(0, 0, 0));
 	skyboxEntity->setScale(vec3(10, 10, 10));
 	m_skyboxEntities.push_back(skyboxEntity);
@@ -97,7 +92,6 @@ void AGN::ASceneManager::loadScrambledScene()
 					// crate
 					AEntity* crateEntity = new AEntity();
 					crateEntity->setMeshCollection(crateMeshCollection);
-					crateEntity->setMaterial(&crateMaterial);
 					crateEntity->setPosition(vec3(x * 2, y * 2, z * -2));
 					m_entities.push_back(crateEntity);
 				}
@@ -106,7 +100,6 @@ void AGN::ASceneManager::loadScrambledScene()
 					// suzanne
 					AEntity* suzanneEntity = new AEntity();
 					suzanneEntity->setMeshCollection(suzanneMeshCollection);
-					suzanneEntity->setMaterial(&testMaterial);
 					suzanneEntity->setPosition(vec3(x * 2, y * 2, z * -2));
 					m_entities.push_back(suzanneEntity);
 				}

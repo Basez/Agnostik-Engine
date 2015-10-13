@@ -22,8 +22,8 @@ namespace AGN
 		std::vector<uint32_t> indicies;
 		std::vector<glm::vec3> positions;
 		std::vector<glm::vec3> normals;
-		std::vector<glm::vec3> tagents;
-		std::vector<glm::vec3> bitangent;
+		std::vector<glm::vec3> tangents;
+		std::vector<glm::vec3> bitangents;
 		std::vector<glm::vec2> textureCoords;
 		glm::vec3 centerpoint;
 
