@@ -10,7 +10,7 @@ namespace AGN
 		ATextureGL(const uint16_t a_id, ATextureData* a_textureData, GLuint a_glId);
 		~ATextureGL() override;
 
-		std::string getRelativePath();
+		std::string getRelativePath() override;
 		static GLenum getGlTypeByTextureType(EATextureType a_type);
 		void pullBuffer();
 		void pushBuffer();
