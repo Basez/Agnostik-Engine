@@ -26,6 +26,7 @@ namespace AGN
 		void showCursor(bool a_shown) override;
 
 		glm::ivec2 getDimentions() override { return glm::ivec2(); } // TODO:
+		const HWND getWindowHandle() const { return m_windowHandle; }
 
 	private:
 		glm::ivec2 m_dimentions;

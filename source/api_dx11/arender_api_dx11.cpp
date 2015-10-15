@@ -23,9 +23,11 @@ bool AGN::ARenderAPIDX11::init()
 	windowDimentions.y = g_configManager.getConfigPropertyAsInt32("start_resolution_y");
 	m_window = new AWindowDX11(windowDimentions);
 
-	m_device = new ADeviceDX11();
-	m_renderer = new ARendererDX11();
+	m_device = new ADeviceDX11(m_window);
+	m_device->init();
 
+	m_renderer = new ARendererDX11(m_device, m_window);
+	m_renderer->init();
 
 	return false; // TODO:
 }

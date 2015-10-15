@@ -4,17 +4,17 @@
 #include "aosutils.hpp"
 #include "arender_api_dx11.hpp"
 
-// TODO: lean and mean?
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-
-
 
 using namespace AGN;
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+int WINAPI WinMain(HINSTANCE a_hInstance, HINSTANCE a_hPrevInstance, LPSTR a_lpCmdLine, int a_nShowCmd)
 {
-	UNREFERENCED_PARAMETER(hPrevInstance);
-	UNREFERENCED_PARAMETER(lpCmdLine);
+	UNREFERENCED_PARAMETER(a_hInstance);
+	UNREFERENCED_PARAMETER(a_hPrevInstance);
+	UNREFERENCED_PARAMETER(a_lpCmdLine);
+	UNREFERENCED_PARAMETER(a_nShowCmd);
 
 	g_log.init(EALogTimeType::RunningTime, (uint8_t)EALoggerOutputType::Window | (uint8_t)EALoggerOutputType::OutputDebug);
 

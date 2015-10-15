@@ -18,6 +18,7 @@ namespace AGN
 		virtual class IARenderer& getRenderer() override;
 
 	private:
+
 		bool m_initialized;
 		class AWindowDX11* m_window;
 		class ADeviceDX11* m_device;

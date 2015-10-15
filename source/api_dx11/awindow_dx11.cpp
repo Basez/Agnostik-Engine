@@ -3,9 +3,11 @@
 #include "aosutils.hpp"
 #include "iainput.hpp"
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-AGN::AWindowDX11* g_window = nullptr;
+// accessor for global window procedure callback function
+static AGN::AWindowDX11* g_window = nullptr;
 
 // process messages sent to the window.
 LRESULT CALLBACK AGN::windowProcedureCallback(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
