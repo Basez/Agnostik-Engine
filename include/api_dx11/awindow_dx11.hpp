@@ -1,6 +1,17 @@
 #pragma once
 
 #include "iawindow.hpp"
+#include <basetsd.h>
+
+// fwd declare
+// TODO: review if these are smart fwd declares as they are pretty much ripped from a windows header
+typedef struct HWND__ *HWND;
+#define CALLBACK __stdcall
+typedef LONG_PTR LRESULT;
+typedef UINT_PTR WPARAM;
+typedef LONG_PTR LPARAM;
+typedef unsigned int UINT;
+
 
 namespace AGN
 {
@@ -17,5 +28,11 @@ namespace AGN
 		glm::ivec2 getDimentions() override { return glm::ivec2(); } // TODO:
 
 	private:
+		glm::ivec2 m_dimentions;
+		HWND m_windowHandle = 0;
+
+		LRESULT CALLBACK onWindowEvent(HWND a_hwnd, UINT a_message, WPARAM a_wParam, LPARAM a_lParam);
+		friend LRESULT CALLBACK windowProcedureCallback(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+
 	};
 }

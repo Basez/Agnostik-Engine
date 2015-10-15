@@ -77,7 +77,7 @@ void AGN::ARendererGL::render(AGN::ADrawCommander& a_drawCommander)
 		}
 	}
 
-	// TODO: unbind everything?
+	// TODO: totally whipe state?
 }
 
 void AGN::ARendererGL::drawEntity(ADrawCommand* a_command)

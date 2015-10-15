@@ -13,13 +13,20 @@ AGN::ARenderAPIDX11::ARenderAPIDX11()
 	, m_device(nullptr)
 	, m_renderer(nullptr)
 {
-	// TODO:
-	//m_device = new ADeviceDX11();
-	//m_renderer = new ADeviceDX11();
+
 }
 
 bool AGN::ARenderAPIDX11::init()
 {
+	glm::ivec2 windowDimentions;
+	windowDimentions.x = g_configManager.getConfigPropertyAsInt32("start_resolution_x");
+	windowDimentions.y = g_configManager.getConfigPropertyAsInt32("start_resolution_y");
+	m_window = new AWindowDX11(windowDimentions);
+
+	m_device = new ADeviceDX11();
+	m_renderer = new ARendererDX11();
+
+
 	return false; // TODO:
 }
 
