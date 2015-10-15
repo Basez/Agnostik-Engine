@@ -176,12 +176,97 @@ DXGI_RATIONAL AGN::ADeviceDX11::queryRefreshRate(bool a_vsync)
 
 AGN::IAMesh* AGN::ADeviceDX11::createMesh(const uint16_t a_aId, AGN::AMeshData* a_meshData)
 {
-	return nullptr;
+	ID3D11Buffer* d3d11VertexBuffer;
+	ID3D11Buffer* d3d11IndexBuffer;
+
+	// Create vertex buff
+	D3D11_BUFFER_DESC vertexPosBufferDesc;
+	ZeroMemory(&vertexPosBufferDesc, sizeof(D3D11_BUFFER_DESC));
+
+	vertexPosBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // how the buffer will be bound to the pipeline 
+	vertexPosBufferDesc.ByteWidth = static_cast<UINT>(sizeof(AGN::AMeshDX11::VertexShaderData) * a_meshData->positions.size());
+	vertexPosBufferDesc.CPUAccessFlags = 0;
+	vertexPosBufferDesc.Usage = D3D11_USAGE_DEFAULT; // Identify how the buffer is expected to be read from and written to. Frequency of update is a key factor
+
+	D3D11_SUBRESOURCE_DATA resourceData;
+	ZeroMemory(&resourceData, sizeof(D3D11_SUBRESOURCE_DATA));
+
+	resourceData.pSysMem = a_meshData->positions.data();
+
+	HRESULT hr = m_d3d11Device->CreateBuffer(&vertexPosBufferDesc, &resourceData, &d3d11VertexBuffer);
+	if (FAILED(hr))
+	{
+		g_log.error("failure CreateBuffer vertexBufferDesc");
+		return nullptr;
+	}
+
+	// Create and initialize the index buffer.
+	D3D11_BUFFER_DESC indexBufferDesc;
+	ZeroMemory(&indexBufferDesc, sizeof(D3D11_BUFFER_DESC));
+
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.ByteWidth = static_cast<UINT>(sizeof(uint32_t) * a_meshData->indicies.size());
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	resourceData.pSysMem = a_meshData->indicies.data();
+
+	hr = m_d3d11Device->CreateBuffer(&indexBufferDesc, &resourceData, &d3d11IndexBuffer);
+	if (FAILED(hr))
+	{
+		g_log.error("failure CreateBuffer indexBufferDesc");
+		return nullptr;
+	}
+
+	// create agnostik texture holding the info.
+	AMeshDX11* mesh = new AMeshDX11(a_aId, a_meshData, d3d11VertexBuffer, d3d11IndexBuffer);
+	
+	return dynamic_cast<IAMesh*>(mesh);
 }
 
 AGN::IATexture* AGN::ADeviceDX11::createTexture(const uint16_t a_aId, AGN::ATextureData* a_textureData)
 {
-	return nullptr;
+	const char* relativePath = a_textureData->relativePath.c_str();
+	ID3D11Texture2D* textureHandle = nullptr;
+
+	D3D11_TEXTURE2D_DESC textureDesc;
+	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
+	textureDesc.Width = a_textureData->width;
+	textureDesc.Height = a_textureData->height;
+	textureDesc.MipLevels = textureDesc.ArraySize = 1;
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;			// DXGI_FORMAT_R8G8B8A8_UNORM DXGI_FORMAT_R8G8B8A8_TYPELESS DXGI_FORMAT_R8G8B8A8_UINT
+	textureDesc.SampleDesc.Count = 1;
+	//textureDesc.SampleDesc.Quality = 0;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT; //  D3D11_USAGE_DYNAMIC
+	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE; //D3D11_BIND_DECODER | D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = 0; // D3D11_CPU_ACCESS_WRITE;
+	textureDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA resourceData = { 0 };
+	resourceData.pSysMem = a_textureData->buffer;
+	resourceData.SysMemPitch = a_textureData->width * 4;									// pitch in bytes
+	resourceData.SysMemSlicePitch = a_textureData->height * resourceData.SysMemPitch;	// pitch * slice (total memsize)
+
+	HRESULT hr = m_d3d11Device->CreateTexture2D(&textureDesc, &resourceData, &textureHandle);
+
+	if (FAILED(hr))
+	{
+		g_log.error("Failed to create Texture: %s", relativePath);
+		return nullptr;
+	}
+
+	hr = textureHandle->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof(relativePath) - 1, relativePath);
+
+	if (FAILED(hr))
+	{
+		g_log.error("Failed to set private data: %s", relativePath);
+		return nullptr;
+	}
+
+	
+	// create agnostik texture holding the info.
+	ATextureDX11* texture = new ATextureDX11(a_aId, a_textureData, textureHandle);
+
+	return dynamic_cast<IATexture*>(texture);
 }
 
 AGN::IAShader* AGN::ADeviceDX11::createShader(const uint16_t a_aId, const char* a_shaderSource, AGN::EAShaderType a_type)

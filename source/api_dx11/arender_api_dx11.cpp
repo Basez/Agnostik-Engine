@@ -24,12 +24,12 @@ bool AGN::ARenderAPIDX11::init()
 	m_window = new AWindowDX11(windowDimentions);
 
 	m_device = new ADeviceDX11(m_window);
-	m_device->init();
+	if (!m_device->init()) return false;
 
 	m_renderer = new ARendererDX11(m_device, m_window);
-	m_renderer->init();
+	if (!m_renderer->init()) return false;
 
-	return false; // TODO:
+	return true;
 }
 
 AGN::IAWindow& AGN::ARenderAPIDX11::getWindow()

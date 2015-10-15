@@ -29,8 +29,5 @@ namespace AGN
 
 
 		class AMaterial* material;
-		//class IATexture* diffuse;
-		//class IATexture* normal;
-		//class IATexture* specular;
 	};
 }
