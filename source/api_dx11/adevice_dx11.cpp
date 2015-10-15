@@ -262,7 +262,6 @@ AGN::IATexture* AGN::ADeviceDX11::createTexture(const uint16_t a_aId, AGN::AText
 		return nullptr;
 	}
 
-	
 	// create agnostik texture holding the info.
 	ATextureDX11* texture = new ATextureDX11(a_aId, a_textureData, textureHandle);
 
@@ -271,7 +270,80 @@ AGN::IATexture* AGN::ADeviceDX11::createTexture(const uint16_t a_aId, AGN::AText
 
 AGN::IAShader* AGN::ADeviceDX11::createShader(const uint16_t a_aId, const char* a_shaderSource, AGN::EAShaderType a_type)
 {
-	return nullptr;
+	ID3DBlob* shaderBlob = nullptr;
+	ID3DBlob* errorBlob = nullptr;
+
+	// use latest profile
+	std::string profile = AShaderDX11::getLatestProfile(a_type, m_d3d11Device);
+	
+	UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
+#if AGN_DEBUG
+	flags |= D3DCOMPILE_DEBUG;
+#endif
+	HRESULT hr;
+
+	hr = D3DCompile(
+		a_shaderSource,							// A pointer to uncompiled shader data; either ASCII HLSL code or a compiled effect.
+		strlen(a_shaderSource),					// Length of pSrcData.
+		nullptr,								// Optional.You can use this parameter for strings that specify error messages.
+		nullptr,								// Optional. An array of NULL-terminated macro definitions (see D3D_SHADER_MACRO).
+		D3D_COMPILE_STANDARD_FILE_INCLUDE,		// Optional. A pointer to an ID3DInclude for handling include files
+		"Main",									// The name of the shader entry point function where shader execution begins.
+		profile.c_str(),						// specifies the shader target or set of shader features to compile against
+		flags,									// Shader compile options.
+		0,										// Effect compile options. 
+		&shaderBlob,							// interface that you can use to access the compiled code.
+		&errorBlob);							// interface that you can use to access compiler error messages, or NULL if there are no errors.
+
+	if (FAILED(hr))
+	{
+		if (errorBlob)
+		{
+			std::string errorMessage = (char*)errorBlob->GetBufferPointer();
+			g_log.error(errorMessage.c_str());
+
+			if (shaderBlob != nullptr) shaderBlob->Release();
+			if (errorBlob != nullptr) errorBlob->Release();
+		}
+
+		return nullptr;
+	}
+
+	ID3D11DeviceChild* d3d11Shader = nullptr;
+	ID3D11PixelShader* pixelShader = nullptr;
+	ID3D11VertexShader* vertexShader = nullptr;
+
+	switch (a_type)
+	{
+	case EAShaderType::PixelShader:
+		hr = m_d3d11Device->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &pixelShader);
+		d3d11Shader = dynamic_cast<ID3D11DeviceChild*>(pixelShader);
+		break;
+
+	case EAShaderType::VertexShader:
+		hr = m_d3d11Device->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &vertexShader);
+		d3d11Shader = dynamic_cast<ID3D11DeviceChild*>(vertexShader);
+		break;
+
+	default:
+		g_log.error("Unsupported Shader type");
+		return nullptr;
+	}
+	
+	if (FAILED(hr))
+	{
+		g_log.error("Failed to compile shader");
+		return nullptr;
+	}
+
+	if (errorBlob != nullptr)
+	{
+		errorBlob->Release();
+		errorBlob = nullptr;
+	}
+
+	AShaderDX11* shader = new AShaderDX11(a_aId, a_type, d3d11Shader);
+	return dynamic_cast<AShaderDX11*>(shader);
 }
 
 AGN::IAShaderPipeline* AGN::ADeviceDX11::createShaderPipeline(const uint16_t a_aId, std::vector<AGN::IAShader*> a_shaders)

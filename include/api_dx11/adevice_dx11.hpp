@@ -26,6 +26,7 @@ namespace AGN
 		IDXGISwapChain* getD3D11SwapChain() { return m_d3d11SwapChain; }
 
 	private:
+
 		class AWindowDX11* m_window;
 
 		ID3D11Device* m_d3d11Device;
