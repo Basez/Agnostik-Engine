@@ -2,7 +2,7 @@
 
 #include "iashader.hpp"
 
-// fwd declare
+// fwd declare (most ever)
 struct ID3D11Device;
 struct ID3D11DeviceChild;
 struct ID3D10Blob;
@@ -10,6 +10,8 @@ struct D3D11_INPUT_ELEMENT_DESC;
 typedef ID3D10Blob ID3DBlob;
 struct ID3D11ShaderReflection;
 typedef struct _D3D11_SIGNATURE_PARAMETER_DESC D3D11_SIGNATURE_PARAMETER_DESC;
+struct D3D11_SAMPLER_DESC;
+typedef struct _D3D11_SHADER_BUFFER_DESC D3D11_SHADER_BUFFER_DESC;
 
 namespace AGN
 {
@@ -23,9 +25,13 @@ namespace AGN
 
 		static std::string getLatestProfile(const AGN::EAShaderType a_type, ID3D11Device* a_device);
 		
-		void getInputLayoutDesc(D3D11_INPUT_ELEMENT_DESC*& out_inputLayouts, int& out_count);
+		void getInputLayoutDesc(D3D11_INPUT_ELEMENT_DESC*& out_inputLayoutDescs, int& out_count);
+		//void getOutputLayout(D3D11_INPUT_ELEMENT_DESC* inputLayouts, int& out_count);				// TODO?
+		void getSamplerLayoutDesc(D3D11_SAMPLER_DESC*& out_samplerLayoutDecs, int& out_count);
+		void getConstantBufferDesc(D3D11_SHADER_BUFFER_DESC*& out_constantBufferDecs, int& out_count);
+
 		ID3DBlob* getBlob() { return m_shaderBlob; }
-		//void getOutputLayout(D3D11_INPUT_ELEMENT_DESC* inputLayouts, int& out_count); // TODO?
+		
 
 	private:
 		const uint16_t m_aId;
