@@ -38,27 +38,39 @@ Import('env')
 print("Environment: " + env['PLATFORM']);
 print("TARGET_ARCH: " + env['TARGET_ARCH']);
 
+# Return all files in dir, and all its subdirectories, ending in pattern
+def listAllFilesWithExtention(dir, pattern):
+   for dirname, subdirs, files in os.walk(dir):
+      for f in files:
+         if f.endswith(pattern):
+            yield os.path.join(dirname, f)
+			
 # if cleaning, make sure its cleaning everything that an IDE could generate
 if env.GetOption('clean'):
 	#call sconscripts to make sure the cleaner knows about the output files these create, and can clean them
-	#SConscript('SConscript_msvc')
-	#SConscript('SConscript_g++')
-	Execute(Delete('project_files/agnostik_' + buildname + '.sdf', must_exist=0))
-	Execute(Delete('project_files/agnostik_' + buildname + '.v12.suo', must_exist=0))
-	Execute(Delete('project_files/agnostik_' + buildname + '.opensdf', must_exist=0))
-	Execute(Delete('project_files/agnostik_' + buildname + '.vcxproj.user', must_exist=0))
-	Execute(Delete('project_files/.vs/', must_exist=0))
-	Execute(Delete('project_files/release/', must_exist=0))
-	Execute(Delete('project_files/debug/', must_exist=0))
-	Execute(Delete('project_files/obj/', must_exist=0))
-	Execute(Delete('genfiles/', must_exist=0))
-	# delete shaders
+	# Remove all files in the current dir matching *.config
+	for f in listAllFilesWithExtention('.', '.sln'): print("files with extension: " + f);
+	for f in listAllFilesWithExtention('.', '.sln'): Execute(Delete(f, must_exist=0))
+	for f in listAllFilesWithExtention('.', '.sdf'): Execute(Delete(f, must_exist=0))
+	for f in listAllFilesWithExtention('.', '.suo'): Execute(Delete(f, must_exist=0))
+	for f in listAllFilesWithExtention('.', '.opensdf'): Execute(Delete(f, must_exist=0))
+	for f in listAllFilesWithExtention('.', '.user'): Execute(Delete(f, must_exist=0))
+	for f in listAllFilesWithExtention('.', '.ilk'): Execute(Delete(f, must_exist=0))
+	for f in listAllFilesWithExtention('.', '.pdb'): Execute(Delete(f, must_exist=0))
+	for f in listAllFilesWithExtention('.', '.vcxproj'): Execute(Delete(f, must_exist=0))
+	for f in listAllFilesWithExtention('.', '.filters'): Execute(Delete(f, must_exist=0))
+	for f in listAllFilesWithExtention('.', '.exe'): Execute(Delete(f, must_exist=0))	
+#	for f in listAllFilesWithExtention('.', '.exe'): Execute(os.remove(f))
+	# delete shaders and other folders
 	Execute(Delete('shaders/output_dx11', must_exist=0))
 	Execute(Delete('shaders/output_gl/', must_exist=0))
-	# delete visual studio output files
-	Execute(Delete('build/' + buildname + '/agnostik_debug.ilk', must_exist=0))
-	Execute(Delete('build/' + buildname + '/agnostik_debug.pdb', must_exist=0))
-	Execute(Delete('build/' + buildname + '/agnostik_release.ilk', must_exist=0))
-	Execute(Delete('build/' + buildname + '/agnostik_release.pdb', must_exist=0))
+	Execute(Delete('genfiles/', must_exist=0))
+	
+	
 	
 
+
+
+
+	
+	
