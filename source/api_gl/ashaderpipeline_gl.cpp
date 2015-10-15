@@ -8,7 +8,7 @@ using namespace glm;
 AGN::AShaderPipelineGL::AShaderPipelineGL(const GLuint a_glprogramId, AShaderPipelineData& a_data)
 	: m_aId(a_data.aId)
 	, m_glProgramId(a_glprogramId)
-	, m_vertextShader(a_data.vertextShader)
+	, m_vertexShader(a_data.vertexShader)
 	, m_pixelShader(a_data.pixelShader)
 	, m_hullShader(a_data.hullShader)
 	, m_domainShader(a_data.domainShader)

@@ -26,9 +26,9 @@ AGN::ARendererGL::ARendererGL()
 
 }
 
-void AGN::ARendererGL::init()
+bool AGN::ARendererGL::init()
 {
-	
+	return true;
 }
 
 void AGN::ARendererGL::render(AGN::ADrawCommander& a_drawCommander)

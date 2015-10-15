@@ -12,9 +12,9 @@ AGN::ADeviceGL::ADeviceGL()
 
 }
 
-void AGN::ADeviceGL::init()
+bool AGN::ADeviceGL::init()
 {
-	
+	return true;
 }
 
 AGN::IAMesh* AGN::ADeviceGL::createMesh(const uint16_t a_aId, AGN::AMeshData* a_meshData)
@@ -124,7 +124,7 @@ AGN::IAShader* AGN::ADeviceGL::createShader(const uint16_t a_aId, const char* a_
 
 AGN::IAShaderPipeline* AGN::ADeviceGL::createShaderPipeline(const uint16_t a_aId, std::vector<AGN::IAShader*> a_shaders)
 {
-	AShaderPipelineData shaderPipelineData = AShaderPipelineData(); // is object nulled?
+	AShaderPipelineData shaderPipelineData = AShaderPipelineData();
 	shaderPipelineData.aId = a_aId;
 
 	GLuint programGl = glCreateProgram();
@@ -137,7 +137,7 @@ AGN::IAShaderPipeline* AGN::ADeviceGL::createShaderPipeline(const uint16_t a_aId
 		switch (shaderGL->getType())
 		{
 		case EAShaderType::VertexShader:
-			shaderPipelineData.vertextShader = a_shaders[i];
+			shaderPipelineData.vertexShader = a_shaders[i];
 			break;
 
 		case EAShaderType::PixelShader:
@@ -162,9 +162,9 @@ AGN::IAShaderPipeline* AGN::ADeviceGL::createShaderPipeline(const uint16_t a_aId
 		}
 	}
 
-	if (shaderPipelineData.pixelShader == nullptr || shaderPipelineData.vertextShader == nullptr)
+	if (shaderPipelineData.pixelShader == nullptr || shaderPipelineData.vertexShader == nullptr)
 	{
-		g_log.warning("ShaderPipeline is missing a pixelShader or vertextShader");
+		g_log.warning("ShaderPipeline is missing a pixelShader or vertexShader");
 	}
 
 	// Link the program

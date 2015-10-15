@@ -342,11 +342,165 @@ AGN::IAShader* AGN::ADeviceDX11::createShader(const uint16_t a_aId, const char* 
 		errorBlob = nullptr;
 	}
 
-	AShaderDX11* shader = new AShaderDX11(a_aId, a_type, d3d11Shader);
+	AShaderDX11* shader = new AShaderDX11(a_aId, a_type, d3d11Shader, shaderBlob);
 	return dynamic_cast<AShaderDX11*>(shader);
 }
 
 AGN::IAShaderPipeline* AGN::ADeviceDX11::createShaderPipeline(const uint16_t a_aId, std::vector<AGN::IAShader*> a_shaders)
 {
+	HRESULT hr;
+
+	// Create the constant buffers for the variables defined in the vertex shader.
+	/*
+	// TODO: Do this inside shaderpipeline constructor?
+	D3D11_BUFFER_DESC constantBufferDesc;
+	ZeroMemory(&constantBufferDesc, sizeof(D3D11_BUFFER_DESC));
+
+	constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	constantBufferDesc.ByteWidth = sizeof(mat4);
+	constantBufferDesc.CPUAccessFlags = 0;
+	constantBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+
+	hr = m_d3d11Device->CreateBuffer(&constantBufferDesc, nullptr, &m_d3dConstantBuffers[CB_Appliation]);
+	if (FAILED(hr))
+	{
+		Log.error("failure CreateBuffer");
+		return;
+	}
+	hr = d3dDevice->CreateBuffer(&constantBufferDesc, nullptr, &m_d3dConstantBuffers[CB_Frame]);
+	if (FAILED(hr))
+	{
+		Log.error("failure CreateBuffer");
+		return;
+	}
+	hr = d3dDevice->CreateBuffer(&constantBufferDesc, nullptr, &m_d3dConstantBuffers[CB_Object]);
+	if (FAILED(hr))
+	{
+		Log.error("failure CreateBuffer");
+		return;
+	}
+	*/
+
+	AShaderPipelineData shaderPipelineData = AShaderPipelineData();
+	shaderPipelineData.aId = a_aId;
+
+	for (unsigned int i = 0; i < a_shaders.size(); i++)
+	{
+		AShaderDX11* shaderDX11 = dynamic_cast<AShaderDX11*>(a_shaders[i]);
+
+		switch (shaderDX11->getType())
+		{
+		case EAShaderType::VertexShader:
+			shaderPipelineData.vertexShader = a_shaders[i];
+			break;
+
+		case EAShaderType::PixelShader:
+			shaderPipelineData.pixelShader = a_shaders[i];
+			break;
+
+		case EAShaderType::HullShader:
+			shaderPipelineData.hullShader = a_shaders[i];
+			break;
+
+		case EAShaderType::DomainShader:
+			shaderPipelineData.domainShader = a_shaders[i];
+			break;
+
+		case EAShaderType::GeometryShader:
+			shaderPipelineData.geometryShader = a_shaders[i];
+			break;
+
+		case EAShaderType::ComputeShader:
+			shaderPipelineData.computeShader = a_shaders[i];
+			break;
+		}
+	}
+
+	//m_d3dMeshVertexShader = (ID3D11VertexShader*)g_shaderManager.LoadShader(ShaderType::VERTEX, L"data/shaders/MeshVertexShader.hlsl", "MeshVertexShader", "latest", vsBlop);
+
+	if (shaderPipelineData.vertexShader == nullptr || shaderPipelineData.pixelShader == nullptr)
+	{
+		g_log.error("Shader pipeline is missing either a vertex shader or a pixel shader?");
+		return nullptr;
+	}
+
+	AShaderDX11* vertexShaderDX11 = dynamic_cast<AShaderDX11*>(shaderPipelineData.vertexShader);
+
+	//ID3DBlob* vsBlop = nullptr;
+
+	// create input layout for vertex shader
+	D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc = nullptr;
+	int inputLayoutCount = 0;
+
+	vertexShaderDX11->getInputLayoutDesc(inputLayoutDesc, inputLayoutCount);
+
+	ID3D11InputLayout* vertexInputLayout = nullptr;
+	hr = m_d3d11Device->CreateInputLayout(
+		inputLayoutDesc,												// input-assembler stage input data types
+		inputLayoutCount,
+		vertexShaderDX11->getBlob()->GetBufferPointer(),				// pointer to the compiled shader
+		vertexShaderDX11->getBlob()->GetBufferSize(),
+		&vertexInputLayout);
+
+	delete inputLayoutDesc;
+
+	if (FAILED(hr))
+	{
+		g_log.error("Failure CreateInputLayout");
+		return nullptr;
+	}
+
+	// TODO: Continue here when implementing ShaderPipelines
+	/*
+	vsBlop->Release();
+	vsBlop = nullptr;
+
+	// load pixel shader
+	ID3DBlob* psBlop = nullptr;
+
+	m_d3dMeshPixelShader = (ID3D11PixelShader*)g_shaderManager.LoadShader(ShaderType::PIXEL, L"data/shaders/MeshPixelShader.hlsl", "MeshPixelShader", "latest", psBlop);
+
+	if (m_d3dMeshPixelShader == nullptr)
+	{
+		g_log.error("Failed to load shader");
+		return nullptr;
+	}
+
+	psBlop->Release();
+	psBlop = nullptr;
+
+	// Create a texture sampler state description.
+	D3D11_SAMPLER_DESC samplerDesc;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	// Create the texture sampler state.
+	hr = d3dDevice->CreateSamplerState(&samplerDesc, &m_textureSampleState);
+	if (FAILED(hr))
+	{
+		Log.error("Failed to initialize mesh sampler state");
+		return;
+	}
+
+	// update object constant buffer with current position
+	g_engine.getD3DDeviceContext()->UpdateSubresource(m_d3dConstantBuffers[CB_Object], 0, nullptr, &g_worldMatrix, 0, 0);
+
+
+	*/
+
 	return nullptr;
+	
+
+	
 }

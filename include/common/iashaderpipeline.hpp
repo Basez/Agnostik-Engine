@@ -8,7 +8,7 @@ namespace AGN
 	{
 	public:
 		virtual ~IAShaderPipeline() {}
-		virtual class IAShader* getVertextShader() = 0;
+		virtual class IAShader* getVertexShader() = 0;
 		virtual class IAShader* getPixelShader() = 0;
 		virtual class IAShader* getHullShader() = 0;
 		virtual class IAShader* getDomainShader() = 0;
@@ -26,7 +26,7 @@ namespace AGN
 	{
 		AShaderPipelineData()
 			: aId(0)
-			, vertextShader(nullptr)
+			, vertexShader(nullptr)
 			, pixelShader(nullptr)
 			, hullShader(nullptr)
 			, domainShader(nullptr)
@@ -35,7 +35,7 @@ namespace AGN
 		{}
 
 		uint16_t aId;						// required
-		class IAShader* vertextShader;	// required
+		class IAShader* vertexShader;	// required
 		class IAShader* pixelShader;	// required
 		class IAShader* hullShader;
 		class IAShader* domainShader;

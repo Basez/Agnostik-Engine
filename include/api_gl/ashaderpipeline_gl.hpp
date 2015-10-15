@@ -10,7 +10,7 @@ namespace AGN
 	{
 	public:
 		AShaderPipelineGL(const GLuint a_glprogramId, AShaderPipelineData& a_data);
-		class IAShader* getVertextShader() override { return m_vertextShader; }
+		class IAShader* getVertexShader() override { return m_vertexShader; }
 		class IAShader* getPixelShader() override { return m_pixelShader; }
 		class IAShader* getHullShader() override { return m_hullShader; }
 		class IAShader* getDomainShader() override { return m_domainShader; }
@@ -32,7 +32,7 @@ namespace AGN
 
 		const uint16_t m_aId;				
 		const GLuint m_glProgramId;			
-		class IAShader* m_vertextShader;	
+		class IAShader* m_vertexShader;	
 		class IAShader* m_pixelShader;		
 		class IAShader* m_hullShader;		
 		class IAShader* m_domainShader;		

@@ -10,12 +10,12 @@ namespace AGN
 	{
 	public:
 		AShaderPipelineDX11();
-		class IAShader* getVertextShader() override { return nullptr; }
-		class IAShader* getPixelShader() override { return nullptr; }
-		class IAShader* getHullShader() override { return nullptr; }
-		class IAShader* getDomainShader() override { return nullptr; }
-		class IAShader* getGeometryShader() override { return nullptr; }
-		class IAShader* getComputeShader() override { return nullptr; }
+		class IAShader* getVertexShader() override { return nullptr; } // TODO:
+		class IAShader* getPixelShader() override { return nullptr; } // TODO:
+		class IAShader* getHullShader() override { return nullptr; } // TODO:
+		class IAShader* getDomainShader() override { return nullptr; } // TODO:
+		class IAShader* getGeometryShader() override { return nullptr; } // TODO:
+		class IAShader* getComputeShader() override { return nullptr; } // TODO:
 
 		void bind() override;
 		void setUniformBufferData(const char* a_name, void* a_data, size_t a_dataSize) override;
