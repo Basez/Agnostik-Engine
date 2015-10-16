@@ -9,6 +9,7 @@ namespace AGN
 
 		virtual bool init() = 0;
 		virtual void enableVSync(bool a_value) = 0;
+		virtual bool getVSync() = 0;
 		virtual void handleEvents() = 0;
 
 		virtual class IAWindow& getWindow() = 0;

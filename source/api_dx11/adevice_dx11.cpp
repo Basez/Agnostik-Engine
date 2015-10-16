@@ -176,8 +176,8 @@ DXGI_RATIONAL AGN::ADeviceDX11::queryRefreshRate(bool a_vsync)
 
 AGN::IAMesh* AGN::ADeviceDX11::createMesh(const uint16_t a_aId, AGN::AMeshData* a_meshData)
 {
-	ID3D11Buffer* d3d11VertexBuffer;
-	ID3D11Buffer* d3d11IndexBuffer;
+	ID3D11Buffer* d3d11VertexBuffer = nullptr;
+	ID3D11Buffer* d3d11IndexBuffer = nullptr;
 
 	// Create vertex buff
 	D3D11_BUFFER_DESC vertexPosBufferDesc;
@@ -241,7 +241,9 @@ AGN::IATexture* AGN::ADeviceDX11::createTexture(const uint16_t a_aId, AGN::AText
 	textureDesc.CPUAccessFlags = 0; // D3D11_CPU_ACCESS_WRITE;
 	textureDesc.MiscFlags = 0;
 
-	D3D11_SUBRESOURCE_DATA resourceData = { 0 };
+	D3D11_SUBRESOURCE_DATA resourceData;
+	ZeroMemory(&resourceData, sizeof(D3D11_SUBRESOURCE_DATA));
+
 	resourceData.pSysMem = a_textureData->buffer;
 	resourceData.SysMemPitch = a_textureData->width * 4;									// pitch in bytes
 	resourceData.SysMemSlicePitch = a_textureData->height * resourceData.SysMemPitch;	// pitch * slice (total memsize)
@@ -385,8 +387,6 @@ AGN::IAShaderPipeline* AGN::ADeviceDX11::createShaderPipeline(const uint16_t a_a
 		}
 	}
 
-	//m_d3dMeshVertexShader = (ID3D11VertexShader*)g_shaderManager.LoadShader(ShaderType::VERTEX, L"data/shaders/MeshVertexShader.hlsl", "MeshVertexShader", "latest", vsBlop);
-
 	if (shaderPipelineData->vertexShader == nullptr || shaderPipelineData->pixelShader == nullptr)
 	{
 		g_log.error("Shader pipeline is missing either a vertex shader or a pixel shader?");
@@ -394,8 +394,6 @@ AGN::IAShaderPipeline* AGN::ADeviceDX11::createShaderPipeline(const uint16_t a_a
 	}
 
 	AShaderDX11* vertexShaderDX11 = dynamic_cast<AShaderDX11*>(shaderPipelineData->vertexShader);
-
-	//ID3DBlob* vsBlop = nullptr;
 
 	// create input layout for vertex shader
 	D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc = nullptr;

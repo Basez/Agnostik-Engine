@@ -13,10 +13,9 @@ AGN::AShaderDX11::AShaderDX11(const uint16_t a_aId, EAShaderType a_type, ID3D11D
 	, m_shaderReflection(nullptr)
 	, m_shaderReflectionDesc(nullptr)
 {
-
 	HRESULT hr = D3DReflect(m_shaderBlob->GetBufferPointer(), m_shaderBlob->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&m_shaderReflection);
 
-	if (FAILED(hr)) g_log.error("Failed peforming reflection on shader");
+	if (FAILED(hr)) g_log.error("Failed performing reflection on shader");
 
 	m_shaderReflectionDesc = new D3D11_SHADER_DESC();
 	ZeroMemory(m_shaderReflectionDesc, sizeof(D3D11_SHADER_DESC));

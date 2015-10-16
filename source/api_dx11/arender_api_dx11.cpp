@@ -26,7 +26,7 @@ bool AGN::ARenderAPIDX11::init()
 	m_device = new ADeviceDX11(m_window);
 	if (!m_device->init()) return false;
 
-	m_renderer = new ARendererDX11(m_device, m_window);
+	m_renderer = new ARendererDX11(*this, *m_device, *m_window);
 	if (!m_renderer->init()) return false;
 
 	return true;

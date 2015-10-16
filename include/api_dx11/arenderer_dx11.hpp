@@ -14,22 +14,24 @@ namespace AGN
 	class ARendererDX11 : public IARenderer 
 	{
 	public:
-		ARendererDX11(class ADeviceDX11* a_device, class AWindowDX11* a_window);
+		ARendererDX11(class ARenderAPIDX11& a_renderAPIReference, class ADeviceDX11& a_deviceReference, class AWindowDX11& a_windowReference);
 		bool init() override;
 		void render(class ADrawCommander& a_drawCommander) override;
 		void setCamera(class ACamera* a_camera) override { m_currentCamera = a_camera; }
 
 	private:
-		void drawEntity(struct ADrawCommand* a_command);
+		void drawEntity(struct ADrawCommand& a_command);
+		void clearBuffer(struct ADrawCommand& a_command);
 
+		class ADeviceDX11& m_deviceReference;
+		class AWindowDX11& m_windowReference;
+		class ARenderAPIDX11& m_renderAPIReference;
+		
 		class ACamera* m_currentCamera;
 		glm::mat4 m_vp;
-
 		class AMeshDX11* m_boundMesh;
 		class AMaterial* m_boundMaterial;
 		class AShaderPipelineDX11* m_boundShaderPipeline;
-		class ADeviceDX11* m_device;
-		class AWindowDX11* m_window;
 
 		ID3D11RenderTargetView* m_d3dRenderTargetView;		// Render target view for the back buffer of the swap chain.
 		ID3D11DepthStencilView* m_d3dDepthStencilView;		// Depth/stencil view for use as a depth buffer.

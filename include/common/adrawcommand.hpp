@@ -68,7 +68,7 @@ namespace AGN
 		union DrawData
 		{
 			ADrawEntityData entityData;
-			AClearBufferData clearcolorData;
+			AClearBufferData clearBufferData;
 		} data;
 	};
 

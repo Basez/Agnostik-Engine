@@ -11,6 +11,7 @@ namespace AGN
 
 		bool init() override;
 		void enableVSync(bool a_value) override;
+		virtual bool getVSync() { return m_vSync; }
 		void handleEvents() override;
 
 		virtual class IAWindow& getWindow() override;
@@ -20,6 +21,7 @@ namespace AGN
 	private:
 
 		bool m_initialized;
+		bool m_vSync;
 		class AWindowDX11* m_window;
 		class ADeviceDX11* m_device;
 		class ARendererDX11* m_renderer;

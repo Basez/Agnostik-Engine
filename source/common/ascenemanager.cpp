@@ -84,7 +84,7 @@ void AGN::ASceneManager::loadScrambledScene()
 	{
 		for (int y = 0; y < 1; y++)
 		{
-			for (int z = 0; z < 500; z++)
+			for (int z = 0; z < 2; z++)
 			{
 				// interchange crates & suzannes (worst case scenario in terms of sorting/nosorting)
 				if ((++index % 2) == 1)

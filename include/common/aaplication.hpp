@@ -5,6 +5,7 @@ namespace AGN
 	class AAplication
 	{
 	public:
+		AAplication();
 		void run(class IARenderAPI* a_renderAPI);
 		void cleanup();
 

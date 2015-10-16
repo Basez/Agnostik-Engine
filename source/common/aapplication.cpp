@@ -30,6 +30,14 @@ AGN::AAplication& g_application = appTemp;
 
 using namespace glm;
 
+
+AGN::AAplication::AAplication()
+	: m_meshShaderPipeline(nullptr)
+	, m_skyboxShaderPipeline(nullptr)
+{
+
+}
+
 void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 {
 	m_renderAPI = a_renderAPI;
@@ -42,14 +50,14 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 	}
 	
 	m_resourceManager = new AResourceManager(m_renderAPI->getDevice());
-	m_resourceManager->loadDefaults();
-	loadShaders();
+	//m_resourceManager->loadDefaults();
+	//loadShaders();
 
 	m_drawCommander = new ADrawCommander();
 
 	m_sceneManager = new ASceneManager();
 	m_sceneManager->init();
-	m_sceneManager->loadScene();
+	//m_sceneManager->loadScene();
 
 	m_renderAPI->getRenderer().setCamera(m_sceneManager->getCurrentCamera());
 
@@ -88,7 +96,7 @@ void AGN::AAplication::update()
 
 	// logic
 	m_sceneManager->update(deltaTime);
-	updateMeshShaderProperties(deltaTime);
+	if (m_meshShaderPipeline) updateMeshShaderProperties(deltaTime);
 }
 
 void AGN::AAplication::updateMeshShaderProperties(float a_deltaTime)
@@ -96,7 +104,7 @@ void AGN::AAplication::updateMeshShaderProperties(float a_deltaTime)
 	// change mesh light properties
 	// test code to update shader buffer
 	// TODO: Abstract this, currently very much hardcoded
-	unsigned char buffer[48];
+	unsigned char buffer[48] = {0};
 
 	static float rotationY = 0.0f;
 	rotationY += a_deltaTime * 45.0f;
@@ -114,7 +122,7 @@ void AGN::AAplication::updateMeshShaderProperties(float a_deltaTime)
 	memcpy(buffer + 16, lightColor, 4 * sizeof(float));
 	memcpy(buffer + 32, lightAmbient, 4 * sizeof(float));
 
-	m_meshShaderPipeline->setUniformBufferData("LightSettings", &buffer, 48);
+	m_meshShaderPipeline->setConstantBufferData("LightSettings", &buffer, 48);
 }
 
 void AGN::AAplication::loadShaders()
@@ -180,11 +188,9 @@ void AGN::AAplication::createDrawQueue()
 		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, shaderPipelineId, meshId, materialId, depth);
 		
 		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::ClearBuffer, sortkey);
-		AClearBufferData& data = drawCommand.data.clearcolorData;
+		AClearBufferData& data = drawCommand.data.clearBufferData;
 		data.buffersToClear = (uint32_t)ADrawBufferType::COLOR | (uint32_t)ADrawBufferType::DEPTH;
-		data.clearColor = 0x00FF00;
-
-		
+		data.clearColor = 0x0000FF00;
 	}
 
 	/*
@@ -242,7 +248,7 @@ void AGN::AAplication::createDrawQueue()
 		uint64_t sortkey = ADrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, shaderPipelineId, meshId, materialId, depth);
 
 		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::ClearBuffer, sortkey);
-		AClearBufferData& data = drawCommand.data.clearcolorData;
+		AClearBufferData& data = drawCommand.data.clearBufferData;
 		data.buffersToClear = (uint32_t)ADrawBufferType::DEPTH;
 		data.clearColor = 0x000000;
 	}

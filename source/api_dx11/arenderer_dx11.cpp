@@ -10,11 +10,12 @@
 #include "aentity.hpp"
 #include "ashaderpipeline_dx11.hpp"
 #include "adevice_dx11.hpp"
+#include "adrawcommand.hpp"
+#include "adrawcommander.hpp"
+#include "apixelutils.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 #include <d3d11_1.h>
 #include <d3dcompiler.h>
 
@@ -23,16 +24,15 @@ using namespace glm;
 static const vec4 g_white(1);
 static const vec4 g_black(0);
 
-
-
-AGN::ARendererDX11::ARendererDX11(ADeviceDX11* a_device, AWindowDX11* a_window)
-	: m_currentCamera(nullptr)
+AGN::ARendererDX11::ARendererDX11(ARenderAPIDX11& a_renderAPIReference, ADeviceDX11& a_device, AWindowDX11& a_window)
+	: m_renderAPIReference(a_renderAPIReference)
+	, m_deviceReference(a_device)
+	, m_windowReference(a_window)
+	, m_currentCamera(nullptr)
 	, m_vp(mat4())
 	, m_boundMesh(nullptr)
 	, m_boundMaterial(nullptr)
 	, m_boundShaderPipeline(nullptr)
-	, m_device(a_device)
-	, m_window(a_window)
 	, m_d3dRenderTargetView(nullptr)
 	, m_d3dDepthStencilView(nullptr)
 	, m_d3dDepthStencilBuffer(nullptr)
@@ -40,18 +40,15 @@ AGN::ARendererDX11::ARendererDX11(ADeviceDX11* a_device, AWindowDX11* a_window)
 	, m_d3dRasterizerState(nullptr)
 	, m_viewport(nullptr)
 {
-	
 
 }
 
 bool AGN::ARendererDX11::init()
 {
-	ID3D11Device* d3d11Device = m_device->getD3D11Device();
-	ID3D11DeviceContext* d3d11DeviceContext = m_device->getD3D11DeviceContext();
-	IDXGISwapChain* d3d11SwapChain = m_device->getD3D11SwapChain();
+	ID3D11Device* d3d11Device = m_deviceReference.getD3D11Device();
 
 	RECT clientRect;
-	GetClientRect(m_window->getWindowHandle(), &clientRect);
+	GetClientRect(m_windowReference.getWindowHandle(), &clientRect);
 
 	// Compute the exact client dimensions. This will be used
 	// to initialize the render targets for our swap chain.
@@ -60,7 +57,7 @@ bool AGN::ARendererDX11::init()
 
 	// initialize the back buffer of the swap chain and associate it to a render target view.
 	ID3D11Texture2D* backBuffer;
-	HRESULT hr = m_device->getD3D11SwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
+	HRESULT hr = m_deviceReference.getD3D11SwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
 	if (FAILED(hr))
 	{
 		g_log.error("d3dSwapChain->GetBuffer() Failure");
@@ -125,6 +122,12 @@ bool AGN::ARendererDX11::init()
 
 	hr = d3d11Device->CreateDepthStencilState(&depthStencilStateDesc, &m_d3dDepthStencilState);
 
+	if (FAILED(hr))
+	{
+		g_log.error("Failed creating Depth stencil state");
+		return false;
+	}
+
 	// Setup rasterizer state.
 	D3D11_RASTERIZER_DESC rasterizerDesc;
 	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
@@ -162,7 +165,6 @@ bool AGN::ARendererDX11::init()
 
 void AGN::ARendererDX11::render(AGN::ADrawCommander& a_drawCommander)
 {
-	/*
 	if (m_currentCamera == nullptr)
 	{
 		g_log.error("Camera was not set, cannot render!");
@@ -189,26 +191,63 @@ void AGN::ARendererDX11::render(AGN::ADrawCommander& a_drawCommander)
 		switch (command->type)
 		{
 		case EADrawCommandType::ClearBuffer:
-			// TODO: 
+			clearBuffer(*command);
 			break;
 
 		case EADrawCommandType::DrawEntity:
-			// TODO: 
+			drawEntity(*command);
 			break;
 
 		case EADrawCommandType::SwapBackBuffer:
-			// TODO: 
+
+			IDXGISwapChain* d3d11SwapChain = m_deviceReference.getD3D11SwapChain();
+			
+			if (m_renderAPIReference.getVSync())
+			{
+				d3d11SwapChain->Present(1, 0);
+			}
+			else
+			{
+				d3d11SwapChain->Present(0, 0);
+			}
 			break;
 		}
 	}
-	*/
-	
-	// TODO: unbind everything?
 }
 
-void AGN::ARendererDX11::drawEntity(ADrawCommand* a_command)
+void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 {
 	// TODO:
+
+}
+
+void AGN::ARendererDX11::clearBuffer(struct ADrawCommand& a_command)
+{
+	if (a_command.data.clearBufferData.buffersToClear & (uint32_t)ADrawBufferType::COLOR)
+	{
+		float clearColorFloat[4] = { 0.0f };
+
+		AGN::PixelUtils::getARGBFloat(
+			a_command.data.clearBufferData.clearColor,
+			clearColorFloat[0],
+			clearColorFloat[1],
+			clearColorFloat[2],
+			clearColorFloat[3]);
+
+		m_deviceReference.getD3D11DeviceContext()->ClearRenderTargetView(m_d3dRenderTargetView, clearColorFloat);
+	}
+	
+	if (a_command.data.clearBufferData.buffersToClear & (uint32_t)ADrawBufferType::DEPTH)
+	{
+		m_deviceReference.getD3D11DeviceContext()->ClearDepthStencilView(m_d3dDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
+	}
+
+	
+
+
+	//AClearBufferData& data = drawCommand.data.clearBufferData;
+	//data.buffersToClear = (uint32_t)ADrawBufferType::COLOR | (uint32_t)ADrawBufferType::DEPTH;
+	//data.clearColor = 0x00FF00;
 
 }
 

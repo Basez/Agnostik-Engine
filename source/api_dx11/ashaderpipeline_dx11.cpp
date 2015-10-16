@@ -10,7 +10,8 @@
 using namespace glm;
 
 AGN::AShaderPipelineDX11::AShaderPipelineDX11(ADeviceDX11& a_deviceReference, AShaderPipelineData* a_shaderPipelineData, ID3D11InputLayout* a_vertexInputLayout, ID3D11SamplerState* a_samplerState)
-	: m_shaderPipelineData(a_shaderPipelineData)
+	: m_deviceReference(a_deviceReference)
+	, m_shaderPipelineData(a_shaderPipelineData)
 	, m_vertexInputLayout(a_vertexInputLayout)
 	, m_samplerState(a_samplerState)
 {
@@ -59,7 +60,7 @@ AGN::AShaderPipelineDX11::AShaderPipelineDX11(ADeviceDX11& a_deviceReference, AS
 			newConstantBufferDesc.MiscFlags = 0;
 			newConstantBufferDesc.StructureByteStride = 0;
 
-			HRESULT hr = a_deviceReference.getD3D11Device()->CreateBuffer(&newConstantBufferDesc, nullptr, &constantBufferDX11->bufferHandle);
+			HRESULT hr = m_deviceReference.getD3D11Device()->CreateBuffer(&newConstantBufferDesc, nullptr, &constantBufferDX11->bufferHandle);
 
 			if (FAILED(hr))
 			{
@@ -69,7 +70,7 @@ AGN::AShaderPipelineDX11::AShaderPipelineDX11(ADeviceDX11& a_deviceReference, AS
 
 			m_constantBuffers.push_back(constantBufferDX11);
 		}
-		
+
 		delete[] constReflectionBufferDesc;
 	}
 
@@ -84,13 +85,29 @@ void AGN::AShaderPipelineDX11::bind()
 	// TODO:
 }
 
-
-void AGN::AShaderPipelineDX11::setUniformBufferData(const char* a_name, void* a_data, size_t a_dataSize)
+void AGN::AShaderPipelineDX11::setConstantBufferData(const char* a_name, void* a_data, size_t a_dataSize)
 {
-	// TODO:
+	for (uint16_t i = 0; i < m_constantBuffers.size(); i++)
+	{
+		if (strcmp(m_constantBuffers[i]->bufferDesc->Name, a_name) == 0)
+		{
+			m_deviceReference.getD3D11DeviceContext()->UpdateSubresource(m_constantBuffers[i]->bufferHandle, 0, nullptr, a_data, 0, 0);
+
+			return;
+		}
+	}
+
 }
 
-bool AGN::AShaderPipelineDX11::hasUniformBuffer(const char* a_name)
+bool AGN::AShaderPipelineDX11::hasConstantBuffer(const char* a_name)
 {
-	return false; // TODO:
+	for (uint16_t i = 0; i < m_constantBuffers.size(); i++)
+	{
+		if (strcmp(m_constantBuffers[i]->bufferDesc->Name, a_name) == 0)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
