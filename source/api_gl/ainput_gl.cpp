@@ -17,7 +17,7 @@ AGN::AInputGL::AInputGL()
 	memset(m_click, false, sizeof(m_click));
 }
 
-AGN::AGN_SCANCODE AGN::AInputGL::getAGNKey(SDL_Scancode a_sdlkey)
+AGN::AGN_SCANCODE AGN::AInputGL::getAGNScanCode(SDL_Scancode a_sdlkey)
 {
 	// TODO: convert to similar code that DX11 uses
 	return (AGN_SCANCODE)a_sdlkey;

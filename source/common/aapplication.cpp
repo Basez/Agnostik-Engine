@@ -42,7 +42,6 @@ AGN::AAplication::AAplication()
 void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 {
 	m_renderAPI = a_renderAPI;
-	m_quit = false;
 
 	if (!m_renderAPI->init())
 	{
@@ -62,7 +61,8 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 
 	m_renderAPI->getRenderer().setCamera(m_sceneManager->getCurrentCamera());
 
-	while (!m_quit)
+	bool doQuit = false;
+	while (!doQuit)
 	{
 		update();
 
@@ -71,7 +71,7 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 		g_input.registerFrameCompletion();
 
 		// api specific event handling, input etc
-		m_renderAPI->handleEvents();
+		m_renderAPI->handleEvents(doQuit);
 	}
 }
 

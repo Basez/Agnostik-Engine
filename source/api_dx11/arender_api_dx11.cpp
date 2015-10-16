@@ -7,6 +7,9 @@
 #include "ainput_dx11.hpp"
 #include "aaplication.hpp"
 
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 AGN::ARenderAPIDX11::ARenderAPIDX11()
 	: m_initialized(false)
 	, m_window(nullptr)
@@ -52,7 +55,28 @@ void AGN::ARenderAPIDX11::enableVSync(bool a_value)
 	// TODO: Restore
 }
 
-void AGN::ARenderAPIDX11::handleEvents()
+void AGN::ARenderAPIDX11::handleEvents(bool& a_doQuit)
 {
+	a_doQuit = false;
+
+	MSG msg = { 0 };
+
+	//static DWORD previousTime = timeGetTime();
+	//static const float targetFramerate = 30.0f;
+	//static const float maxTimeStep = 1.0f / targetFramerate;
+
+	while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+	{
+		TranslateMessage(&msg);	// translate virtual-key messages into character messages
+		DispatchMessage(&msg); // dispatch the message to the appropriate window’s procedure function
+
+		if (msg.message == WM_QUIT)
+		{
+			a_doQuit = true;
+		}
+	}
+
+	
+
 	// TODO: Restore
 }

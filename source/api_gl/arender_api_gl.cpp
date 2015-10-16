@@ -178,8 +178,9 @@ void AGN::ARenderAPIGL::enableVSync(bool a_value)
 	}
 }
 
-void AGN::ARenderAPIGL::handleEvents()
+void AGN::ARenderAPIGL::handleEvents(bool& a_doQuit)
 {
+	a_doQuit = false;
 	SDL_Event event;
 
 	while (SDL_PollEvent(&event))
@@ -187,15 +188,18 @@ void AGN::ARenderAPIGL::handleEvents()
 		switch (event.type)
 		{
 		case SDL_QUIT:	
-			g_application.quit();
+			a_doQuit = true;
 			break;
 
 		case SDL_KEYDOWN:
-			g_input.registerHold(AInputGL::getAGNKey(event.key.keysym.scancode), true);
+			g_log.debug("GL scancode: %i, agnscancode: %u", (uint16_t)event.key.keysym.scancode, (uint16_t)AInputGL::getAGNScanCode(event.key.keysym.scancode));
+
+
+			g_input.registerHold(AInputGL::getAGNScanCode(event.key.keysym.scancode), true);
 			break;
 
 		case SDL_KEYUP:
-			g_input.registerHold(AInputGL::getAGNKey(event.key.keysym.scancode), false);
+			g_input.registerHold(AInputGL::getAGNScanCode(event.key.keysym.scancode), false);
 			break;
 
 		case SDL_MOUSEBUTTONDOWN:
@@ -221,13 +225,8 @@ void AGN::ARenderAPIGL::handleEvents()
 
 			if (event.window.event == SDL_WINDOWEVENT_RESIZED)
 			{
-				// TODO: refactor, this is a weird hack?
 				int windowSizeX = event.window.data1;
 				int windowSizeY = event.window.data2;
-
-				//g_camera3D->setProjectionRH(60.0f, (float)windowSizeX / (float)windowSizeY, 0.1f, 10000.0f);
-				//g_camera3D->setViewport(0, 0, windowSizeX, windowSizeY);
-				//g_camera3D->onWindowResize();
 				g_log.info("window resized to %i/%i", windowSizeX, windowSizeY);
 			}
 			break;

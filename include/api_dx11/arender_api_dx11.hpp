@@ -12,7 +12,7 @@ namespace AGN
 		bool init() override;
 		void enableVSync(bool a_value) override;
 		virtual bool getVSync() { return m_vSync; }
-		void handleEvents() override;
+		void handleEvents(bool& a_doQuit) override;
 
 		virtual class IAWindow& getWindow() override;
 		virtual class IADevice& getDevice() override;

@@ -9,8 +9,7 @@ namespace AGN
 	public:
 		AInputDX11();
 
-		//static AGN::AGN_SCANCODE getAGNKey(SDL_Scancode a_sdlkey);
-		//static AGN::AGN_MOUSECODE getAGNMouse(uint8_t a_sdlMouse);
+		static AGN::AGN_SCANCODE getAGNScanCode(uint32_t a_dx11scancode);
 
 		void registerMouseClick(AGN::AGN_MOUSECODE a_mouseButton) override;
 		void registerMouseHold(AGN::AGN_MOUSECODE a_mouseButton, bool a_held) override;

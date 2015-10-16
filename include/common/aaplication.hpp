@@ -11,7 +11,6 @@ namespace AGN
 
 		class IARenderAPI& getRenderAPI();
 		class AResourceManager& getResourceManager();
-		void quit() { m_quit = true; }
 
 	private:
 		void update();
@@ -27,8 +26,6 @@ namespace AGN
 
 		class IAShaderPipeline* m_meshShaderPipeline;
 		class IAShaderPipeline* m_skyboxShaderPipeline;
-
-		bool m_quit;
 	};
 }
 extern AGN::AAplication& g_application;

@@ -2,6 +2,7 @@
 #include "awindow_dx11.hpp"
 #include "aosutils.hpp"
 #include "iainput.hpp"
+#include "ainput_dx11.hpp"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -100,13 +101,14 @@ LRESULT CALLBACK AGN::AWindowDX11::onWindowEvent(HWND a_hwnd, UINT a_message, WP
 		bool control = GetAsyncKeyState(VK_CONTROL) > 0;
 		bool alt = GetAsyncKeyState(VK_MENU) > 0;
 
-		uint32_t scanCode = (a_lParam & 0x00FF0000) >> 16;
-		uint64_t keyCode = (uint64_t)a_wParam;
+		uint32_t dx11ScanCode = (a_lParam & 0x00FF0000) >> 16;
+		uint64_t dx11KeyCode = (uint64_t)a_wParam;
+		auto agnScanKey = AInputDX11::getAGNScanCode(dx11ScanCode);
 
-		g_log.debug("DX keycode: %i, scancode: %i", keyCode, scanCode);
+		g_log.debug("dx11ScanCode: %i, agnScanKey: %u", dx11ScanCode, (uint16_t)agnScanKey);
 
-		// TODO:
-		//g_input.registerHold(keyCode, true);
+		g_input.registerHold(agnScanKey, true);
+
 
 		//KeyEventArgs keyEventArgs(key, c, KeyEventArgs::Pressed, shift, control, alt);
 		//pWindow->OnKeyPressed(keyEventArgs);
@@ -118,8 +120,11 @@ LRESULT CALLBACK AGN::AWindowDX11::onWindowEvent(HWND a_hwnd, UINT a_message, WP
 		bool shift = GetAsyncKeyState(VK_SHIFT) > 0;
 		bool control = GetAsyncKeyState(VK_CONTROL) > 0;
 		bool alt = GetAsyncKeyState(VK_MENU) > 0;
-		uint32_t scanCode = (a_lParam & 0x00FF0000) >> 16;
-		uint64_t keyCode = (uint64_t)a_wParam;
+		uint32_t dx11ScanCode = (a_lParam & 0x00FF0000) >> 16;
+		uint64_t dx11KeyCode = (uint64_t)a_wParam;
+		auto agnScanKey = AInputDX11::getAGNScanCode(dx11ScanCode);
+
+		g_input.registerHold(agnScanKey, false);
 
 		// Determine which key was released by converting the key code and the scan code
 		// to a printable character (if possible). Inspired by the SDL 1.2 implementation.
@@ -133,9 +138,6 @@ LRESULT CALLBACK AGN::AWindowDX11::onWindowEvent(HWND a_hwnd, UINT a_message, WP
 
 		//KeyEventArgs keyEventArgs(key, c, KeyEventArgs::Released, shift, control, alt);
 		//pWindow->OnKeyReleased(keyEventArgs);
-		
-		// TODO:
-		//g_inputManager.setHold(keyCode, false);
 	}
 	break;
 
@@ -150,54 +152,41 @@ LRESULT CALLBACK AGN::AWindowDX11::onWindowEvent(HWND a_hwnd, UINT a_message, WP
 		int mouseX = ((int)(short)LOWORD(a_lParam));
 		int mouseY = ((int)(short)HIWORD(a_lParam));
 
-		// TODO:
-		//g_inputManager.setMouseXY(mouseX, mouseY);
-
+		g_input.registerMouseMotion(mouseX, mouseY);
 	}
 	break;
+
 	case WM_LBUTTONDOWN:
-		//g_inputManager.setMouseHold(1, true); // TODO:
-		break;
-	case WM_MBUTTONDOWN:
-		//g_inputManager.setMouseHold(2, true); // TODO:
-		break;
-	case WM_RBUTTONDOWN:
-		//g_inputManager.setMouseHold(3, true); // TODO:
+		g_input.registerMouseHold(AGN::AGN_MOUSECODE::LEFT, true);
 		break;
 
+	case WM_MBUTTONDOWN:
+		g_input.registerMouseHold(AGN::AGN_MOUSECODE::MIDDLE, true);
 		break;
+
+	case WM_RBUTTONDOWN:
+		g_input.registerMouseHold(AGN::AGN_MOUSECODE::RIGHT, true);
+		break;
+
 	case WM_LBUTTONUP:
-		//g_inputManager.setMouseHold(1, false); // TODO:
-		//g_inputManager.mouseClick(1); // TODO:
+		g_input.registerMouseHold(AGN::AGN_MOUSECODE::LEFT, false);
+		g_input.registerMouseClick(AGN::AGN_MOUSECODE::LEFT);
 		break;
 
 	case WM_MBUTTONUP:
-		//g_inputManager.setMouseHold(2, false); // TODO:
-		//g_inputManager.mouseClick(2); // TODO:
+		g_input.registerMouseHold(AGN::AGN_MOUSECODE::MIDDLE, false);
+		g_input.registerMouseClick(AGN::AGN_MOUSECODE::MIDDLE);
 		break;
 
 	case WM_RBUTTONUP:
-		//g_inputManager.setMouseHold(3, false); // TODO:
-		//g_inputManager.mouseClick(3); // TODO:
+		g_input.registerMouseHold(AGN::AGN_MOUSECODE::RIGHT, false);
+		g_input.registerMouseClick(AGN::AGN_MOUSECODE::RIGHT);
 		break;
 
 	case WM_MOUSEWHEEL:
-	{
-		// The distance the mouse wheel is rotated.
-		// A positive value indicates the wheel was rotated to the right.
-		// A negative value indicates the wheel was rotated to the left.
-		float zDelta = ((int)(short)HIWORD(a_wParam)) / (float)WHEEL_DELTA;
-		//int x = ((int)(short)LOWORD(a_lParam));
-		//int y = ((int)(short)HIWORD(a_lParam));
+		g_input.registerMouseScroll(int(((int)(short)HIWORD(a_wParam)) / (float)WHEEL_DELTA));
+		break;
 
-		// Convert the screen coordinates to client coordinates.
-		//POINT clientToScreenPoint;
-		//clientToScreenPoint.x = x;
-		//clientToScreenPoint.y = y;
-		//ScreenToClient(a_hwnd, &clientToScreenPoint);
-		//g_inputManager.setMouseScroll((int)zDelta); // TODO:
-	}
-	break;
 	default:
 		return DefWindowProc(a_hwnd, a_message, a_wParam, a_lParam);
 	}

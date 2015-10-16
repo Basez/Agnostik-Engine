@@ -9,7 +9,7 @@ namespace AGN
 	public:
 		AInputGL();
 
-		static AGN::AGN_SCANCODE getAGNKey(SDL_Scancode a_sdlkey);
+		static AGN::AGN_SCANCODE getAGNScanCode(SDL_Scancode a_sdlkey);
 		static AGN::AGN_MOUSECODE getAGNMouse(uint8_t a_sdlMouse);
 
 		void registerMouseClick(AGN::AGN_MOUSECODE a_mouseButton) override;
