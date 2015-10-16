@@ -30,6 +30,7 @@ namespace AGN
 		//void getOutputLayout(D3D11_INPUT_ELEMENT_DESC* inputLayouts, int& out_count);				// TODO?
 		void getSamplerLayoutDesc(D3D11_SAMPLER_DESC*& out_samplerLayoutDecs, int& out_count);
 		void getConstantBufferDesc(D3D11_SHADER_BUFFER_DESC*& out_constantBufferDecs, int& out_count);
+		ID3D11DeviceChild* getD3D11Shader() { return m_shaderHandle; }
 
 		ID3DBlob* getBlob() { return m_shaderBlob; }
 		

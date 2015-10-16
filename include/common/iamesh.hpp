@@ -13,6 +13,7 @@ namespace AGN
 		virtual class AMaterial* getMaterial() = 0;
 		virtual void setMaterial(class AMaterial* a_material) = 0;
 		virtual glm::vec3 getCenterPoint() = 0;							// Center point relative to mesh's outer vertices
+		virtual uint32_t getIndexCount() const = 0;
 
 	};
 

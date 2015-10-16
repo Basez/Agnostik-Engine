@@ -22,8 +22,18 @@ AGN::AWindowDX11::AWindowDX11(glm::ivec2 a_dimentions)
 {
 	g_window = this;
 
-	static TCHAR applicationName[] = TEXT("agnostik_dx11");
-	static TCHAR windowName[] = TEXT("Agnostik DX11"); // TODO: match openGL window naming style
+	std::string windowName;
+	std::string applicationName;
+
+#ifdef AGN_DEBUG
+	windowName = "Agnostik D3D11 - DEBUG";
+	applicationName = "agnostik_dx11_debug";
+#elif AGN_RELEASE
+	windowName = std::string("Agnostik D3D11 - RELEASE");
+	applicationName = "agnostik_dx11_release";
+#else
+	assert(false);
+#endif
 
 	WNDCLASSEX wndClass = { 0 };
 	wndClass.cbSize = sizeof(WNDCLASSEX);
@@ -33,7 +43,7 @@ AGN::AWindowDX11::AWindowDX11(glm::ivec2 a_dimentions)
 	wndClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wndClass.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wndClass.lpszMenuName = nullptr;
-	wndClass.lpszClassName = applicationName;
+	wndClass.lpszClassName = applicationName.c_str();
 
 	if (!RegisterClassEx(&wndClass))
 	{
@@ -45,7 +55,7 @@ AGN::AWindowDX11::AWindowDX11(glm::ivec2 a_dimentions)
 
 	auto moduleHandle = GetModuleHandle(nullptr);
 
-	m_windowHandle = CreateWindowA(applicationName, windowName,
+	m_windowHandle = CreateWindowA(applicationName.c_str(), windowName.c_str(),
 		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
 		windowRect.right - windowRect.left,
 		windowRect.bottom - windowRect.top,

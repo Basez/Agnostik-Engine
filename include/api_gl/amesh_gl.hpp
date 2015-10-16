@@ -19,7 +19,7 @@ namespace AGN
 		std::string getRelativePath() override { return m_meshData->relativePath; }
 		uint16_t getAId() override { return m_aId; }
 		uint32_t getVao() const { return m_vao; }
-		uint32_t getIndexCount() const { return (uint32_t)m_meshData->indicies.size();  }
+		uint32_t getIndexCount() const override { return (uint32_t)m_meshData->indicies.size();  }
 		class AMaterial* getMaterial() override { return m_meshData->material; }
 		glm::vec3 getCenterPoint() override { return m_meshData->centerpoint; }
 

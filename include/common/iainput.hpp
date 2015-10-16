@@ -62,7 +62,6 @@ namespace AGN
 
 	enum class AGN_MOUSECODE
 	{
-		// TODO: confirm these are set to SDL standards
 		LEFT = 1,
 		MIDDLE = 2,
 		RIGHT = 3,

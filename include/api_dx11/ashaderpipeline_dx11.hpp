@@ -28,6 +28,7 @@ namespace AGN
 		void bind() override;
 		void setConstantBufferData(const char* a_name, void* a_data, size_t a_dataSize) override;
 		virtual bool hasConstantBuffer(const char* a_name) override;
+		ID3D11InputLayout* getVertexInputLayout() const { return m_vertexInputLayout; }
 
 	private:
 		class ADeviceDX11& m_deviceReference;

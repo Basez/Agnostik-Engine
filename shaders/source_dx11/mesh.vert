@@ -1,16 +1,17 @@
-cbuffer PerApplication : register(b0)
-{
-	matrix projectionMatrix;
-}
+//cbuffer PerApplication : register(b0)
+//{
+//	matrix projectionMatrix;
+//}
 
-cbuffer PerFrame : register(b1)
-{
-	matrix viewMatrix;
-}
+//cbuffer PerFrame : register(b1)
+//{
+//	matrix viewMatrix;
+//}
 
 cbuffer PerObject : register(b2)
 {
-	matrix worldMatrix;
+	matrix modelViewProjectionMatrix;
+	//matrix modelMatrix;
 }
 
 struct InputData
@@ -29,8 +30,7 @@ OutputData Main(InputData IN)
 {
 	OutputData OUT;
 
-	matrix mvp = mul(projectionMatrix, mul(viewMatrix, worldMatrix));
-	OUT.position = mul(mvp, float4(IN.position, 1.0f));
+	OUT.position = mul(modelViewProjectionMatrix, float4(IN.position, 1.0f));
 	OUT.uv = IN.uv;
 	return OUT;
 }

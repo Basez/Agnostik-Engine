@@ -9,6 +9,7 @@
 #include "acamera.hpp"
 #include "aentity.hpp"
 #include "ashaderpipeline_dx11.hpp"
+#include "ashader_dx11.hpp"
 #include "adevice_dx11.hpp"
 #include "adrawcommand.hpp"
 #include "adrawcommander.hpp"
@@ -30,9 +31,9 @@ AGN::ARendererDX11::ARendererDX11(ARenderAPIDX11& a_renderAPIReference, ADeviceD
 	, m_windowReference(a_window)
 	, m_currentCamera(nullptr)
 	, m_vp(mat4())
-	, m_boundMesh(nullptr)
-	, m_boundMaterial(nullptr)
-	, m_boundShaderPipeline(nullptr)
+	//, m_boundMesh(nullptr)
+	//, m_boundMaterial(nullptr)
+	//, m_boundShaderPipeline(nullptr)
 	, m_d3dRenderTargetView(nullptr)
 	, m_d3dDepthStencilView(nullptr)
 	, m_d3dDepthStencilBuffer(nullptr)
@@ -171,9 +172,9 @@ void AGN::ARendererDX11::render(AGN::ADrawCommander& a_drawCommander)
 		return;
 	}
 
-	m_boundMesh = nullptr;
-	m_boundMaterial = nullptr;
-	m_boundShaderPipeline = nullptr;
+	//m_boundMesh = nullptr;
+	//m_boundMaterial = nullptr;
+	//m_boundShaderPipeline = nullptr;
 
 	// make sure the camera has the correct ViewSettings
 	m_currentCamera->setProjectionRH(60.0f, 0.1f, 10000.0f);
@@ -199,17 +200,8 @@ void AGN::ARendererDX11::render(AGN::ADrawCommander& a_drawCommander)
 			break;
 
 		case EADrawCommandType::SwapBackBuffer:
-
-			IDXGISwapChain* d3d11SwapChain = m_deviceReference.getD3D11SwapChain();
-			
-			if (m_renderAPIReference.getVSync())
-			{
-				d3d11SwapChain->Present(1, 0);
-			}
-			else
-			{
-				d3d11SwapChain->Present(0, 0);
-			}
+			if (m_renderAPIReference.getVSync()) m_deviceReference.getD3D11SwapChain()->Present(1, 0);
+			else m_deviceReference.getD3D11SwapChain()->Present(0, 0);
 			break;
 		}
 	}
@@ -217,8 +209,84 @@ void AGN::ARendererDX11::render(AGN::ADrawCommander& a_drawCommander)
 
 void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 {
-	// TODO:
+	return;
 
+	ID3D11DeviceContext* const d3dDeviceContext = m_deviceReference.getD3D11DeviceContext();
+
+	ADrawEntityData& data = a_command.data.entityData;
+	AMeshDX11* mesh = dynamic_cast<AMeshDX11*>(data.mesh);
+	AMaterial* material = dynamic_cast<AMaterial*>(data.material);
+	AShaderPipelineDX11* shaderPipeline = dynamic_cast<AShaderPipelineDX11*>(data.shaderPipeline);
+
+	// input assembler stage
+	{
+		// get vertex stride (inputdata size)
+		// TODO: get this from shader reflection not hardcoded!
+		//AShaderDX11* vertexShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getVertexShader());
+		const uint32_t vertexStride = sizeof(glm::vec3) + sizeof(glm::vec2);
+		const uint32_t offset = 0;
+
+		ID3D11Buffer* vertexBuffer = mesh->getD3D11VertexBuffer();
+		ID3D11Buffer* indexBuffer = mesh->getD3D11IndexBuffer();
+		ID3D11InputLayout* vertexInputLayout = shaderPipeline->getVertexInputLayout();
+
+		d3dDeviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexStride, &offset);
+		d3dDeviceContext->IASetInputLayout(vertexInputLayout);
+		d3dDeviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		d3dDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	}
+
+	// Vertex shader stage
+	{
+		AShaderDX11* vertexShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getVertexShader());
+		ID3D11VertexShader* d3d11VertexShader = dynamic_cast<ID3D11VertexShader*>(vertexShader->getD3D11Shader());
+			
+		d3dDeviceContext->VSSetShader(d3d11VertexShader, nullptr, 0);
+
+		// update VertexConstantBuffer (MVP)
+		// retrieve model matrix from array in struct
+		glm::mat4 modelMatrix = glm::make_mat4(data.modelMatrixArray); // TODO: send model matrix to shader as well for WS coordinate calculation
+		mat4 mvp = m_vp * modelMatrix;
+
+		shaderPipeline->setConstantBufferData("PerObject", &mvp, sizeof(mvp));
+
+		// TODO: get actual constant buffers only for the vertex shader.... this is going to be a problem as it works a bit diffrent in OpenGL
+		//d3dDeviceContext->VSSetConstantBuffers(0, 3, m_d3dConstantBuffers);	
+	}
+
+	// rasterizer stage
+	{
+		d3dDeviceContext->RSSetState(m_d3dRasterizerState);
+		d3dDeviceContext->RSSetViewports(1, m_viewport);
+	}
+
+
+	// pixel shader stage
+	{
+		// TODO:
+		/*
+		d3dDeviceContext->PSSetShader(m_d3dMeshPixelShader, nullptr, 0);
+		d3dDeviceContext->PSSetSamplers(0, 1, &m_textureSampleState);
+		if (m_diffuseTexture != nullptr)
+		{
+			ID3D11ShaderResourceView* srv = m_diffuseTexture->getShaderResourceView();
+			d3dDeviceContext->PSSetShaderResources(0, 1, &srv);
+		}
+		*/
+	}
+	
+	// output merger stage
+	{
+		d3dDeviceContext->OMSetRenderTargets(1, &m_d3dRenderTargetView, m_d3dDepthStencilView);
+		d3dDeviceContext->OMSetDepthStencilState(m_d3dDepthStencilState, 1);
+	}
+
+	// render the mesh
+	d3dDeviceContext->DrawIndexed((uint32_t)mesh->getIndexCount(), 0, 0);
+
+#ifdef AGN_DEBUG
+	// TODO: get DX11 error
+#endif
 }
 
 void AGN::ARendererDX11::clearBuffer(struct ADrawCommand& a_command)

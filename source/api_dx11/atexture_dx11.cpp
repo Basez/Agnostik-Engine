@@ -1,8 +1,8 @@
 #include "asharedh.hpp"
 #include "atexture_dx11.hpp"
 
-AGN::ATextureDX11::ATextureDX11(const uint16_t a_id, ATextureData* a_textureData, ID3D11Texture2D* a_d3d11TextureHandle)
-	: m_id(a_id)
+AGN::ATextureDX11::ATextureDX11(const uint16_t a_aId, ATextureData* a_textureData, ID3D11Texture2D* a_d3d11TextureHandle)
+	: m_aId(a_aId)
 	, m_textureData(a_textureData)
 	, m_textureHandle(a_d3d11TextureHandle)
 {

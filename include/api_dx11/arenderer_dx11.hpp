@@ -29,9 +29,11 @@ namespace AGN
 		
 		class ACamera* m_currentCamera;
 		glm::mat4 m_vp;
-		class AMeshDX11* m_boundMesh;
-		class AMaterial* m_boundMaterial;
-		class AShaderPipelineDX11* m_boundShaderPipeline;
+
+		// TODO: experiment with this, as I am not sure if keeping track of bound mesh/material/shaders will improve performence for either DX11 or OpenGL!
+		//class AMeshDX11* m_boundMesh;
+		//class AMaterial* m_boundMaterial;
+		//class AShaderPipelineDX11* m_boundShaderPipeline;
 
 		ID3D11RenderTargetView* m_d3dRenderTargetView;		// Render target view for the back buffer of the swap chain.
 		ID3D11DepthStencilView* m_d3dDepthStencilView;		// Depth/stencil view for use as a depth buffer.

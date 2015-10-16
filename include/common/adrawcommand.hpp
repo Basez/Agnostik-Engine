@@ -30,9 +30,7 @@ namespace AGN
 		Effects = 0,
 	};
 
-	// TODO: this is not really memory friendly,
-	// TODO: if the data is stored here directly, its faster (cache coherent)
-	// TODO: now it is simply accessing the data irregularly
+	// TODO: this is not really memory friendly, if the data is stored here directly, its faster (cache coherent), now it is simply accessing the data irregularly
 	struct ADrawEntityData
 	{
 		class IAShaderPipeline* shaderPipeline;

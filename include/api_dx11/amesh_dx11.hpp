@@ -1,7 +1,6 @@
 #pragma once
 
 #include "iamesh.hpp"
-#include "amaterial.hpp" // TODO: remove
 
 struct ID3D11Buffer;
 
@@ -21,8 +20,11 @@ namespace AGN
 		uint16_t getAId() override { return m_aId; }
 		class AMaterial* getMaterial() override { return m_meshData->material; }
 		glm::vec3 getCenterPoint() override { return m_meshData->centerpoint; } 
+		uint32_t getIndexCount() const override { return (uint32_t)m_meshData->indicies.size(); }
+		ID3D11Buffer* getD3D11VertexBuffer() const { return m_d3d11VertexBuffer;  }
+		ID3D11Buffer* getD3D11IndexBuffer() const { return m_d3d11IndexBuffer; }
 
-		void setMaterial(class AMaterial* a_material) override { m_meshData->material = a_material; } // TODO: check if this is correct?
+		void setMaterial(class AMaterial* a_material) override { m_meshData->material = a_material; }
 
 		struct VertexShaderData
 		{

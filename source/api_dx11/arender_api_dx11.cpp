@@ -75,8 +75,4 @@ void AGN::ARenderAPIDX11::handleEvents(bool& a_doQuit)
 			a_doQuit = true;
 		}
 	}
-
-	
-
-	// TODO: Restore
 }

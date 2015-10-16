@@ -4,7 +4,6 @@
 
 namespace AGN
 {
-	// TODO: AMaterial and AMaterialData are too similar, refactor into the same thing?
 	class AMaterial
 	{
 	public:

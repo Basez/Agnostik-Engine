@@ -10,16 +10,16 @@ namespace AGN
 	class ATextureDX11 : public IATexture
 	{
 	public:
-		ATextureDX11(const uint16_t a_id, struct ATextureData* a_textureData, ID3D11Texture2D* a_d3d11TextureHandle);
+		ATextureDX11(const uint16_t a_aId, struct ATextureData* a_textureData, ID3D11Texture2D* a_d3d11TextureHandle);
 		~ATextureDX11() override;
 		
 		std::string getRelativePath() override;
 		void setTextureParams(unsigned int a_flags = 0) override;
 		
-		uint16_t getId() override { return 0; } // TODO:
+		uint16_t getId() override { return m_aId; }
 
 	private:
-		const uint16_t m_id;
+		const uint16_t m_aId;
 		struct ATextureData* m_textureData;
 		ID3D11Texture2D* m_textureHandle;
 	};

@@ -14,9 +14,9 @@ AGN::AWindowGL::AWindowGL(glm::ivec2 a_dimentions)
 	std::string windowName;
 
 #ifdef AGN_DEBUG
-	windowName = std::string("Agnostik - DEBUG");
+	windowName = std::string("Agnostik OpenGL - DEBUG");
 #elif AGN_RELEASE
-	windowName = std::string("Agnostik - RELEASE");
+	windowName = std::string("Agnostik OpenGL - RELEASE");
 #else
 	windowName = AGN::AOSUtils::getExecutableName();
 #endif

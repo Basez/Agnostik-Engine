@@ -25,7 +25,7 @@ namespace AGN
 		void warpCursor(glm::ivec2 a_screenPosition) override;
 		void showCursor(bool a_shown) override;
 
-		glm::ivec2 getDimentions() override { return glm::ivec2(); } // TODO:
+		glm::ivec2 getDimentions() override { return m_dimentions; }
 		const HWND getWindowHandle() const { return m_windowHandle; }
 
 	private:
