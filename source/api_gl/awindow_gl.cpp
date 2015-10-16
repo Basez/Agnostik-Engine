@@ -1,4 +1,5 @@
 #include "asharedh.hpp"
+#include "asharedapi.hpp" // Glew & OpenGL
 #include "awindow_gl.hpp"
 #include "aosutils.hpp"
 

@@ -1,4 +1,5 @@
 #include "asharedh.hpp"
+#include "asharedapi.hpp" // Glew & OpenGL
 #include "ainput_gl.hpp"
 
 // set static reference of g_input to the GL input

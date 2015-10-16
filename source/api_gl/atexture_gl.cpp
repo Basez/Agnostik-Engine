@@ -1,4 +1,5 @@
 #include "asharedh.hpp"
+#include "asharedapi.hpp" // Glew & OpenGL
 #include "atexture_gl.hpp"
 
 AGN::ATextureGL::ATextureGL(const uint16_t a_id, ATextureData* a_textureData, GLuint a_glId)

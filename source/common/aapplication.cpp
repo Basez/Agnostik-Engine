@@ -1,14 +1,13 @@
 #include "asharedh.hpp"
-#include "aaplication.hpp"
-#include <chrono>
+#include "iainput.hpp"
 
+#include "aaplication.hpp"
 #include "iarender_api.hpp"
 #include "iawindow.hpp"
 #include "iarenderer.hpp"
 #include "iamesh.hpp"
 #include "iashaderpipeline.hpp"
 #include "iashader.hpp"
-
 #include "amaterial.hpp"
 #include "aentity.hpp"
 #include "ascenemanager.hpp"
@@ -17,6 +16,8 @@
 #include "adrawcommander.hpp"
 #include "adrawcommand.hpp"
 #include "acamera.hpp"
+
+#include <chrono>
 
 // shaders
 // TODO: find crossplatform for these shaders. Perhaps let the pre-build step figure it out or generate both types in the same file?
@@ -50,14 +51,14 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 	}
 	
 	m_resourceManager = new AResourceManager(m_renderAPI->getDevice());
-	//m_resourceManager->loadDefaults();
-	//loadShaders();
+	m_resourceManager->loadDefaults();
+	loadShaders();
 
 	m_drawCommander = new ADrawCommander();
 
 	m_sceneManager = new ASceneManager();
 	m_sceneManager->init();
-	//m_sceneManager->loadScene();
+	m_sceneManager->loadScene();
 
 	m_renderAPI->getRenderer().setCamera(m_sceneManager->getCurrentCamera());
 
@@ -190,7 +191,7 @@ void AGN::AAplication::createDrawQueue()
 		ADrawCommand& drawCommand = m_drawCommander->addDrawCommand(EADrawCommandType::ClearBuffer, sortkey);
 		AClearBufferData& data = drawCommand.data.clearBufferData;
 		data.buffersToClear = (uint32_t)ADrawBufferType::COLOR | (uint32_t)ADrawBufferType::DEPTH;
-		data.clearColor = 0x0000FF00;
+		data.clearColor = 0x00FF0000;
 	}
 
 	/*

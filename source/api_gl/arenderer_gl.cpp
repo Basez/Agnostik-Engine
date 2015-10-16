@@ -1,4 +1,5 @@
 #include "asharedh.hpp"
+#include "asharedapi.hpp" // Glew & OpenGL
 #include "arenderer_gl.hpp"
 #include "adrawcommand.hpp"
 #include "adrawcommander.hpp"
