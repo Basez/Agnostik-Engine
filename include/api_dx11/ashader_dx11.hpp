@@ -12,6 +12,7 @@ struct ID3D11ShaderReflection;
 typedef struct _D3D11_SIGNATURE_PARAMETER_DESC D3D11_SIGNATURE_PARAMETER_DESC;
 struct D3D11_SAMPLER_DESC;
 typedef struct _D3D11_SHADER_BUFFER_DESC D3D11_SHADER_BUFFER_DESC;
+typedef struct _D3D11_SHADER_DESC D3D11_SHADER_DESC;
 
 namespace AGN
 {
@@ -39,6 +40,7 @@ namespace AGN
 		ID3D11DeviceChild* m_shaderHandle;
 		ID3DBlob* m_shaderBlob;
 		ID3D11ShaderReflection* m_shaderReflection;
+		D3D11_SHADER_DESC* m_shaderReflectionDesc;
 
 		static uint32_t getFormatByParameterSignature(D3D11_SIGNATURE_PARAMETER_DESC& a_signature);
 	};

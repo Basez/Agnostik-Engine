@@ -5,7 +5,8 @@
 // fwd declare
 struct ID3D11InputLayout;
 struct ID3D11SamplerState;
-
+struct ID3D11Buffer;
+typedef struct _D3D11_SHADER_BUFFER_DESC D3D11_SHADER_BUFFER_DESC;
 namespace AGN
 {
 	static const int MAX_UNIFORM_NAME = 128;
@@ -32,23 +33,15 @@ namespace AGN
 		ID3D11InputLayout* m_vertexInputLayout;
 		ID3D11SamplerState* m_samplerState;
 
-		// TODO:
-		//std::vector<struct AUniformConstantBufferGL*> m_uniformBuffers;
+		std::vector<struct AConstantBufferDX11*> m_constantBuffers;
 	};	
 
-	/*
-	// TODO:
-	struct AUniformConstantBufferGL
+	
+	struct AConstantBufferDX11
 	{
-		GLint index;
-		GLchar name[MAX_UNIFORM_NAME];
-		GLint size;
-		GLuint uboHandle;
-		GLubyte* buffer;
-		GLint uniformCount;
-		
-		// inner uniform members (arrays of their data)
-		GLint* uniformIds;
-		GLint* uniformOffsets;
-	};*/
+		AConstantBufferDX11() : bufferHandle(nullptr), bufferDesc(nullptr) {}
+
+		ID3D11Buffer* bufferHandle;
+		D3D11_SHADER_BUFFER_DESC* bufferDesc;
+	};
 }

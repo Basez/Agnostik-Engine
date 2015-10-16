@@ -34,7 +34,7 @@ namespace AGN
 			, computeShader(nullptr)
 		{}
 
-		uint16_t aId;						// required
+		uint16_t aId;					// required
 		class IAShader* vertexShader;	// required
 		class IAShader* pixelShader;	// required
 		class IAShader* hullShader;

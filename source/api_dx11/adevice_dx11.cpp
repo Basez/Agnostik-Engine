@@ -426,7 +426,7 @@ AGN::IAShaderPipeline* AGN::ADeviceDX11::createShaderPipeline(const uint16_t a_a
 	int samplerLayoutCount = 0;
 	pixelShaderDX11->getSamplerLayoutDesc(samplerLayoutDesc, samplerLayoutCount);
 
-	// TODO: support more? if not, 	
+	// TODO: support more? if not, refactor this code
 	if (samplerLayoutCount > 1)
 	{
 		g_log.warning("More than 1 sampler is not yet supported");

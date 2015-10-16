@@ -84,6 +84,7 @@ void AGN::AShaderPipelineGL::bind()
 {
 	glUseProgram(m_glProgramId);
 
+	// TODO: do this based on if its a per object/perframe/per application Constant buffer???
 	for (unsigned int i = 0; i < m_uniformBuffers.size(); i++)
 	{
 		// bind & upload buffer

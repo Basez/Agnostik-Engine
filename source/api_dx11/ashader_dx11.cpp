@@ -10,9 +10,19 @@ AGN::AShaderDX11::AShaderDX11(const uint16_t a_aId, EAShaderType a_type, ID3D11D
 	, m_type(a_type)
 	, m_shaderHandle(a_shaderHandle)
 	, m_shaderBlob(a_shaderBlob)
+	, m_shaderReflection(nullptr)
+	, m_shaderReflectionDesc(nullptr)
 {
 
 	HRESULT hr = D3DReflect(m_shaderBlob->GetBufferPointer(), m_shaderBlob->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&m_shaderReflection);
+
+	if (FAILED(hr)) g_log.error("Failed peforming reflection on shader");
+
+	m_shaderReflectionDesc = new D3D11_SHADER_DESC();
+	ZeroMemory(m_shaderReflectionDesc, sizeof(D3D11_SHADER_DESC));
+	hr = m_shaderReflection->GetDesc(m_shaderReflectionDesc);
+
+	if (FAILED(hr)) g_log.error("Failed getting reflection desc on shader");
 
 #ifdef AGN_DEBUG
 	//AGN::logHResultData(hr);
@@ -69,16 +79,12 @@ std::string AGN::AShaderDX11::getLatestProfile(const AGN::EAShaderType a_type, I
 
 void AGN::AShaderDX11::getInputLayoutDesc(D3D11_INPUT_ELEMENT_DESC*& out_inputLayouts, int& out_count)
 {
-	D3D11_SHADER_DESC shaderDesc;
-
-	m_shaderReflection->GetDesc(&shaderDesc);
-
-	out_count = shaderDesc.InputParameters;
+	out_count = m_shaderReflectionDesc->InputParameters;
 	out_inputLayouts = new D3D11_INPUT_ELEMENT_DESC[out_count];
 	ZeroMemory(out_inputLayouts, sizeof(D3D11_INPUT_ELEMENT_DESC) * out_count);
 
 	// get Input data names
-	for (uint32_t i = 0; i < shaderDesc.InputParameters; i++)
+	for (uint32_t i = 0; i < m_shaderReflectionDesc->InputParameters; i++)
 	{
 		D3D11_SIGNATURE_PARAMETER_DESC	paramDesc;
 
@@ -136,12 +142,9 @@ uint32_t AGN::AShaderDX11::getFormatByParameterSignature(D3D11_SIGNATURE_PARAMET
 
 void AGN::AShaderDX11::getSamplerLayoutDesc(D3D11_SAMPLER_DESC*& out_samplerLayoutDecs, int& out_count)
 {
-	D3D11_SHADER_DESC shaderDesc;
-	m_shaderReflection->GetDesc(&shaderDesc);
-
 	D3D11_SHADER_INPUT_BIND_DESC paramDesc;
 
-	for (uint32_t i = 0; i < shaderDesc.BoundResources; i++)
+	for (uint32_t i = 0; i < m_shaderReflectionDesc->BoundResources; i++)
 	{
 		m_shaderReflection->GetResourceBindingDesc(i, &paramDesc);
 
@@ -196,29 +199,27 @@ void AGN::AShaderDX11::getSamplerLayoutDesc(D3D11_SAMPLER_DESC*& out_samplerLayo
 }
 
 void AGN::AShaderDX11::getConstantBufferDesc(D3D11_SHADER_BUFFER_DESC*& out_constantBufferDecs, int& out_count)
-{
-	// TODO: Finish this piece of code, reflect on the D3D_CT_CBUFFER and return the correct data in an array
-
-
-
-
-	D3D11_SHADER_DESC shaderDesc;
-	HRESULT hr = m_shaderReflection->GetDesc(&shaderDesc);
+{	
+	std::vector<D3D11_SHADER_BUFFER_DESC> constantBufferDescList;
 
 	// get constant buffer info
-	for (uint32_t i = 0; i < shaderDesc.ConstantBuffers; i++)
+	for (uint32_t i = 0; i < m_shaderReflectionDesc->ConstantBuffers; i++)
 	{
 		D3D11_SHADER_BUFFER_DESC constantBufferDesc;
 
 		ID3D11ShaderReflectionConstantBuffer* buffer = m_shaderReflection->GetConstantBufferByIndex(i);
 
-		hr = buffer->GetDesc(&constantBufferDesc);
+		HRESULT hr = buffer->GetDesc(&constantBufferDesc);
 
-		g_log.debug("-- Found Constant Buffer:");
-		g_log.debug("Name: %s", constantBufferDesc.Name);
-		g_log.debug("Size: %u", (uint32_t)constantBufferDesc.Size);
-		g_log.debug("Variables: %u", (uint32_t)constantBufferDesc.Variables);
-		g_log.debug("Type: %u", (uint32_t)constantBufferDesc.Type);
+		if (constantBufferDesc.Type == D3D_CT_CBUFFER)
+		{
+			// add to list
+			constantBufferDescList.push_back(constantBufferDesc);
+		}
 	}
-	
+
+	out_count = constantBufferDescList.size();
+	out_constantBufferDecs = new D3D11_SHADER_BUFFER_DESC[out_count];
+
+	memcpy(out_constantBufferDecs, constantBufferDescList.data(), sizeof(D3D11_SHADER_BUFFER_DESC) * constantBufferDescList.size());
 }
