@@ -83,7 +83,7 @@ bool AGN::ARenderAPIGL::initOpenGL()
 
 	SDL_GL_CreateContext(m_window->getSDLWindow());
 	
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClearDepth(1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -164,6 +164,7 @@ void AGN::ARenderAPIGL::logAvailableGLExtensions()
 
 void AGN::ARenderAPIGL::enableVSync(bool a_value)
 {
+	m_vSync = a_value;
 	if (a_value)
 	{
 		// TODO: for working vsync on linux, apparently I should use GLFW instead of SDL

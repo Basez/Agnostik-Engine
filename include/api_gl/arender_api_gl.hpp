@@ -11,7 +11,9 @@ namespace AGN
 
 		bool init() override;
 		void enableVSync(bool a_value) override;
+		bool getVSync() override { return m_vSync; }
 		void handleEvents() override;
+		
 
 		virtual class IAWindow& getWindow() override;
 		virtual class IADevice& getDevice() override;
@@ -23,6 +25,7 @@ namespace AGN
 		bool initOpenGL();
 		bool initGlew();
 
+		bool m_vSync;
 		bool m_initialized;
 		class AWindowGL* m_window;
 		class ADeviceGL* m_device;

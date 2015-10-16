@@ -61,9 +61,9 @@ void AGN::ARendererGL::render(AGN::ADrawCommander& a_drawCommander)
 		case EADrawCommandType::ClearBuffer:
 			
 			float a, r, g, b;
-			PixelUtils::getARGBFloat(command->data.clearcolorData.clearColor, a, r, g, b);
+			PixelUtils::getRGBAFloat(command->data.clearBufferData.clearColor, r, g, b, a);
 			glClearColor(r, g, b, 1.0f);
-			glClear(getGlEnumBuffers(command->data.clearcolorData.buffersToClear));
+			glClear(getGlEnumBuffers(command->data.clearBufferData.buffersToClear));
 			break;
 
 		case EADrawCommandType::DrawEntity:
@@ -109,7 +109,7 @@ void AGN::ARendererGL::drawEntity(ADrawCommand* a_command)
 			bindTexturesToShader(shaderPipeline->getGlProgramId(), 1, texturesToBind);
 		}
 	
-		if (shaderPipeline->hasUniformBuffer("MaterialProperties"))
+		if (shaderPipeline->hasConstantBuffer("MaterialProperties"))
 		{
 			// TODO: get buffer offset, this is hardcoded
 			unsigned char buffer[40];
@@ -118,7 +118,7 @@ void AGN::ARendererGL::drawEntity(ADrawCommand* a_command)
 			memcpy(buffer + 24, glm::value_ptr(material->ambientColor), sizeof(material->ambientColor)); // material ambient
 			memcpy(buffer + 36, &material->transparency, sizeof(material->transparency)); // material transparency // TODO: check if this is correct
 
-			shaderPipeline->setUniformBufferData("MaterialProperties", &buffer, 32);
+			shaderPipeline->setConstantBufferData("MaterialProperties", &buffer, 32);
 		}
 
 		m_boundMaterial = material;

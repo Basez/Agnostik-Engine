@@ -19,8 +19,8 @@ namespace AGN
 		uint16_t getAId() { return m_aId; }
 
 		void bind() override;
-		void setUniformBufferData(const char* a_name, void* a_data, size_t a_dataSize) override;
-		virtual bool hasUniformBuffer(const char* a_name) override;
+		void setConstantBufferData(const char* a_name, void* a_data, size_t a_dataSize) override;
+		virtual bool hasConstantBuffer(const char* a_name) override;
 
 		// TODO: change architecture after bind stuff works
 		GLuint getGlProgramId() { return m_glProgramId; }
@@ -39,7 +39,7 @@ namespace AGN
 		class IAShader* m_geometryShader;	
 		class IAShader* m_computeShader;
 
-		std::vector<struct AUniformConstantBufferGL*> m_uniformBuffers;
+		std::vector<struct AUniformConstantBufferGL*> m_constantBuffers;
 
 		GLint m_uniformPropertyCount;
 	};	

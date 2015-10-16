@@ -1,7 +1,7 @@
-#define ALPHAMASK (0xff000000)
-#define REDMASK	(0x00ff0000)
-#define GREENMASK (0x00ff00)
-#define BLUEMASK (0x000000ff)
+#define REDMASK		(0xff000000)
+#define GREENMASK	(0x00ff0000)
+#define BLUEMASK	(0x0000ff00)
+#define ALPHAMASK	(0x000000ff)
 
 namespace AGN
 {
@@ -27,42 +27,44 @@ namespace AGN
 			return (uint32_t)(red + green + blue);
 		}
 
-		inline void getARGBFloat(const uint32_t& a_color, float& out_a, float& out_r, float& out_g, float& out_b)
+		inline void getRGBAFloat(const uint32_t& a_color, float& out_r, float& out_g, float& out_b, float& out_a)
 		{
-			out_a = float((a_color & ALPHAMASK) >> 24) / 255.0f;
-			out_r = float((a_color & REDMASK) >> 16) / 255.0f;
-			out_g = float((a_color & GREENMASK) >> 8) / 255.0f;
-			out_b = float((a_color & BLUEMASK)) / 255.0f;
+			out_r = float((a_color & REDMASK) >> 24) / 255.0f;
+			out_g = float((a_color & GREENMASK) >> 16) / 255.0f;
+			out_b = float((a_color & BLUEMASK) >> 8) / 255.0f;
+			out_a = float((a_color & ALPHAMASK)) / 255.0f;
+		}
+
+		inline uint32_t getUintColorFromFloat(const float& a_red, const float& a_green, const float& a_blue)
+		{
+			uint8_t red = uint8_t(a_red * 255.0f) << 24;
+			uint8_t blue = uint8_t(a_green * 255.0f) << 16;
+			uint8_t green = uint8_t(a_blue * 255.0f) << 8;
+
+			return red + blue + green;
 		}
 
 		inline float getRedFloat(const uint32_t& a_color)
 		{
-			return float((a_color & REDMASK) >> 16) / 255.0f;
+			return float((a_color & REDMASK) >> 24) / 255.0f;
 		}
 
 		inline float getGreenFloat(const uint32_t& a_color)
 		{
-			return float((a_color & GREENMASK) >> 8) / 255.0f;
+			return float((a_color & GREENMASK) >> 16) / 255.0f;
 		}
 
 		inline float getBlueFloat(const uint32_t& a_color)
 		{
-			return float((a_color & BLUEMASK)) / 255.0f;
+			return float((a_color & BLUEMASK) >> 8) / 255.0f;
 		}
 
 		inline float getAlphaFloat(const uint32_t& a_color)
 		{
-			return float((a_color & ALPHAMASK) >> 24) / 255.0f;
+			return float(a_color & ALPHAMASK) / 255.0f;
 		}
 
-		inline uint32_t getColorFromFloat(const float& a_red, const float& a_green, const float& a_blue)
-		{
-			uint8_t red = uint8_t(a_red * 255.0f) << 16;
-			uint8_t blue = uint8_t(a_green * 255.0f) << 8;
-			uint8_t green = uint8_t(a_blue * 255.0f);
-
-			return red + blue + green;
-		}
+		
 
 	}
 }

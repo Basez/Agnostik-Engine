@@ -22,7 +22,7 @@ AGN::AShaderPipelineGL::AShaderPipelineGL(const GLuint a_glprogramId, AShaderPip
 	GLint numBlocks;
 	glGetProgramiv(m_glProgramId, GL_ACTIVE_UNIFORM_BLOCKS, &numBlocks);
 	
-	m_uniformBuffers.reserve(numBlocks);
+	m_constantBuffers.reserve(numBlocks);
 	//std::vector<std::string> nameList;
 	for (int i = 0; i < numBlocks; i++)
 	{
@@ -74,7 +74,7 @@ AGN::AShaderPipelineGL::AShaderPipelineGL(const GLuint a_glprogramId, AShaderPip
 		// unbind
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-		m_uniformBuffers.push_back(constantBuffer);
+		m_constantBuffers.push_back(constantBuffer);
 	}
 
 	AGN::getOpenGLError();
@@ -85,11 +85,11 @@ void AGN::AShaderPipelineGL::bind()
 	glUseProgram(m_glProgramId);
 
 	// TODO: do this based on if its a per object/perframe/per application Constant buffer???
-	for (unsigned int i = 0; i < m_uniformBuffers.size(); i++)
+	for (unsigned int i = 0; i < m_constantBuffers.size(); i++)
 	{
 		// bind & upload buffer
-		glBindBuffer(GL_UNIFORM_BUFFER, m_uniformBuffers[i]->uboHandle);
-		glBufferData(GL_UNIFORM_BUFFER, m_uniformBuffers[i]->size, m_uniformBuffers[i]->buffer, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, m_constantBuffers[i]->uboHandle);
+		glBufferData(GL_UNIFORM_BUFFER, m_constantBuffers[i]->size, m_constantBuffers[i]->buffer, GL_DYNAMIC_DRAW);
 	}
 
 	AGN::getOpenGLError();
@@ -112,7 +112,7 @@ bool AGN::AShaderPipelineGL::hasUniform(const char* a_name)
 	return glGetUniformLocation(m_glProgramId, a_name) != -1;
 }
 
-void AGN::AShaderPipelineGL::setUniformBufferData(const char* a_name, void* a_data, size_t a_dataSize)
+void AGN::AShaderPipelineGL::setConstantBufferData(const char* a_name, void* a_data, size_t a_dataSize)
 {
 	AUniformConstantBufferGL* uniformConstantBuffer = getUniformConstantBufferByName(a_name);
 
@@ -123,11 +123,11 @@ void AGN::AShaderPipelineGL::setUniformBufferData(const char* a_name, void* a_da
 	glBufferData(GL_UNIFORM_BUFFER, uniformConstantBuffer->size, uniformConstantBuffer->buffer, GL_DYNAMIC_DRAW);
 }
 
-bool AGN::AShaderPipelineGL::hasUniformBuffer(const char* a_name)
+bool AGN::AShaderPipelineGL::hasConstantBuffer(const char* a_name)
 {
-	for (unsigned int i = 0; i < m_uniformBuffers.size(); i++)
+	for (unsigned int i = 0; i < m_constantBuffers.size(); i++)
 	{
-		if (strcmp(m_uniformBuffers[i]->name, a_name) == 0) return true;
+		if (strcmp(m_constantBuffers[i]->name, a_name) == 0) return true;
 	}
 
 	return false;
@@ -135,10 +135,10 @@ bool AGN::AShaderPipelineGL::hasUniformBuffer(const char* a_name)
 
 struct AGN::AUniformConstantBufferGL* AGN::AShaderPipelineGL::getUniformConstantBufferByName(const char* a_name)
 {
-	for (unsigned int i = 0; i < m_uniformBuffers.size(); i++)
+	for (unsigned int i = 0; i < m_constantBuffers.size(); i++)
 	{
-		if (strcmp(m_uniformBuffers[i]->name, a_name) == 0)
-			return m_uniformBuffers[i];
+		if (strcmp(m_constantBuffers[i]->name, a_name) == 0)
+			return m_constantBuffers[i];
 	}
 
 	assert(false);

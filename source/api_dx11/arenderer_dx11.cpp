@@ -227,7 +227,7 @@ void AGN::ARendererDX11::clearBuffer(struct ADrawCommand& a_command)
 	{
 		float clearColorFloat[4] = { 0.0f };
 
-		AGN::PixelUtils::getARGBFloat(
+		AGN::PixelUtils::getRGBAFloat(
 			a_command.data.clearBufferData.clearColor,
 			clearColorFloat[0],
 			clearColorFloat[1],
@@ -239,11 +239,8 @@ void AGN::ARendererDX11::clearBuffer(struct ADrawCommand& a_command)
 	
 	if (a_command.data.clearBufferData.buffersToClear & (uint32_t)ADrawBufferType::DEPTH)
 	{
-		m_deviceReference.getD3D11DeviceContext()->ClearDepthStencilView(m_d3dDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
+		m_deviceReference.getD3D11DeviceContext()->ClearDepthStencilView(m_d3dDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	}
-
-	
-
 
 	//AClearBufferData& data = drawCommand.data.clearBufferData;
 	//data.buffersToClear = (uint32_t)ADrawBufferType::COLOR | (uint32_t)ADrawBufferType::DEPTH;

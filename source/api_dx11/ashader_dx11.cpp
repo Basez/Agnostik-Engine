@@ -217,7 +217,7 @@ void AGN::AShaderDX11::getConstantBufferDesc(D3D11_SHADER_BUFFER_DESC*& out_cons
 		}
 	}
 
-	out_count = constantBufferDescList.size();
+	out_count = (int)constantBufferDescList.size();
 	out_constantBufferDecs = new D3D11_SHADER_BUFFER_DESC[out_count];
 
 	memcpy(out_constantBufferDecs, constantBufferDescList.data(), sizeof(D3D11_SHADER_BUFFER_DESC) * constantBufferDescList.size());

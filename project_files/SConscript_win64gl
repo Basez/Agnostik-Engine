@@ -16,6 +16,7 @@ SConscript('../shaders/SConscript_generate_gl_shaders')
 # Compiler & Linker commands
 env.AppendUnique(CXXFLAGS=Split("/EHsc"))				# specify compiler unwind semantics
 env.AppendUnique(CXXFLAGS = ['/W3'])					# warning level
+env.AppendUnique(CXXFLAGS = ['/WX'])					# treat warning as error
 env.AppendUnique(LINKFLAGS = ['/SUBSYSTEM:WINDOWS'])
 env.AppendUnique(LINKFLAGS = ['/MACHINE:X64'])
 env['CCPDBFLAGS'] = '/Z7 /Fd${TARGET}.pdb'				# Generate pdb for code debugging (both release and debug) NOTE: changed to /Z7 instead of Zi because that doesnt work with precompiled headers
