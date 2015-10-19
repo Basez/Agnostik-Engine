@@ -225,8 +225,9 @@ AGN::IAMesh* AGN::ADeviceDX11::createMesh(const uint16_t a_aId, AGN::AMeshData* 
 
 AGN::IATexture* AGN::ADeviceDX11::createTexture(const uint16_t a_aId, AGN::ATextureData* a_textureData)
 {
-	const char* relativePath = a_textureData->relativePath.c_str();
 	ID3D11Texture2D* textureHandle = nullptr;
+	ID3D11ShaderResourceView* shaderResourceView = nullptr;
+	const char* relativePath = a_textureData->relativePath.c_str();
 
 	D3D11_TEXTURE2D_DESC textureDesc;
 	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
@@ -264,8 +265,25 @@ AGN::IATexture* AGN::ADeviceDX11::createTexture(const uint16_t a_aId, AGN::AText
 		return nullptr;
 	}
 
+	// create shader resource view
+	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
+	ZeroMemory(&SRVDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+
+	SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
+	SRVDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	SRVDesc.Texture2D.MipLevels = 1;
+	SRVDesc.Texture2D.MostDetailedMip = 0;
+
+	hr = m_d3d11Device->CreateShaderResourceView(textureHandle, &SRVDesc, &shaderResourceView);
+
+	if (FAILED(hr))
+	{
+		g_log.error("Failed to create shader resource view: %s", relativePath);
+		return nullptr;
+	}
+
 	// create agnostik texture holding the info.
-	ATextureDX11* texture = new ATextureDX11(a_aId, a_textureData, textureHandle);
+	ATextureDX11* texture = new ATextureDX11(a_aId, a_textureData, textureHandle, shaderResourceView);
 
 	return dynamic_cast<IATexture*>(texture);
 }

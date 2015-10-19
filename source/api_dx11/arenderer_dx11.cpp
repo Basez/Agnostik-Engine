@@ -221,7 +221,7 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 	// input assembler stage
 	{
 		// get vertex stride (inputdata size)
-		// TODO: get this from shader reflection not hardcoded!
+		// TODO: get this from shader parsing(reflection) not hardcoded!
 		//AShaderDX11* vertexShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getVertexShader());
 		const uint32_t vertexStride = sizeof(glm::vec3) + sizeof(glm::vec2);
 		const uint32_t offset = 0;
@@ -250,8 +250,9 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 
 		shaderPipeline->setConstantBufferData("PerObject", &mvp, sizeof(mvp));
 
-		// TODO: get actual constant buffers only for the vertex shader.... this is going to be a problem as it works a bit diffrent in OpenGL
-		//d3dDeviceContext->VSSetConstantBuffers(0, 3, m_d3dConstantBuffers);	
+		// TODO: get actual constant buffers only for the vertex shader.... this is going to be a problem as it works a bit different in OpenGL
+		// TODO: refactor constant buffers to their individual shader counterparts?
+		d3dDeviceContext->VSSetConstantBuffers(0, 3, m_d3dConstantBuffers);	
 	}
 
 	// rasterizer stage
@@ -260,19 +261,26 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 		d3dDeviceContext->RSSetViewports(1, m_viewport);
 	}
 
-
 	// pixel shader stage
 	{
-		// TODO:
-		/*
-		d3dDeviceContext->PSSetShader(m_d3dMeshPixelShader, nullptr, 0);
-		d3dDeviceContext->PSSetSamplers(0, 1, &m_textureSampleState);
-		if (m_diffuseTexture != nullptr)
+		AShaderDX11* pixelShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getPixelShader());
+		ID3D11PixelShader* d3d11PixelShader = dynamic_cast<ID3D11PixelShader*>(pixelShader->getD3D11Shader());
+		
+		d3dDeviceContext->PSSetShader(d3d11PixelShader, nullptr, 0);
+		ID3D11SamplerState* sampler = shaderPipeline->getSamplerState();
+		d3dDeviceContext->PSSetSamplers(0, 1, &sampler);
+
+		ATextureDX11* diffuse = dynamic_cast<ATextureDX11*>(material->diffuseTexture);
+		ATextureDX11* normal = dynamic_cast<ATextureDX11*>(material->normalTexture);
+		ATextureDX11* specular = dynamic_cast<ATextureDX11*>(material->specularTexture);
+
+		// TODO: add multiple texture support
+		if (diffuse != nullptr)
 		{
-			ID3D11ShaderResourceView* srv = m_diffuseTexture->getShaderResourceView();
-			d3dDeviceContext->PSSetShaderResources(0, 1, &srv);
+			ID3D11ShaderResourceView* shaderResourceView = diffuse->getShaderResourceView();
+			d3dDeviceContext->PSSetShaderResources(0, 1, &shaderResourceView);
 		}
-		*/
+		
 	}
 	
 	// output merger stage

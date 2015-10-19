@@ -29,6 +29,7 @@ namespace AGN
 		void setConstantBufferData(const char* a_name, void* a_data, size_t a_dataSize) override;
 		virtual bool hasConstantBuffer(const char* a_name) override;
 		ID3D11InputLayout* getVertexInputLayout() const { return m_vertexInputLayout; }
+		ID3D11SamplerState* getSamplerState() { return m_samplerState; }
 
 	private:
 		class ADeviceDX11& m_deviceReference;

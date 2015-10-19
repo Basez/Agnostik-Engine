@@ -9,6 +9,8 @@ namespace AGN
 		virtual std::string getRelativePath() = 0;
 		virtual uint16_t getId() = 0;
 		virtual void setTextureParams(unsigned int a_flags = 0) = 0;
+
+		// TODO: push/pull buffers for CPU access to texture data
 	};
 
 	enum class EATextureType
