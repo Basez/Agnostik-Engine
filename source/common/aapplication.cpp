@@ -20,7 +20,7 @@
 #include <chrono>
 
 // shaders
-// TODO: find crossplatform for these shaders. Perhaps let the pre-build step figure it out or generate both types in the same file?
+// TODO: make these shaders more crossplatform friendly. Perhaps let the pre-build step figure it out or generate both types in the same file, with a special getter
 #include "shader_mesh_pix.hpp"
 #include "shader_mesh_vert.hpp"
 #include "shader_skybox_pix.hpp"

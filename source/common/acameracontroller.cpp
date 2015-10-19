@@ -59,15 +59,15 @@ void AGN::ACameraController::update(float a_deltaTime)
 	// camera movement
 	float cameraSpeed = m_normalMovementSpeed;
 
-	if (g_input.getKey(AGN_SCANCODE::LCTRL) || g_input.getKey(AGN_SCANCODE::RCTRL)) cameraSpeed = m_slowMovementSpeed;
-	if (g_input.getKey(AGN_SCANCODE::LSHIFT) || g_input.getKey(AGN_SCANCODE::RSHIFT)) cameraSpeed = m_fastMovementSpeed;
+	if (g_input.getKey(SCANCODE::LCTRL) || g_input.getKey(SCANCODE::RCTRL)) cameraSpeed = m_slowMovementSpeed;
+	if (g_input.getKey(SCANCODE::LSHIFT) || g_input.getKey(SCANCODE::RSHIFT)) cameraSpeed = m_fastMovementSpeed;
 
 	bool localMovement = true;
 	vec3 translation;
 
-	int xMovement = (int)g_input.getKey(AGN_SCANCODE::D) - (int)g_input.getKey(AGN_SCANCODE::A);
-	int yMovement = (int)g_input.getKey(AGN_SCANCODE::SPACE) - (int)g_input.getKey(AGN_SCANCODE::C);
-	int zMovement = (int)g_input.getKey(AGN_SCANCODE::S) - (int)g_input.getKey(AGN_SCANCODE::W);
+	int xMovement = (int)g_input.getKey(SCANCODE::D) - (int)g_input.getKey(SCANCODE::A);
+	int yMovement = (int)g_input.getKey(SCANCODE::SPACE) - (int)g_input.getKey(SCANCODE::C);
+	int zMovement = (int)g_input.getKey(SCANCODE::S) - (int)g_input.getKey(SCANCODE::W);
 
 	if (localMovement)
 	{

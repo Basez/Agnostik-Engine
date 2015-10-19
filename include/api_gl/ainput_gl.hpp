@@ -9,19 +9,19 @@ namespace AGN
 	public:
 		AInputGL();
 
-		static AGN::AGN_SCANCODE getAGNScanCode(SDL_Scancode a_sdlkey);
+		static AGN::SCANCODE getAGNScanCode(SDL_Scancode a_sdlkey);
 		static AGN::AGN_MOUSECODE getAGNMouse(uint8_t a_sdlMouse);
 
 		void registerMouseClick(AGN::AGN_MOUSECODE a_mouseButton) override;
 		void registerMouseHold(AGN::AGN_MOUSECODE a_mouseButton, bool a_held) override;
-		void registerHold(AGN::AGN_SCANCODE a_key, bool a_held) override;
+		void registerHold(AGN::SCANCODE a_key, bool a_held) override;
 		void registerFrameCompletion() override;
 		void registerMouseScroll(int a_scrollAmount) override { m_scrollAmount = a_scrollAmount; }
 		void registerMouseMotion(int a_mouseX, int a_mouseY) override;
 
-		bool getKeyDown(AGN::AGN_SCANCODE a_key) override;
-		bool getKeyUp(AGN::AGN_SCANCODE a_key) override;
-		bool getKey(AGN::AGN_SCANCODE a_key) override;
+		bool getKeyDown(AGN::SCANCODE a_key) override;
+		bool getKeyUp(AGN::SCANCODE a_key) override;
+		bool getKey(AGN::SCANCODE a_key) override;
 		bool getMouseDown(AGN::AGN_MOUSECODE a_mouseButton) override;
 		bool getMouseUp(AGN::AGN_MOUSECODE a_mouseButton) override;
 		bool getMouse(AGN::AGN_MOUSECODE a_mouseButton) override;
@@ -43,8 +43,8 @@ namespace AGN
 		//void onInputCharacter(SDL_Scancode a_key);
 		//bool m_doTrackInput;
 		
-		bool m_held[(int)AGN::AGN_SCANCODE::NUM_SCANCODES];
-		bool m_heldChange[(int)AGN::AGN_SCANCODE::NUM_SCANCODES];
+		bool m_held[(int)AGN::SCANCODE::NUM_SCANCODES];
+		bool m_heldChange[(int)AGN::SCANCODE::NUM_SCANCODES];
 
 		bool m_mouse[(int)AGN::AGN_MOUSECODE::NUM_MOUSECODES];
 		bool m_click[(int)AGN::AGN_MOUSECODE::NUM_MOUSECODES];

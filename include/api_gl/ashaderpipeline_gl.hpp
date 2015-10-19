@@ -22,7 +22,6 @@ namespace AGN
 		void setConstantBufferData(const char* a_name, void* a_data, size_t a_dataSize) override;
 		virtual bool hasConstantBuffer(const char* a_name) override;
 
-		// TODO: change architecture after bind stuff works
 		GLuint getGlProgramId() { return m_glProgramId; }
 		GLint getUniformIdByName(const char* a_name);
 		bool hasUniform(const char* a_name);

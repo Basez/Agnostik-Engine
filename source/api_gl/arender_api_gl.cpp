@@ -57,7 +57,7 @@ bool AGN::ARenderAPIGL::initOpenGL()
 		return false;
 	}
 
-	// TODO: implement TTF 
+	// TODO: implement fonts for OpenGL
 	//TTF_Init();
 
 	// Create an OpenGL 3.3 core forward compatible context.

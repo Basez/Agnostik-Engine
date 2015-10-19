@@ -6,7 +6,7 @@
 AGN::AWindowGL::AWindowGL(glm::ivec2 a_dimentions)
 	: m_dimentions(a_dimentions)
 	, m_mouseOnScreen(false)
-	, m_keyboardFocus(true)
+	, m_keyboardFocus(false)
 	, m_minimized(false)
 {
 	Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
@@ -61,11 +61,6 @@ void AGN::AWindowGL::onWindowEvent(SDL_Event a_event)
 		m_dimentions.x = a_event.window.data1;
 		m_dimentions.y = a_event.window.data2;
 		glViewport(0, 0, m_dimentions.x, m_dimentions.y);
-
-		break;
-
-	case SDL_WINDOWEVENT_EXPOSED:		
-		// Repaint/render on window exposure?
 		break;
 
 	case SDL_WINDOWEVENT_ENTER:
@@ -88,14 +83,8 @@ void AGN::AWindowGL::onWindowEvent(SDL_Event a_event)
 		m_minimized = true;
 		break;
 
-	case SDL_WINDOWEVENT_MAXIMIZED:
+	case SDL_WINDOWEVENT_RESTORED:	// triggered when window is "unminimized"
 		m_minimized = false;
 		break;
-
-	case SDL_WINDOWEVENT_RESTORED:
-		// TODO: Window restored?
-		break;
 	}
-
-	// TODO: check if default values of booleans are correct! (m_keyboardFocus/m_mouseOnScreen/m_minimized)
 }

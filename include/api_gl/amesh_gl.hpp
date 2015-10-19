@@ -1,7 +1,6 @@
 #pragma once
 
 #include "iamesh.hpp"
-#include "amaterial.hpp" // TODO: remove
 
 namespace AGN
 {

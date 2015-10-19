@@ -3,7 +3,7 @@
 namespace AGN
 {
 	enum class AGN_MOUSECODE;
-	enum class AGN_SCANCODE;
+	enum class SCANCODE;
 
 	class IAInput
 	{
@@ -13,15 +13,15 @@ namespace AGN
 		// submitted to track input
 		virtual void registerMouseClick(AGN::AGN_MOUSECODE a_mouseButton) = 0;
 		virtual void registerMouseHold(AGN::AGN_MOUSECODE a_mouseButton, bool a_held) = 0;
-		virtual void registerHold(AGN::AGN_SCANCODE a_key, bool a_held) = 0;
+		virtual void registerHold(AGN::SCANCODE a_key, bool a_held) = 0;
 		virtual void registerFrameCompletion() = 0;
 		virtual void registerMouseScroll(int a_scrollAmount) = 0;
 		virtual void registerMouseMotion(int a_mouseX, int a_mouseY) = 0;
 
 		// poll input functions
-		virtual bool getKeyDown(AGN::AGN_SCANCODE a_key) = 0;
-		virtual bool getKeyUp(AGN::AGN_SCANCODE a_key) = 0;
-		virtual bool getKey(AGN::AGN_SCANCODE a_key) = 0;
+		virtual bool getKeyDown(AGN::SCANCODE a_key) = 0;
+		virtual bool getKeyUp(AGN::SCANCODE a_key) = 0;
+		virtual bool getKey(AGN::SCANCODE a_key) = 0;
 		virtual bool getMouseDown(AGN::AGN_MOUSECODE a_mouseButton) = 0;
 		virtual bool getMouseUp(AGN::AGN_MOUSECODE a_mouseButton) = 0;
 		virtual bool getMouse(AGN::AGN_MOUSECODE a_mouseButton) = 0;
@@ -70,7 +70,7 @@ namespace AGN
 	};
 
 	// Set to match SDL scancodes
-	enum class AGN_SCANCODE
+	enum class SCANCODE
 	{
 		UNKNOWN = 0,
 		A = 4,

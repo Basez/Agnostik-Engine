@@ -17,15 +17,13 @@ AGN::AInputGL::AInputGL()
 	memset(m_click, false, sizeof(m_click));
 }
 
-AGN::AGN_SCANCODE AGN::AInputGL::getAGNScanCode(SDL_Scancode a_sdlkey)
+AGN::SCANCODE AGN::AInputGL::getAGNScanCode(SDL_Scancode a_sdlkey)
 {
-	// TODO: convert to similar code that DX11 uses
-	return (AGN_SCANCODE)a_sdlkey;
+	return (SCANCODE)a_sdlkey;
 }
 
 AGN::AGN_MOUSECODE AGN::AInputGL::getAGNMouse(uint8_t a_sdlMouse)
 {
-	// TODO: convert to similar code that DX11 uses
 	return (AGN_MOUSECODE)a_sdlMouse;
 }
 
@@ -51,7 +49,7 @@ void AGN::AInputGL::registerMouseHold(AGN::AGN_MOUSECODE a_mouseButton, bool a_h
 	m_mouse[(int)a_mouseButton] = a_held;
 }
 
-void AGN::AInputGL::registerHold(AGN::AGN_SCANCODE a_key, bool a_held)
+void AGN::AInputGL::registerHold(AGN::SCANCODE a_key, bool a_held)
 {
 	if (m_held[(int)a_key] != a_held)
 	{
@@ -84,19 +82,19 @@ void AGN::AInputGL::registerMouseMotion(int a_mouseX, int a_mouseY)
 	}
 }
 
-bool AGN::AInputGL::getKeyDown(AGN::AGN_SCANCODE a_key)
+bool AGN::AInputGL::getKeyDown(AGN::SCANCODE a_key)
 {
 	const bool retVal = m_held[(int)a_key] && m_heldChange[(int)a_key];
 	return retVal;
 }
 
-bool AGN::AInputGL::getKeyUp(AGN::AGN_SCANCODE a_key)
+bool AGN::AInputGL::getKeyUp(AGN::SCANCODE a_key)
 {
 	const bool retVal = !m_held[(int)a_key] && m_heldChange[(int)a_key];
 	return retVal;
 }
 
-bool AGN::AInputGL::getKey(AGN::AGN_SCANCODE a_key)
+bool AGN::AInputGL::getKey(AGN::SCANCODE a_key)
 {
 	return m_held[(int)a_key];
 }
