@@ -13,6 +13,7 @@
 #include "acamera.hpp"
 #include "aentity.hpp"
 #include "ashaderpipeline_gl.hpp"
+#include "iashader.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -110,7 +111,7 @@ void AGN::ARendererGL::drawEntity(ADrawCommand* a_command)
 			bindTexturesToShader(shaderPipeline->getGlProgramId(), 1, texturesToBind);
 		}
 	
-		if (shaderPipeline->hasConstantBuffer("MaterialProperties"))
+		if (shaderPipeline->hasConstantBuffer(EAShaderType::PixelShader,"MaterialProperties"))
 		{
 			// TODO: get buffer offset, this is hardcoded
 			unsigned char buffer[40];
@@ -119,7 +120,7 @@ void AGN::ARendererGL::drawEntity(ADrawCommand* a_command)
 			memcpy(buffer + 24, glm::value_ptr(material->ambientColor), sizeof(material->ambientColor)); // material ambient
 			memcpy(buffer + 36, &material->transparency, sizeof(material->transparency)); // material transparency // TODO: check if this is correct
 
-			shaderPipeline->setConstantBufferData("MaterialProperties", &buffer, 32);
+			shaderPipeline->setConstantBufferData(EAShaderType::PixelShader, "MaterialProperties", &buffer, 32);
 		}
 
 		m_boundMaterial = material;

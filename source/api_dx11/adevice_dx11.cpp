@@ -362,7 +362,7 @@ AGN::IAShader* AGN::ADeviceDX11::createShader(const uint16_t a_aId, const char* 
 		errorBlob = nullptr;
 	}
 
-	AShaderDX11* shader = new AShaderDX11(a_aId, a_type, d3d11Shader, shaderBlob);
+	AShaderDX11* shader = new AShaderDX11(*this, a_aId, a_type, d3d11Shader, shaderBlob);
 	return dynamic_cast<IAShader*>(shader);
 }
 
@@ -461,7 +461,7 @@ AGN::IAShaderPipeline* AGN::ADeviceDX11::createShaderPipeline(const uint16_t a_a
 
 	delete samplerLayoutDesc;
 
-	AShaderPipelineDX11* shaderPipeline = new AShaderPipelineDX11(*this, shaderPipelineData, vertexInputLayout, samplerState);
+	AShaderPipelineDX11* shaderPipeline = new AShaderPipelineDX11(shaderPipelineData, vertexInputLayout, samplerState);
 
 	return dynamic_cast<IAShaderPipeline*>(shaderPipeline);
 }

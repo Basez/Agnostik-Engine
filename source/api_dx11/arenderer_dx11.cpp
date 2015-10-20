@@ -238,7 +238,7 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 
 	// Vertex shader stage
 	{
-		AShaderDX11* vertexShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getVertexShader());
+		AShaderDX11* vertexShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getShader(EAShaderType::VertexShader));
 		ID3D11VertexShader* d3d11VertexShader = dynamic_cast<ID3D11VertexShader*>(vertexShader->getD3D11Shader());
 			
 		d3dDeviceContext->VSSetShader(d3d11VertexShader, nullptr, 0);
@@ -247,12 +247,12 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 		// retrieve model matrix from array in struct
 		glm::mat4 modelMatrix = glm::make_mat4(data.modelMatrixArray); // TODO: send model matrix to shader as well for WS coordinate calculation
 		mat4 mvp = m_vp * modelMatrix;
-
-		shaderPipeline->setConstantBufferData("PerObject", &mvp, sizeof(mvp));
+		
+		shaderPipeline->setConstantBufferData(EAShaderType::VertexShader, "PerObject", &mvp, sizeof(mvp));
 
 		// TODO: get actual constant buffers only for the vertex shader.... this is going to be a problem as it works a bit different in OpenGL
 		// TODO: refactor constant buffers to their individual shader counterparts?
-		d3dDeviceContext->VSSetConstantBuffers(0, 3, m_d3dConstantBuffers);	
+		//d3dDeviceContext->VSSetConstantBuffers(0, 3, m_d3dConstantBuffers);	
 	}
 
 	// rasterizer stage
@@ -263,7 +263,7 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 
 	// pixel shader stage
 	{
-		AShaderDX11* pixelShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getPixelShader());
+		AShaderDX11* pixelShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getShader(EAShaderType::PixelShader));
 		ID3D11PixelShader* d3d11PixelShader = dynamic_cast<ID3D11PixelShader*>(pixelShader->getD3D11Shader());
 		
 		d3dDeviceContext->PSSetShader(d3d11PixelShader, nullptr, 0);

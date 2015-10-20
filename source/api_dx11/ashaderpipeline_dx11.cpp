@@ -9,70 +9,18 @@
 
 using namespace glm;
 
-AGN::AShaderPipelineDX11::AShaderPipelineDX11(ADeviceDX11& a_deviceReference, AShaderPipelineData* a_shaderPipelineData, ID3D11InputLayout* a_vertexInputLayout, ID3D11SamplerState* a_samplerState)
-	: m_deviceReference(a_deviceReference)
-	, m_shaderPipelineData(a_shaderPipelineData)
+AGN::AShaderPipelineDX11::AShaderPipelineDX11(AShaderPipelineData* a_shaderPipelineData, ID3D11InputLayout* a_vertexInputLayout, ID3D11SamplerState* a_samplerState)
+	: m_aId(a_shaderPipelineData->aId)
 	, m_vertexInputLayout(a_vertexInputLayout)
 	, m_samplerState(a_samplerState)
 {
-	AShaderDX11* vertexShader = dynamic_cast<AShaderDX11*>(m_shaderPipelineData->vertexShader);
-
-	IAShader * const shaderArray[] = {
-		m_shaderPipelineData->vertexShader,
-		m_shaderPipelineData->pixelShader,
-		m_shaderPipelineData->hullShader,
-		m_shaderPipelineData->domainShader,
-		m_shaderPipelineData->geometryShader,
-		m_shaderPipelineData->computeShader
-	};
-
-	const uint32_t numShaders = sizeof(shaderArray) / sizeof(IAShader*);
-
-	// create constant buffers for shader pipeline, combined from all shaders (same as OpenGL)
-	for (unsigned int i = 0; i < numShaders; i++)
-	{
-		if (shaderArray[i] == nullptr) continue;
-
-		AShaderDX11* currentShader = dynamic_cast<AShaderDX11*>(shaderArray[i]);
-
-		// create input layout for vertex shader
-		D3D11_SHADER_BUFFER_DESC* constReflectionBufferDesc = nullptr;
-		int inputLayoutCount = 0;
-
-		currentShader->getConstantBufferDesc(constReflectionBufferDesc, inputLayoutCount);
-
-		// create constant buffers
-		for (uint16_t i = 0; i < inputLayoutCount; i++)
-		{
-			// create dx11 constant buffer object and put info in
-			AConstantBufferDX11* constantBufferDX11 = new AConstantBufferDX11();
-			constantBufferDX11->bufferDesc = new D3D11_SHADER_BUFFER_DESC();
-			memcpy(constantBufferDX11->bufferDesc, &constReflectionBufferDesc[i], sizeof(D3D11_SHADER_BUFFER_DESC));
-
-			// create handle to actual buffer
-			D3D11_BUFFER_DESC newConstantBufferDesc;
-			ZeroMemory(&newConstantBufferDesc, sizeof(D3D11_BUFFER_DESC));
-
-			newConstantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-			newConstantBufferDesc.ByteWidth = constantBufferDX11->bufferDesc->Size;
-			newConstantBufferDesc.CPUAccessFlags = 0;
-			newConstantBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-			newConstantBufferDesc.MiscFlags = 0;
-			newConstantBufferDesc.StructureByteStride = 0;
-
-			HRESULT hr = m_deviceReference.getD3D11Device()->CreateBuffer(&newConstantBufferDesc, nullptr, &constantBufferDX11->bufferHandle);
-
-			if (FAILED(hr))
-			{
-				g_log.error("failure creating constant buffer");
-				return;
-			}
-
-			m_constantBuffers.push_back(constantBufferDX11);
-		}
-
-		delete[] constReflectionBufferDesc;
-	}
+	// fill shader array
+	m_shaders[0] = a_shaderPipelineData->vertexShader;
+	m_shaders[1] = a_shaderPipelineData->pixelShader;
+	m_shaders[2] = a_shaderPipelineData->hullShader;
+	m_shaders[3] = a_shaderPipelineData->domainShader;
+	m_shaders[4] = a_shaderPipelineData->geometryShader;
+	m_shaders[5] = a_shaderPipelineData->computeShader;
 
 	/*
 	// update object constant buffer with current position
@@ -80,34 +28,33 @@ AGN::AShaderPipelineDX11::AShaderPipelineDX11(ADeviceDX11& a_deviceReference, AS
 	*/
 }
 
+class AGN::IAShader* AGN::AShaderPipelineDX11::getShader(const AGN::EAShaderType a_type)
+{
+	const uint32_t numShaders = sizeof(m_shaders) / sizeof(m_shaders[0]);
+
+	for (int i = 0; i < numShaders; i++)
+	{
+		if (m_shaders[i]->getType() == a_type) return m_shaders[i];
+	}
+
+	g_log.error("Shader with type not recognized or added");
+	assert(false);
+	return nullptr;
+}
+
 void AGN::AShaderPipelineDX11::bind()
 {
-	// TODO:
+	// TODO:? remove this ?
 }
 
-void AGN::AShaderPipelineDX11::setConstantBufferData(const char* a_name, void* a_data, size_t a_dataSize)
+void AGN::AShaderPipelineDX11::setConstantBufferData(const EAShaderType a_shaderType, const char* a_name, void* a_data, size_t a_dataSize)
 {
-	for (uint16_t i = 0; i < m_constantBuffers.size(); i++)
-	{
-		if (strcmp(m_constantBuffers[i]->bufferDesc->Name, a_name) == 0)
-		{
-			m_deviceReference.getD3D11DeviceContext()->UpdateSubresource(m_constantBuffers[i]->bufferHandle, 0, nullptr, a_data, 0, 0);
-
-			return;
-		}
-	}
-
+	AShaderDX11* shaderDX11 = dynamic_cast<AShaderDX11*>(getShader(a_shaderType));
+	shaderDX11->setConstantBufferData(a_name, a_data, a_dataSize);
 }
 
-bool AGN::AShaderPipelineDX11::hasConstantBuffer(const char* a_name)
+bool AGN::AShaderPipelineDX11::hasConstantBuffer(const EAShaderType a_shader, const char* a_name)
 {
-	for (uint16_t i = 0; i < m_constantBuffers.size(); i++)
-	{
-		if (strcmp(m_constantBuffers[i]->bufferDesc->Name, a_name) == 0)
-		{
-			return true;
-		}
-	}
-
-	return false;
+	AShaderDX11* shaderDX11 = dynamic_cast<AShaderDX11*>(getShader(a_shader));
+	return shaderDX11->hasConstantBuffer(a_name);
 }

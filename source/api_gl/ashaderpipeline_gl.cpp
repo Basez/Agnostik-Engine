@@ -9,13 +9,15 @@ using namespace glm;
 AGN::AShaderPipelineGL::AShaderPipelineGL(const GLuint a_glprogramId, AShaderPipelineData& a_data)
 	: m_aId(a_data.aId)
 	, m_glProgramId(a_glprogramId)
-	, m_vertexShader(a_data.vertexShader)
-	, m_pixelShader(a_data.pixelShader)
-	, m_hullShader(a_data.hullShader)
-	, m_domainShader(a_data.domainShader)
-	, m_geometryShader(a_data.geometryShader)
-	, m_computeShader(a_data.computeShader)
 {
+	// fill shader array
+	m_shaders[0] = a_data.vertexShader;
+	m_shaders[1] = a_data.pixelShader;
+	m_shaders[2] = a_data.hullShader;
+	m_shaders[3] = a_data.domainShader;
+	m_shaders[4] = a_data.geometryShader;
+	m_shaders[5] = a_data.computeShader;
+
 	// get total uniform count
 	//glGetProgramiv(m_glProgramId, GL_ACTIVE_UNIFORMS, &m_uniformPropertyCount);
 
@@ -81,6 +83,20 @@ AGN::AShaderPipelineGL::AShaderPipelineGL(const GLuint a_glprogramId, AShaderPip
 	AGN::getOpenGLError();
 }
 
+AGN::IAShader* AGN::AShaderPipelineGL::getShader(const EAShaderType a_type)
+{
+	const uint32_t numShaders = sizeof(m_shaders) / sizeof(m_shaders[0]);
+
+	for (int i = 0; i < numShaders; i++)
+	{
+		if (m_shaders[i]->getType() == a_type) return m_shaders[i];
+	}
+
+	g_log.error("Shader with type not recognized or added");
+	assert(false);
+	return nullptr;
+}
+
 void AGN::AShaderPipelineGL::bind()
 {
 	glUseProgram(m_glProgramId);
@@ -113,7 +129,7 @@ bool AGN::AShaderPipelineGL::hasUniform(const char* a_name)
 	return glGetUniformLocation(m_glProgramId, a_name) != -1;
 }
 
-void AGN::AShaderPipelineGL::setConstantBufferData(const char* a_name, void* a_data, size_t a_dataSize)
+void AGN::AShaderPipelineGL::setConstantBufferData(const EAShaderType a_shader, const char* a_name, void* a_data, size_t a_dataSize)
 {
 	AUniformConstantBufferGL* uniformConstantBuffer = getUniformConstantBufferByName(a_name);
 
@@ -124,7 +140,7 @@ void AGN::AShaderPipelineGL::setConstantBufferData(const char* a_name, void* a_d
 	glBufferData(GL_UNIFORM_BUFFER, uniformConstantBuffer->size, uniformConstantBuffer->buffer, GL_DYNAMIC_DRAW);
 }
 
-bool AGN::AShaderPipelineGL::hasConstantBuffer(const char* a_name)
+bool AGN::AShaderPipelineGL::hasConstantBuffer(const EAShaderType a_shader, const char* a_name)
 {
 	for (unsigned int i = 0; i < m_constantBuffers.size(); i++)
 	{

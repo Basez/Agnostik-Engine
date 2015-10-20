@@ -123,7 +123,7 @@ void AGN::AAplication::updateMeshShaderProperties(float a_deltaTime)
 	memcpy(buffer + 16, lightColor, 4 * sizeof(float));
 	memcpy(buffer + 32, lightAmbient, 4 * sizeof(float));
 
-	m_meshShaderPipeline->setConstantBufferData("LightSettings", &buffer, 48);
+	m_meshShaderPipeline->setConstantBufferData(EAShaderType::PixelShader,"LightSettings", &buffer, 48);
 }
 
 void AGN::AAplication::loadShaders()

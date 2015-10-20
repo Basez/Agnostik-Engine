@@ -10,17 +10,12 @@ namespace AGN
 	{
 	public:
 		AShaderPipelineGL(const GLuint a_glprogramId, AShaderPipelineData& a_data);
-		class IAShader* getVertexShader() override { return m_vertexShader; }
-		class IAShader* getPixelShader() override { return m_pixelShader; }
-		class IAShader* getHullShader() override { return m_hullShader; }
-		class IAShader* getDomainShader() override { return m_domainShader; }
-		class IAShader* getGeometryShader() override { return m_geometryShader; }
-		class IAShader* getComputeShader() override { return m_computeShader; }
+		class IAShader* getShader(const EAShaderType a_type) override;
 		uint16_t getAId() { return m_aId; }
 
 		void bind() override;
-		void setConstantBufferData(const char* a_name, void* a_data, size_t a_dataSize) override;
-		virtual bool hasConstantBuffer(const char* a_name) override;
+		void setConstantBufferData(const EAShaderType a_shader, const char* a_name, void* a_data, size_t a_dataSize) override;
+		virtual bool hasConstantBuffer(const EAShaderType a_shader, const char* a_name) override;
 
 		GLuint getGlProgramId() { return m_glProgramId; }
 		GLint getUniformIdByName(const char* a_name);
@@ -31,12 +26,7 @@ namespace AGN
 
 		const uint16_t m_aId;				
 		const GLuint m_glProgramId;			
-		class IAShader* m_vertexShader;	
-		class IAShader* m_pixelShader;		
-		class IAShader* m_hullShader;		
-		class IAShader* m_domainShader;		
-		class IAShader* m_geometryShader;	
-		class IAShader* m_computeShader;
+		class IAShader* m_shaders[6];
 
 		std::vector<struct AUniformConstantBufferGL*> m_constantBuffers;
 
