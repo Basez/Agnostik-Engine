@@ -182,6 +182,13 @@ void AGN::ARendererDX11::render(AGN::ADrawCommander& a_drawCommander)
 	// pre-calculate matrices that we are going to re-use through the frame
 	m_vp = m_currentCamera->getProjectionMatrix() * m_currentCamera->getViewMatrix();
 
+	/*
+	g_log.debug("vp: %f - %f - %f - %f", m_vp[0][0], m_vp[0][1], m_vp[0][2], m_vp[0][3]);
+	g_log.debug("vp: %f - %f - %f - %f", m_vp[1][0], m_vp[1][1], m_vp[1][2], m_vp[1][3]);
+	g_log.debug("vp: %f - %f - %f - %f", m_vp[2][0], m_vp[2][1], m_vp[2][2], m_vp[2][3]);
+	g_log.debug("vp: %f - %f - %f - %f", m_vp[3][0], m_vp[3][1], m_vp[3][2], m_vp[3][3]);
+	*/
+
 	// loop through sorted draw commands & draw em
 	std::vector<ADrawCommand*> list = a_drawCommander.getSortedDrawCommands();
 
@@ -255,8 +262,9 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 		
 		dx11VertexShader->setConstantBufferData("PerObject", &mvp, sizeof(mvp));
 
-		ID3D11Buffer** ppConstantBuffers = dx11VertexShader->getConstantBufferHandles();
-		d3dDeviceContext->VSSetConstantBuffers(0, dx11VertexShader->getNumConstantBuffers(), ppConstantBuffers);
+		ID3D11Buffer** d3d11ConstantBuffers = dx11VertexShader->getConstantBufferHandles();
+		const int numConstBuffers = dx11VertexShader->getNumConstantBuffers();
+		d3dDeviceContext->VSSetConstantBuffers(0, numConstBuffers, d3d11ConstantBuffers);
 
 		d3d11VertexShader->Release();
 	}

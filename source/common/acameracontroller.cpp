@@ -49,10 +49,12 @@ void AGN::ACameraController::update(float a_deltaTime)
 	{
 		window.showCursor(false);
 		m_lastMousePosition = ivec2(g_input.getMouseX(), g_input.getMouseY());
+		m_startDragPosition = m_lastMousePosition;
 	}
 	else if (g_input.getMouseUp(MOUSECODE::RIGHT))
 	{
 		window.showCursor(true);
+		window.warpCursor(m_startDragPosition);
 		m_lastMousePosition = ivec2(g_input.getMouseX(), g_input.getMouseY());
 	}
 
@@ -120,8 +122,33 @@ void AGN::ACameraController::onMouseMotion(int a_mouseX, int a_mouseY)
 
 		IAWindow& window = g_application.getRenderAPI().getWindow();
 
-		// warp mouse to center of screen, for infinite dragging
-		m_lastMousePosition = ivec2(window.getDimentions().x >> 1, window.getDimentions().y >> 1);
-		window.warpCursor(m_lastMousePosition);
+		// check if out of bounds
+		static const glm::ivec2 boundaryMargin = glm::ivec2(window.getDimentions().x / 5, window.getDimentions().y / 5);
+
+		glm::ivec2 min = glm::ivec2(boundaryMargin.x, boundaryMargin.y);
+		glm::ivec2 max = glm::ivec2(window.getDimentions().x - boundaryMargin.x, window.getDimentions().y - boundaryMargin.y);
+		
+		if (currentMousePos.x < min.x)
+		{
+			m_lastMousePosition = ivec2(max.x - 1, currentMousePos.y);
+			window.warpCursor(m_lastMousePosition);
+		}
+		if (currentMousePos.x > max.x)
+		{
+			m_lastMousePosition = ivec2(min.x + 1, currentMousePos.y);
+			window.warpCursor(m_lastMousePosition);
+		}
+		if (currentMousePos.y < min.y)
+		{
+			m_lastMousePosition = ivec2(currentMousePos.x, max.y - 1);
+			window.warpCursor(m_lastMousePosition);
+		}
+		if (currentMousePos.y > max.y)
+		{
+			m_lastMousePosition = ivec2(currentMousePos.x, min.y + 1);
+			window.warpCursor(m_lastMousePosition);
+		}
+
+
 	}
 }

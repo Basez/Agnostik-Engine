@@ -269,10 +269,7 @@ bool AGN::AInputDX11::getMouseUp(AGN::MOUSECODE a_mouseButton)
 
 bool AGN::AInputDX11::getMouse(AGN::MOUSECODE a_mouseButton)
 {
-	//uint32_t mouseState = SDL_GetMouseState(NULL, NULL)&SDL_BUTTON((uint8_t)a_mouseButton);
-	//uint32_t buttonState = SDL_BUTTON((uint32_t)a_mouseButton);
-	//return (mouseState == buttonState);
-	return false; // TODO: Restore
+	return m_mouse[(int)a_mouseButton];
 }
 
 bool AGN::AInputDX11::getCapslock()

@@ -29,6 +29,7 @@ namespace AGN
 		bool m_collideWithTerrain;
 
 		glm::ivec2 m_lastMousePosition;
+		glm::ivec2 m_startDragPosition;
 		glm::vec2 m_xyRotation;
 		glm::vec2 m_prevXYrotation;
 		float m_slowMovementSpeed;

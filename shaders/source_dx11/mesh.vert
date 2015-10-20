@@ -8,7 +8,8 @@
 //	matrix viewMatrix;
 //}
 
-cbuffer PerObject : register(b2)
+// TODO: fix registers when restoring Cbuffers
+cbuffer PerObject : register(b0)
 {
 	matrix modelViewProjectionMatrix;
 	//matrix modelMatrix;

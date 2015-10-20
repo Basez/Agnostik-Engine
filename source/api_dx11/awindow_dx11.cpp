@@ -115,7 +115,7 @@ LRESULT CALLBACK AGN::AWindowDX11::onWindowEvent(HWND a_hwnd, UINT a_message, WP
 		uint64_t dx11KeyCode = (uint64_t)a_wParam;
 		auto agnScanKey = AInputDX11::getAGNScanCode(dx11ScanCode);
 
-		g_log.debug("dx11ScanCode: %i, agnScanKey: %u", dx11ScanCode, (uint16_t)agnScanKey);
+		//g_log.debug("dx11ScanCode: %i, agnScanKey: %u", dx11ScanCode, (uint16_t)agnScanKey);
 
 		g_input.registerHold(agnScanKey, true);
 
