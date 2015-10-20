@@ -14,7 +14,7 @@
 #include "adrawcommand.hpp"
 #include "adrawcommander.hpp"
 #include "apixelutils.hpp"
-
+#include "atlbase.h" // CCOMMpointers
 #include <glm/gtc/type_ptr.hpp>
 
 #include <d3d11_1.h>
@@ -81,7 +81,7 @@ bool AGN::ARendererDX11::init()
 
 	// Create the depth buffer for use with the depth/stencil view.
 	D3D11_TEXTURE2D_DESC depthStencilBufferDesc;
-	ZeroMemory(&depthStencilBufferDesc, sizeof(D3D11_TEXTURE2D_DESC));
+	memset(&depthStencilBufferDesc, 0, sizeof(D3D11_TEXTURE2D_DESC));
 
 	depthStencilBufferDesc.ArraySize = 1;									// Number of textures in the texture array
 	depthStencilBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;			// how to bind a resource to the pipeline // indicates that this buffer is to be used as a depth-stencil target for the output-merger stage.
@@ -114,7 +114,7 @@ bool AGN::ARendererDX11::init()
 
 	// Setup depth/stencil state.
 	D3D11_DEPTH_STENCIL_DESC depthStencilStateDesc;
-	ZeroMemory(&depthStencilStateDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	memset(&depthStencilStateDesc, 0, sizeof(D3D11_DEPTH_STENCIL_DESC));
 
 	depthStencilStateDesc.DepthEnable = TRUE;									// Set to TRUE to enable depth testing, or set to FALSE to disable depth testing.
 	depthStencilStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;			// Identify a portion of the depth-stencil buffer that can be modified by depth data // Turn on writes to the depth-stencil buffer.
@@ -131,7 +131,7 @@ bool AGN::ARendererDX11::init()
 
 	// Setup rasterizer state.
 	D3D11_RASTERIZER_DESC rasterizerDesc;
-	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
+	memset(&rasterizerDesc, 0, sizeof(D3D11_RASTERIZER_DESC));
 
 	rasterizerDesc.AntialiasedLineEnable = FALSE;		// antialiasing; only applies if doing line drawing and MultisampleEnable is FALSE.
 	rasterizerDesc.CullMode = D3D11_CULL_BACK;
@@ -209,8 +209,6 @@ void AGN::ARendererDX11::render(AGN::ADrawCommander& a_drawCommander)
 
 void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 {
-	return;
-
 	ID3D11DeviceContext* const d3dDeviceContext = m_deviceReference.getD3D11DeviceContext();
 
 	ADrawEntityData& data = a_command.data.entityData;
@@ -238,21 +236,26 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 
 	// Vertex shader stage
 	{
-		AShaderDX11* vertexShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getShader(EAShaderType::VertexShader));
-		ID3D11VertexShader* d3d11VertexShader = dynamic_cast<ID3D11VertexShader*>(vertexShader->getD3D11Shader());
-			
-		d3dDeviceContext->VSSetShader(d3d11VertexShader, nullptr, 0);
+		AShaderDX11* dx11VertexShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getShader(EAShaderType::VertexShader));
+
+		ID3D11VertexShader* d3d11VertexShader;
+		if (SUCCEEDED(dx11VertexShader->getD3D11Shader()->QueryInterface(IID_ID3D11VertexShader, (void**)&d3d11VertexShader)))
+		{
+			d3dDeviceContext->VSSetShader(d3d11VertexShader, nullptr, 0);
+		}
 
 		// update VertexConstantBuffer (MVP)
 		// retrieve model matrix from array in struct
 		glm::mat4 modelMatrix = glm::make_mat4(data.modelMatrixArray); // TODO: send model matrix to shader as well for WS coordinate calculation
 		mat4 mvp = m_vp * modelMatrix;
 		
-		shaderPipeline->setConstantBufferData(EAShaderType::VertexShader, "PerObject", &mvp, sizeof(mvp));
+		dx11VertexShader->setConstantBufferData("PerObject", &mvp, sizeof(mvp));
 
 		// TODO: get actual constant buffers only for the vertex shader.... this is going to be a problem as it works a bit different in OpenGL
 		// TODO: refactor constant buffers to their individual shader counterparts?
-		//d3dDeviceContext->VSSetConstantBuffers(0, 3, m_d3dConstantBuffers);	
+		//d3dDeviceContext->VSSetConstantBuffers(0, dx11VertexShader->getConstantBuffers().size(), dx11VertexShader->getConstantBuffers()[0]);
+		ID3D11Buffer** ppConstantBuffers = dx11VertexShader->getConstantBufferHandles();
+		d3dDeviceContext->VSSetConstantBuffers(0, dx11VertexShader->getNumConstantBuffers(), ppConstantBuffers);
 	}
 
 	// rasterizer stage
@@ -263,10 +266,14 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 
 	// pixel shader stage
 	{
-		AShaderDX11* pixelShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getShader(EAShaderType::PixelShader));
-		ID3D11PixelShader* d3d11PixelShader = dynamic_cast<ID3D11PixelShader*>(pixelShader->getD3D11Shader());
-		
-		d3dDeviceContext->PSSetShader(d3d11PixelShader, nullptr, 0);
+		AShaderDX11* dx11PixelShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getShader(EAShaderType::PixelShader));
+
+		ID3D11PixelShader* d3d11PixelShader;
+		if (SUCCEEDED(dx11PixelShader->getD3D11Shader()->QueryInterface(IID_ID3D11PixelShader, (void**)&d3d11PixelShader)))
+		{
+			d3dDeviceContext->PSSetShader(d3d11PixelShader, nullptr, 0);
+		}
+
 		ID3D11SamplerState* sampler = shaderPipeline->getSamplerState();
 		d3dDeviceContext->PSSetSamplers(0, 1, &sampler);
 

@@ -45,12 +45,12 @@ void AGN::ACameraController::update(float a_deltaTime)
 
 	// mouse change
 	// start / stop camera dragging state
-	if (g_input.getMouseDown(AGN_MOUSECODE::RIGHT))
+	if (g_input.getMouseDown(MOUSECODE::RIGHT))
 	{
 		window.showCursor(false);
 		m_lastMousePosition = ivec2(g_input.getMouseX(), g_input.getMouseY());
 	}
-	else if (g_input.getMouseUp(AGN_MOUSECODE::RIGHT))
+	else if (g_input.getMouseUp(MOUSECODE::RIGHT))
 	{
 		window.showCursor(true);
 		m_lastMousePosition = ivec2(g_input.getMouseX(), g_input.getMouseY());
@@ -101,7 +101,7 @@ void AGN::ACameraController::onMouseMotion(int a_mouseX, int a_mouseY)
 	m_lastMousePosition = currentMousePos;
 
 	// is dragging state?
-	if (g_input.getMouse(AGN_MOUSECODE::RIGHT))
+	if (g_input.getMouse(MOUSECODE::RIGHT))
 	{
 		m_prevXYrotation = m_xyRotation;
 

@@ -5,7 +5,6 @@
 // fwd declare
 struct ID3D11InputLayout;
 struct ID3D11SamplerState;
-struct ID3D11Buffer;
 typedef struct _D3D11_SHADER_BUFFER_DESC D3D11_SHADER_BUFFER_DESC;
 
 namespace AGN
@@ -33,12 +32,5 @@ namespace AGN
 		ID3D11SamplerState* m_samplerState;
 	};	
 
-	
-	struct AConstantBufferDX11
-	{
-		AConstantBufferDX11() : bufferHandle(nullptr), bufferDesc(nullptr) {}
 
-		ID3D11Buffer* bufferHandle;
-		D3D11_SHADER_BUFFER_DESC* bufferDesc;
-	};
 }

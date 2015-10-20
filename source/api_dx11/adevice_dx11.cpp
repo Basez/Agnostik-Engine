@@ -33,7 +33,7 @@ bool AGN::ADeviceDX11::init()
 	unsigned int clientHeight = clientRect.bottom - clientRect.top;
 
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
-	ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
+	memset(&swapChainDesc, 0, sizeof(DXGI_SWAP_CHAIN_DESC));
 
 	bool vsync = g_configManager.getConfigPropertyAsBool("vsync");
 
@@ -50,7 +50,7 @@ bool AGN::ADeviceDX11::init()
 	swapChainDesc.Windowed = TRUE;												// output is in windowed mode.
 
 	UINT createDeviceFlags = 0;
-#if _DEBUG
+#if AGN_DEBUG
 	createDeviceFlags = D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
@@ -100,6 +100,34 @@ bool AGN::ADeviceDX11::init()
 			return false;
 		}
 	}
+
+	ID3D11Debug *d3dDebug = nullptr;
+	if (SUCCEEDED(m_d3d11Device->QueryInterface(__uuidof(ID3D11Debug), (void**)&d3dDebug)))
+	{
+		ID3D11InfoQueue *d3dInfoQueue = nullptr;
+		if (SUCCEEDED(d3dDebug->QueryInterface(__uuidof(ID3D11InfoQueue), (void**)&d3dInfoQueue)))
+		{
+#ifdef AGN_DEBUG
+			d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
+			d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
+#endif
+
+			D3D11_MESSAGE_ID hide[] =
+			{
+				D3D11_MESSAGE_ID_SETPRIVATEDATA_CHANGINGPARAMS,
+				// Add more message IDs here as needed
+			};
+
+			D3D11_INFO_QUEUE_FILTER filter;
+			memset(&filter, 0, sizeof(filter));
+			filter.DenyList.NumIDs = _countof(hide);
+			filter.DenyList.pIDList = hide;
+			d3dInfoQueue->AddStorageFilterEntries(&filter);
+			d3dInfoQueue->Release();
+		}
+		d3dDebug->Release();
+	}
+
 
 	return true;
 }
@@ -181,7 +209,7 @@ AGN::IAMesh* AGN::ADeviceDX11::createMesh(const uint16_t a_aId, AGN::AMeshData* 
 
 	// Create vertex buff
 	D3D11_BUFFER_DESC vertexPosBufferDesc;
-	ZeroMemory(&vertexPosBufferDesc, sizeof(D3D11_BUFFER_DESC));
+	memset(&vertexPosBufferDesc, 0, sizeof(D3D11_BUFFER_DESC));
 
 	vertexPosBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // how the buffer will be bound to the pipeline 
 	vertexPosBufferDesc.ByteWidth = static_cast<UINT>(sizeof(AGN::AMeshDX11::VertexShaderData) * a_meshData->positions.size());
@@ -189,7 +217,7 @@ AGN::IAMesh* AGN::ADeviceDX11::createMesh(const uint16_t a_aId, AGN::AMeshData* 
 	vertexPosBufferDesc.Usage = D3D11_USAGE_DEFAULT; // Identify how the buffer is expected to be read from and written to. Frequency of update is a key factor
 
 	D3D11_SUBRESOURCE_DATA resourceData;
-	ZeroMemory(&resourceData, sizeof(D3D11_SUBRESOURCE_DATA));
+	memset(&resourceData, 0, sizeof(D3D11_SUBRESOURCE_DATA));
 
 	resourceData.pSysMem = a_meshData->positions.data();
 
@@ -202,7 +230,7 @@ AGN::IAMesh* AGN::ADeviceDX11::createMesh(const uint16_t a_aId, AGN::AMeshData* 
 
 	// Create and initialize the index buffer.
 	D3D11_BUFFER_DESC indexBufferDesc;
-	ZeroMemory(&indexBufferDesc, sizeof(D3D11_BUFFER_DESC));
+	memset(&indexBufferDesc, 0, sizeof(D3D11_BUFFER_DESC));
 
 	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	indexBufferDesc.ByteWidth = static_cast<UINT>(sizeof(uint32_t) * a_meshData->indicies.size());
@@ -230,7 +258,8 @@ AGN::IATexture* AGN::ADeviceDX11::createTexture(const uint16_t a_aId, AGN::AText
 	const char* relativePath = a_textureData->relativePath.c_str();
 
 	D3D11_TEXTURE2D_DESC textureDesc;
-	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
+	memset(&textureDesc, 0, sizeof(D3D11_TEXTURE2D_DESC));
+
 	textureDesc.Width = a_textureData->width;
 	textureDesc.Height = a_textureData->height;
 	textureDesc.MipLevels = textureDesc.ArraySize = 1;
@@ -243,7 +272,7 @@ AGN::IATexture* AGN::ADeviceDX11::createTexture(const uint16_t a_aId, AGN::AText
 	textureDesc.MiscFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA resourceData;
-	ZeroMemory(&resourceData, sizeof(D3D11_SUBRESOURCE_DATA));
+	memset(&resourceData, 0, sizeof(D3D11_SUBRESOURCE_DATA));
 
 	resourceData.pSysMem = a_textureData->buffer;
 	resourceData.SysMemPitch = a_textureData->width * 4;									// pitch in bytes
@@ -267,7 +296,7 @@ AGN::IATexture* AGN::ADeviceDX11::createTexture(const uint16_t a_aId, AGN::AText
 
 	// create shader resource view
 	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
-	ZeroMemory(&SRVDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	memset(&SRVDesc, 0, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
 
 	SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
 	SRVDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;

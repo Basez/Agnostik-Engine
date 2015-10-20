@@ -20,38 +20,40 @@ AGN::AShaderDX11::AShaderDX11(ADeviceDX11& a_deviceReference, const uint16_t a_a
 
 	if (FAILED(hr)) g_log.error("Failed performing reflection on shader");
 
-	m_shaderReflectionDesc = new D3D11_SHADER_DESC();
-	ZeroMemory(m_shaderReflectionDesc, sizeof(D3D11_SHADER_DESC));
+	m_shaderReflectionDesc = new D3D11_SHADER_DESC();		// TODO: refactor, we dont want pointers just to be able to fwd declare :/
+	memset(m_shaderReflectionDesc, 0, sizeof(D3D11_SHADER_DESC));
+
 	hr = m_shaderReflection->GetDesc(m_shaderReflectionDesc);
 
 	if (FAILED(hr)) g_log.error("Failed getting reflection desc on shader");
 
-	D3D11_SHADER_BUFFER_DESC* constReflectionBufferDesc = nullptr;
-	int inputLayoutCount = 0;
 
-	getConstantBufferDesc(constReflectionBufferDesc, inputLayoutCount);
+	// reflect on constant buffers
+	getConstantBufferDesc(m_constantBufferDescriptions, m_numConstantBuffers);
+
+	m_constantBufferHandles = new ID3D11Buffer*[m_numConstantBuffers];
 
 	// create constant buffers
-	for (uint16_t i = 0; i < inputLayoutCount; i++)
+	for (uint16_t i = 0; i < m_numConstantBuffers; i++)
 	{
 		// create dx11 constant buffer object and put info in
-		AConstantBufferDX11* constantBufferDX11 = new AConstantBufferDX11();
-		constantBufferDX11->bufferDesc = new D3D11_SHADER_BUFFER_DESC();
-		memcpy(constantBufferDX11->bufferDesc, &constReflectionBufferDesc[i], sizeof(D3D11_SHADER_BUFFER_DESC));
+		//AConstantBufferDX11* constantBufferDX11 = new AConstantBufferDX11();
+		//constantBufferDX11->bufferDesc = new D3D11_SHADER_BUFFER_DESC();
+		//memcpy(constantBufferDX11->bufferDesc, &constReflectionBufferDesc[i], sizeof(D3D11_SHADER_BUFFER_DESC));
 
 		// create handle to actual buffer
 		D3D11_BUFFER_DESC newConstantBufferDesc;
-		ZeroMemory(&newConstantBufferDesc, sizeof(D3D11_BUFFER_DESC));
+		memset(&newConstantBufferDesc, 0, sizeof(D3D11_BUFFER_DESC));
 
 		newConstantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		newConstantBufferDesc.ByteWidth = constantBufferDX11->bufferDesc->Size;
+		newConstantBufferDesc.ByteWidth = m_constantBufferDescriptions[i].Size;
 		newConstantBufferDesc.CPUAccessFlags = 0;
 		newConstantBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 		newConstantBufferDesc.MiscFlags = 0;
 		newConstantBufferDesc.StructureByteStride = 0;
 
 		// TODO: think if this is the correct location for this function, in essence, we are doing the devices job in this constructor?
-		HRESULT hr = a_deviceReference.getD3D11Device()->CreateBuffer(&newConstantBufferDesc, nullptr, &constantBufferDX11->bufferHandle);
+		HRESULT hr = a_deviceReference.getD3D11Device()->CreateBuffer(&newConstantBufferDesc, nullptr, &m_constantBufferHandles[i]);
 
 		if (FAILED(hr))
 		{
@@ -59,10 +61,11 @@ AGN::AShaderDX11::AShaderDX11(ADeviceDX11& a_deviceReference, const uint16_t a_a
 			return;
 		}
 
-		m_constantBuffers.push_back(constantBufferDX11);
+
+		//m_constantBuffers.push_back(constantBufferDX11);
 	}
 
-	delete[] constReflectionBufferDesc;
+	//delete[] constReflectionBufferDesc;
 
 
 #ifdef AGN_DEBUG
@@ -122,7 +125,7 @@ void AGN::AShaderDX11::getInputLayoutDesc(D3D11_INPUT_ELEMENT_DESC*& out_inputLa
 {
 	out_count = m_shaderReflectionDesc->InputParameters;
 	out_inputLayouts = new D3D11_INPUT_ELEMENT_DESC[out_count];
-	ZeroMemory(out_inputLayouts, sizeof(D3D11_INPUT_ELEMENT_DESC) * out_count);
+	memset(out_inputLayouts, 0, sizeof(D3D11_INPUT_ELEMENT_DESC) * out_count);
 
 	// get Input data names
 	for (uint32_t i = 0; i < m_shaderReflectionDesc->InputParameters; i++)
@@ -198,7 +201,7 @@ void AGN::AShaderDX11::getSamplerLayoutDesc(D3D11_SAMPLER_DESC*& out_samplerLayo
 		{
 			out_count = 1; // Hardcoded to 1, only 1 sampler is supported at the moment
 			out_samplerLayoutDecs = new D3D11_SAMPLER_DESC[out_count];
-			ZeroMemory(out_samplerLayoutDecs, sizeof(D3D11_SAMPLER_DESC) * out_count);
+			memset(out_samplerLayoutDecs, 0, sizeof(D3D11_SAMPLER_DESC) * out_count);
 
 			out_samplerLayoutDecs[0].Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 			out_samplerLayoutDecs[0].AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -267,11 +270,11 @@ void AGN::AShaderDX11::getConstantBufferDesc(D3D11_SHADER_BUFFER_DESC*& out_cons
 
 void AGN::AShaderDX11::setConstantBufferData(const char* a_name, void* a_data, size_t a_dataSize)
 {
-	for (uint16_t i = 0; i < m_constantBuffers.size(); i++)
+	for (uint16_t i = 0; i < m_numConstantBuffers; i++)
 	{
-		if (strcmp(m_constantBuffers[i]->bufferDesc->Name, a_name) == 0)
+		if (strcmp(m_constantBufferDescriptions[i].Name, a_name) == 0)
 		{
-			m_deviceReference.getD3D11DeviceContext()->UpdateSubresource(m_constantBuffers[i]->bufferHandle, 0, nullptr, a_data, 0, 0);
+			m_deviceReference.getD3D11DeviceContext()->UpdateSubresource(m_constantBufferHandles[i], 0, nullptr, a_data, 0, 0);
 
 			return;
 		}
@@ -280,9 +283,9 @@ void AGN::AShaderDX11::setConstantBufferData(const char* a_name, void* a_data, s
 
 bool AGN::AShaderDX11::hasConstantBuffer(const char* a_name)
 {
-	for (uint16_t i = 0; i < m_constantBuffers.size(); i++)
+	for (uint16_t i = 0; i < m_numConstantBuffers; i++)
 	{
-		if (strcmp(m_constantBuffers[i]->bufferDesc->Name, a_name) == 0)
+		if (strcmp(m_constantBufferDescriptions[i].Name, a_name) == 0)
 		{
 			return true;
 		}

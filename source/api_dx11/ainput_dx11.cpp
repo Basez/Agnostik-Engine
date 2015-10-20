@@ -10,7 +10,6 @@ static uint16_t s_dx11mappedAGNScancodes[static_cast<unsigned int>(AGN::SCANCODE
 
 static void mapScanCode(uint16_t a_dx11scancode, AGN::SCANCODE a_agnCode)
 {
-	//BX_CHECK(_sdl < BX_COUNTOF(s_translateKey), "Out of bounds %d.", _sdl);
 	s_dx11mappedAGNScancodes[a_dx11scancode] = (uint8_t)a_agnCode;
 }
 
@@ -176,7 +175,7 @@ AGN::SCANCODE AGN::AInputDX11::getAGNScanCode(uint32_t a_dx11scancode)
 	return (AGN::SCANCODE)s_dx11mappedAGNScancodes[a_dx11scancode];
 }
 
-void AGN::AInputDX11::registerMouseClick(AGN::AGN_MOUSECODE a_mouseButton)
+void AGN::AInputDX11::registerMouseClick(AGN::MOUSECODE a_mouseButton)
 {
 	// TODO: Implement click callback system for UI's
 	/*
@@ -189,7 +188,7 @@ void AGN::AInputDX11::registerMouseClick(AGN::AGN_MOUSECODE a_mouseButton)
 	}*/
 }
 
-void AGN::AInputDX11::registerMouseHold(AGN::AGN_MOUSECODE a_mouseButton, bool a_held)
+void AGN::AInputDX11::registerMouseHold(AGN::MOUSECODE a_mouseButton, bool a_held)
 {
 	if (m_mouse[(int)a_mouseButton] != a_held)
 	{
@@ -248,7 +247,7 @@ bool AGN::AInputDX11::getKey(AGN::SCANCODE a_key)
 	return m_held[(int)a_key];
 }
 
-bool AGN::AInputDX11::getMouseDown(AGN::AGN_MOUSECODE a_mouseButton)
+bool AGN::AInputDX11::getMouseDown(AGN::MOUSECODE a_mouseButton)
 {
 	if (m_click[(int)a_mouseButton] && m_mouse[(int)a_mouseButton])
 	{
@@ -258,7 +257,7 @@ bool AGN::AInputDX11::getMouseDown(AGN::AGN_MOUSECODE a_mouseButton)
 	else return false;
 }
 
-bool AGN::AInputDX11::getMouseUp(AGN::AGN_MOUSECODE a_mouseButton)
+bool AGN::AInputDX11::getMouseUp(AGN::MOUSECODE a_mouseButton)
 {
 	if (m_click[(int)a_mouseButton] && !m_mouse[(int)a_mouseButton])
 	{
@@ -268,7 +267,7 @@ bool AGN::AInputDX11::getMouseUp(AGN::AGN_MOUSECODE a_mouseButton)
 	else return false;
 }
 
-bool AGN::AInputDX11::getMouse(AGN::AGN_MOUSECODE a_mouseButton)
+bool AGN::AInputDX11::getMouse(AGN::MOUSECODE a_mouseButton)
 {
 	//uint32_t mouseState = SDL_GetMouseState(NULL, NULL)&SDL_BUTTON((uint8_t)a_mouseButton);
 	//uint32_t buttonState = SDL_BUTTON((uint32_t)a_mouseButton);

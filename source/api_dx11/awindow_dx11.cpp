@@ -167,30 +167,30 @@ LRESULT CALLBACK AGN::AWindowDX11::onWindowEvent(HWND a_hwnd, UINT a_message, WP
 	break;
 
 	case WM_LBUTTONDOWN:
-		g_input.registerMouseHold(AGN::AGN_MOUSECODE::LEFT, true);
+		g_input.registerMouseHold(AGN::MOUSECODE::LEFT, true);
 		break;
 
 	case WM_MBUTTONDOWN:
-		g_input.registerMouseHold(AGN::AGN_MOUSECODE::MIDDLE, true);
+		g_input.registerMouseHold(AGN::MOUSECODE::MIDDLE, true);
 		break;
 
 	case WM_RBUTTONDOWN:
-		g_input.registerMouseHold(AGN::AGN_MOUSECODE::RIGHT, true);
+		g_input.registerMouseHold(AGN::MOUSECODE::RIGHT, true);
 		break;
 
 	case WM_LBUTTONUP:
-		g_input.registerMouseHold(AGN::AGN_MOUSECODE::LEFT, false);
-		g_input.registerMouseClick(AGN::AGN_MOUSECODE::LEFT);
+		g_input.registerMouseHold(AGN::MOUSECODE::LEFT, false);
+		g_input.registerMouseClick(AGN::MOUSECODE::LEFT);
 		break;
 
 	case WM_MBUTTONUP:
-		g_input.registerMouseHold(AGN::AGN_MOUSECODE::MIDDLE, false);
-		g_input.registerMouseClick(AGN::AGN_MOUSECODE::MIDDLE);
+		g_input.registerMouseHold(AGN::MOUSECODE::MIDDLE, false);
+		g_input.registerMouseClick(AGN::MOUSECODE::MIDDLE);
 		break;
 
 	case WM_RBUTTONUP:
-		g_input.registerMouseHold(AGN::AGN_MOUSECODE::RIGHT, false);
-		g_input.registerMouseClick(AGN::AGN_MOUSECODE::RIGHT);
+		g_input.registerMouseHold(AGN::MOUSECODE::RIGHT, false);
+		g_input.registerMouseClick(AGN::MOUSECODE::RIGHT);
 		break;
 
 	case WM_MOUSEWHEEL:

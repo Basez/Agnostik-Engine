@@ -2,7 +2,7 @@
 
 namespace AGN
 {
-	enum class AGN_MOUSECODE;
+	enum class MOUSECODE;
 	enum class SCANCODE;
 
 	class IAInput
@@ -11,8 +11,8 @@ namespace AGN
 		virtual ~IAInput() {};
 
 		// submitted to track input
-		virtual void registerMouseClick(AGN::AGN_MOUSECODE a_mouseButton) = 0;
-		virtual void registerMouseHold(AGN::AGN_MOUSECODE a_mouseButton, bool a_held) = 0;
+		virtual void registerMouseClick(AGN::MOUSECODE a_mouseButton) = 0;
+		virtual void registerMouseHold(AGN::MOUSECODE a_mouseButton, bool a_held) = 0;
 		virtual void registerHold(AGN::SCANCODE a_key, bool a_held) = 0;
 		virtual void registerFrameCompletion() = 0;
 		virtual void registerMouseScroll(int a_scrollAmount) = 0;
@@ -22,9 +22,9 @@ namespace AGN
 		virtual bool getKeyDown(AGN::SCANCODE a_key) = 0;
 		virtual bool getKeyUp(AGN::SCANCODE a_key) = 0;
 		virtual bool getKey(AGN::SCANCODE a_key) = 0;
-		virtual bool getMouseDown(AGN::AGN_MOUSECODE a_mouseButton) = 0;
-		virtual bool getMouseUp(AGN::AGN_MOUSECODE a_mouseButton) = 0;
-		virtual bool getMouse(AGN::AGN_MOUSECODE a_mouseButton) = 0;
+		virtual bool getMouseDown(AGN::MOUSECODE a_mouseButton) = 0;
+		virtual bool getMouseUp(AGN::MOUSECODE a_mouseButton) = 0;
+		virtual bool getMouse(AGN::MOUSECODE a_mouseButton) = 0;
 		virtual int getMouseX() = 0;
 		virtual int getMouseY() = 0;
 		virtual int getMouseXMove() = 0;
@@ -60,7 +60,7 @@ namespace AGN
 		virtual void onMouseClick(int a_mouseX, int a_mouseY) = 0;
 	};
 
-	enum class AGN_MOUSECODE
+	enum class MOUSECODE
 	{
 		LEFT = 1,
 		MIDDLE = 2,
