@@ -32,14 +32,35 @@ AGN::AShaderDX11::AShaderDX11(ADeviceDX11& a_deviceReference, const uint16_t a_a
 	getConstantBufferDesc(m_constantBufferDescriptions, m_numConstantBuffers);
 
 	m_constantBufferHandles = new ID3D11Buffer*[m_numConstantBuffers];
+	m_constantBufferBindPoints = new int32_t[m_numConstantBuffers];
 
 	// create constant buffers
 	for (uint16_t i = 0; i < m_numConstantBuffers; i++)
 	{
-		// create dx11 constant buffer object and put info in
-		//AConstantBufferDX11* constantBufferDX11 = new AConstantBufferDX11();
-		//constantBufferDX11->bufferDesc = new D3D11_SHADER_BUFFER_DESC();
-		//memcpy(constantBufferDX11->bufferDesc, &constReflectionBufferDesc[i], sizeof(D3D11_SHADER_BUFFER_DESC));
+		int16_t constantBufferBindPoint = -1;
+
+		// Find bind point! 
+		for (uint16_t k = 0; k < m_shaderReflectionDesc->BoundResources; ++k)
+		{
+			D3D11_SHADER_INPUT_BIND_DESC ibdesc;
+			memset(&ibdesc, 0, sizeof(D3D11_SHADER_INPUT_BIND_DESC));
+			hr = m_shaderReflection->GetResourceBindingDesc(k, &ibdesc);
+			if (FAILED(hr)) g_log.error("Failed getting reflection D3D11_SHADER_INPUT_BIND_DESC on shader");
+
+			if (strcmp(ibdesc.Name, m_constantBufferDescriptions[i].Name) == 0)
+			{
+				constantBufferBindPoint = ibdesc.BindPoint;
+				break;
+			}
+		}
+
+		if (constantBufferBindPoint == -1)
+		{
+			g_log.error("Did not find bindpoint for Constant buffer with the name %s", m_constantBufferDescriptions[i].Name);
+			assert(false);
+		}
+
+		m_constantBufferBindPoints[i] = constantBufferBindPoint;
 
 		// create handle to actual buffer
 		D3D11_BUFFER_DESC newConstantBufferDesc;
@@ -51,7 +72,6 @@ AGN::AShaderDX11::AShaderDX11(ADeviceDX11& a_deviceReference, const uint16_t a_a
 		newConstantBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 		newConstantBufferDesc.MiscFlags = 0;
 		newConstantBufferDesc.StructureByteStride = 0;
-
 		// TODO: think if this is the correct location for this function, in essence, we are doing the devices job in this constructor?
 		HRESULT hr = a_deviceReference.getD3D11Device()->CreateBuffer(&newConstantBufferDesc, nullptr, &m_constantBufferHandles[i]);
 
@@ -254,7 +274,7 @@ void AGN::AShaderDX11::getConstantBufferDesc(D3D11_SHADER_BUFFER_DESC*& out_cons
 		ID3D11ShaderReflectionConstantBuffer* buffer = m_shaderReflection->GetConstantBufferByIndex(i);
 
 		HRESULT hr = buffer->GetDesc(&constantBufferDesc);
-
+		
 		if (constantBufferDesc.Type == D3D_CT_CBUFFER)
 		{
 			// add to list
@@ -275,7 +295,6 @@ void AGN::AShaderDX11::setConstantBufferData(const char* a_name, void* a_data, s
 		if (strcmp(m_constantBufferDescriptions[i].Name, a_name) == 0)
 		{
 			m_deviceReference.getD3D11DeviceContext()->UpdateSubresource(m_constantBufferHandles[i], 0, nullptr, a_data, 0, 0);
-
 			return;
 		}
 	}
@@ -293,3 +312,19 @@ bool AGN::AShaderDX11::hasConstantBuffer(const char* a_name)
 
 	return false;
 }
+
+int AGN::AShaderDX11::getConstantBufferBindpoint(const char* a_name)
+{
+	for (uint16_t i = 0; i < m_numConstantBuffers; i++)
+	{
+		if (strcmp(m_constantBufferDescriptions[i].Name, a_name) == 0)
+		{
+			return m_constantBufferBindPoints[i];
+		}
+	}
+
+	g_log.error("Did not find constant buffer with name %s in this shader", a_name);
+
+	return -1;
+}
+

@@ -25,7 +25,7 @@ struct InputData
 struct OutputData
 {
 	float2 uv : TEXCOORD0;
-	float4 normal : TEXCOORD1;
+	float4 normalWS : TEXCOORD1;
 	float4 position : SV_POSITION;	// must be last as its consumed
 };
 
@@ -34,7 +34,7 @@ OutputData Main(InputData IN)
 	OutputData OUT;
 
 	OUT.position = mul(modelViewProjectionMatrix, float4(IN.position, 1.0f));
-	OUT.normal = mul(modelMatrix, float4(IN.normal, 0.0f)); 
+	OUT.normalWS = mul(modelMatrix, float4(IN.normal, 0.0f)); 
 	OUT.uv = IN.uv;
 	return OUT;
 }

@@ -279,6 +279,22 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 
 	// pixel shader stage
 	{
+		// set material constant buffer
+		// TODO: move to only when material changes!
+		if (shaderPipeline->hasConstantBuffer(EAShaderType::PixelShader, "MaterialProperties"))
+		{
+			// TODO: get buffer offset, this is hardcoded
+			const unsigned int bufferSize = 48; // 48 because of the 16 byte boundary
+			unsigned char buffer[bufferSize];
+			memset(buffer, 0, bufferSize);
+			memcpy(buffer + 0, &material->transparency, sizeof(float)); // material transparency // TODO: check if this is correct
+			memcpy(buffer + 4, glm::value_ptr(material->diffuseColor), sizeof(glm::vec3)); // material diffuse
+			memcpy(buffer + 16, glm::value_ptr(material->specularColor), sizeof(glm::vec3)); // material specular
+			memcpy(buffer + 28, glm::value_ptr(material->ambientColor), sizeof(glm::vec3)); // material ambient
+
+			shaderPipeline->setConstantBufferData(EAShaderType::PixelShader, "MaterialProperties", &buffer, bufferSize);
+		}
+
 		AShaderDX11* dx11PixelShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getShader(EAShaderType::PixelShader));
 
 		ID3D11PixelShader* d3d11PixelShader;
@@ -287,6 +303,13 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 			d3dDeviceContext->PSSetShader(d3d11PixelShader, nullptr, 0);
 		}
 
+		// set constant buffer
+		ID3D11Buffer** d3d11ConstantBuffers = dx11PixelShader->getConstantBufferHandles();
+		const int numConstBuffers = dx11PixelShader->getNumConstantBuffers();
+		d3dDeviceContext->PSSetConstantBuffers(0, numConstBuffers, d3d11ConstantBuffers);
+
+
+		// set PS sampler
 		ID3D11SamplerState* sampler = shaderPipeline->getSamplerState();
 		d3dDeviceContext->PSSetSamplers(0, 1, &sampler);
 
@@ -301,6 +324,8 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 			d3dDeviceContext->PSSetShaderResources(0, 1, &shaderResourceView);
 		}
 
+
+		
 		d3d11PixelShader->Release();
 	}
 	

@@ -35,6 +35,7 @@ namespace AGN
 		// SoA stored constant buffers
 		ID3D11Buffer** getConstantBufferHandles() { return m_constantBufferHandles; }
 		int getNumConstantBuffers() { return m_numConstantBuffers; }
+		int getConstantBufferBindpoint(const char* a_name);
 
 	private:
 		class ADeviceDX11& m_deviceReference;
@@ -44,10 +45,13 @@ namespace AGN
 		ID3DBlob* m_shaderBlob;
 		ID3D11ShaderReflection* m_shaderReflection;
 		D3D11_SHADER_DESC* m_shaderReflectionDesc;
+
 		// SoA stored constant buffers
 		int m_numConstantBuffers;
 		ID3D11Buffer** m_constantBufferHandles;
 		D3D11_SHADER_BUFFER_DESC* m_constantBufferDescriptions;
+		int32_t* m_constantBufferBindPoints;
+
 
 		void getConstantBufferDesc(D3D11_SHADER_BUFFER_DESC*& out_constantBufferDecs, int& out_count);
 		//void getOutputLayoutDesc(D3D11_INPUT_ELEMENT_DESC*& inputLayouts, int& out_count);				// TODO?

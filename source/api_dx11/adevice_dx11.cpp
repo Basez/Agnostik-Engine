@@ -387,6 +387,8 @@ AGN::IAShader* AGN::ADeviceDX11::createShader(const uint16_t a_aId, const char* 
 
 			if (shaderBlob != nullptr) shaderBlob->Release();
 			if (errorBlob != nullptr) errorBlob->Release();
+
+			assert(false);
 		}
 
 		return nullptr;

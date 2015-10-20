@@ -4,32 +4,42 @@ SamplerState SampleType : register(s0);
 struct InputData
 {
 	float2 uv : TEXCOORD0;
-	float4 normal : TEXCOORD1;
+	float4 normalWS : TEXCOORD1;
 };
 
-/*
-// TODO: fix registers when restoring Cbuffers
-cbuffer MaterialProperties : register(b0)
+cbuffer LightSettings : register(b0)
 {
-	float3 materialDiffuseColor;
-	float3 materialSpecularColor;
-	float3 materialAmbientColor;
-	float materialTransparency;
+	float4 lightDirection; // Light's direction in world space.
+	float4 lightColor; // Light's diffuse and specular contribution.
+	float4 lightAmbient; // Global ambient contribution.
 }
-*/
+
+// TODO: fix registers when restoring Cbuffers
+cbuffer MaterialProperties : register(b1)
+{
+	float materialTransparency;
+	float3 materialDiffuseColor;
+	//-- 16bytes --//
+	float3 materialSpecularColor;
+	float filler1;
+	//-- 16bytes --//
+	float3 materialAmbientColor;
+	//-- 16bytes --//
+}
 
 float4 Main(InputData IN) : SV_TARGET
 {
-	//return float4(IN.uv.x, IN.uv.y, 1.0f - IN.uv.x, 1.0f - IN.uv.y);
-	//return float4(1.0f, 1.0f, 1.0f, 1.0f);
-	//return IN.color;
-	float4 textureColor;
+	// get texture color
+	float4 textureColor = shaderTexture.Sample(SampleType, IN.uv);
 
-	// Sample the pixel color from the texture using the sampler at this texture coordinate location.
-	textureColor = shaderTexture.Sample(SampleType, IN.uv);
+	// calculate diffuse
+	float4 normal = normalize( IN.normalWS );
+	float nDotL = max( dot( normal, lightDirection ), 0 );
+	float4 diffuse =  nDotL * lightColor * float4(materialDiffuseColor, 1.0f);
 
-	// TODO: multiply with lighting instead of adding
-	textureColor += IN.normal * 0.50f;
+	// apply ambients and calculate final color
+	float4 lighting = diffuse + float4(materialAmbientColor, 0.0f) + lightAmbient;
+	float4 finalColor = lighting * textureColor;
 
-	return textureColor;
+	return finalColor;
 }
