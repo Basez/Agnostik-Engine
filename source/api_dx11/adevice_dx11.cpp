@@ -16,6 +16,11 @@ using namespace glm;
 
 AGN::ADeviceDX11::ADeviceDX11(class AWindowDX11* a_window)
 	: m_window(a_window)
+	, m_d3d11Device(nullptr)
+	, m_d3d11DeviceContext(nullptr)
+	, m_d3d11SwapChain(nullptr)
+	, m_d3dDebug(nullptr)
+	, m_debugUDA(nullptr)
 {
 
 }
@@ -59,12 +64,12 @@ bool AGN::ADeviceDX11::init()
 	D3D_FEATURE_LEVEL featureLevels[] =
 	{
 		D3D_FEATURE_LEVEL_11_1,
-		D3D_FEATURE_LEVEL_11_0,
-		D3D_FEATURE_LEVEL_10_1,
-		D3D_FEATURE_LEVEL_10_0,
-		D3D_FEATURE_LEVEL_9_3,
-		D3D_FEATURE_LEVEL_9_2,
-		D3D_FEATURE_LEVEL_9_1
+		D3D_FEATURE_LEVEL_11_0
+		//D3D_FEATURE_LEVEL_10_1,
+		//D3D_FEATURE_LEVEL_10_0,
+		//D3D_FEATURE_LEVEL_9_3,
+		//D3D_FEATURE_LEVEL_9_2,
+		//D3D_FEATURE_LEVEL_9_1
 	};
 
 	// This will be the feature level that 
@@ -101,11 +106,12 @@ bool AGN::ADeviceDX11::init()
 		}
 	}
 
-	ID3D11Debug *d3dDebug = nullptr;
-	if (SUCCEEDED(m_d3d11Device->QueryInterface(__uuidof(ID3D11Debug), (void**)&d3dDebug)))
+	// get debug interface
+	m_d3dDebug = nullptr;
+	if (SUCCEEDED(m_d3d11Device->QueryInterface(__uuidof(ID3D11Debug), (void**)&m_d3dDebug)))
 	{
 		ID3D11InfoQueue *d3dInfoQueue = nullptr;
-		if (SUCCEEDED(d3dDebug->QueryInterface(__uuidof(ID3D11InfoQueue), (void**)&d3dInfoQueue)))
+		if (SUCCEEDED(m_d3dDebug->QueryInterface(__uuidof(ID3D11InfoQueue), (void**)&d3dInfoQueue)))
 		{
 #ifdef AGN_DEBUG
 			d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
@@ -125,8 +131,15 @@ bool AGN::ADeviceDX11::init()
 			d3dInfoQueue->AddStorageFilterEntries(&filter);
 			d3dInfoQueue->Release();
 		}
-		d3dDebug->Release();
+
+		// TODO: usefull for memory leak D3D memory leak detection
 	}
+
+
+	if (SUCCEEDED(m_d3d11DeviceContext->QueryInterface(IID_PPV_ARGS(&m_debugUDA))))
+	{
+	}
+
 
 
 	return true;
@@ -207,19 +220,31 @@ AGN::IAMesh* AGN::ADeviceDX11::createMesh(const uint16_t a_aId, AGN::AMeshData* 
 	ID3D11Buffer* d3d11VertexBuffer = nullptr;
 	ID3D11Buffer* d3d11IndexBuffer = nullptr;
 
+	const unsigned int numVertices = static_cast<unsigned int>(a_meshData->positions.size());
+
 	// Create vertex buff
 	D3D11_BUFFER_DESC vertexPosBufferDesc;
 	memset(&vertexPosBufferDesc, 0, sizeof(D3D11_BUFFER_DESC));
 
 	vertexPosBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // how the buffer will be bound to the pipeline 
-	vertexPosBufferDesc.ByteWidth = static_cast<UINT>(sizeof(AGN::AMeshDX11::VertexShaderData) * a_meshData->positions.size());
+	vertexPosBufferDesc.ByteWidth = static_cast<UINT>(sizeof(AMeshDX11::VertexShaderData) * numVertices);
 	vertexPosBufferDesc.CPUAccessFlags = 0;
 	vertexPosBufferDesc.Usage = D3D11_USAGE_DEFAULT; // Identify how the buffer is expected to be read from and written to. Frequency of update is a key factor
 
 	D3D11_SUBRESOURCE_DATA resourceData;
 	memset(&resourceData, 0, sizeof(D3D11_SUBRESOURCE_DATA));
 
-	resourceData.pSysMem = a_meshData->positions.data();
+
+	AMeshDX11::VertexShaderData* dataToUpload = new AMeshDX11::VertexShaderData[numVertices];
+	
+	// TODO: optimize
+	for (uint32_t i = 0; i < numVertices; i++)
+	{
+		dataToUpload[i].position = a_meshData->positions[i];
+		dataToUpload[i].uv = a_meshData->textureCoords[i]; // TODO: refactor
+	}
+	
+	resourceData.pSysMem = dataToUpload;
 
 	HRESULT hr = m_d3d11Device->CreateBuffer(&vertexPosBufferDesc, &resourceData, &d3d11VertexBuffer);
 	if (FAILED(hr))
@@ -232,8 +257,8 @@ AGN::IAMesh* AGN::ADeviceDX11::createMesh(const uint16_t a_aId, AGN::AMeshData* 
 	D3D11_BUFFER_DESC indexBufferDesc;
 	memset(&indexBufferDesc, 0, sizeof(D3D11_BUFFER_DESC));
 
-	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	indexBufferDesc.ByteWidth = static_cast<UINT>(sizeof(uint32_t) * a_meshData->indicies.size());
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	indexBufferDesc.CPUAccessFlags = 0;
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	resourceData.pSysMem = a_meshData->indicies.data();
@@ -244,6 +269,10 @@ AGN::IAMesh* AGN::ADeviceDX11::createMesh(const uint16_t a_aId, AGN::AMeshData* 
 		g_log.error("failure CreateBuffer indexBufferDesc");
 		return nullptr;
 	}
+
+	// apply debug names
+	ADeviceDX11::setDebugName(d3d11VertexBuffer, "Mesh Vertex buffer (" + a_meshData->relativePath + ")");
+	ADeviceDX11::setDebugName(d3d11IndexBuffer, "Mesh Index buffer (" + a_meshData->relativePath + ")");
 
 	// create agnostik texture holding the info.
 	AMeshDX11* mesh = new AMeshDX11(a_aId, a_meshData, d3d11VertexBuffer, d3d11IndexBuffer);
@@ -311,6 +340,10 @@ AGN::IATexture* AGN::ADeviceDX11::createTexture(const uint16_t a_aId, AGN::AText
 		return nullptr;
 	}
 
+	// give debug names 
+	ADeviceDX11::setDebugName(textureHandle, "Texture handle (" + a_textureData->relativePath + ")");
+	ADeviceDX11::setDebugName(shaderResourceView, "Shader Resource View (" + a_textureData->relativePath + ")");
+
 	// create agnostik texture holding the info.
 	ATextureDX11* texture = new ATextureDX11(a_aId, a_textureData, textureHandle, shaderResourceView);
 
@@ -367,11 +400,13 @@ AGN::IAShader* AGN::ADeviceDX11::createShader(const uint16_t a_aId, const char* 
 	case EAShaderType::PixelShader:
 		hr = m_d3d11Device->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &pixelShader);
 		d3d11Shader = dynamic_cast<ID3D11DeviceChild*>(pixelShader);
+		ADeviceDX11::setDebugName(d3d11Shader, "Pixel Shader a_ID(" + std::to_string(a_aId) + ")");
 		break;
 
 	case EAShaderType::VertexShader:
 		hr = m_d3d11Device->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &vertexShader);
 		d3d11Shader = dynamic_cast<ID3D11DeviceChild*>(vertexShader);
+		ADeviceDX11::setDebugName(d3d11Shader, "Vertex Shader a_ID(" + std::to_string(a_aId) + ")");
 		break;
 
 	default:
@@ -490,7 +525,76 @@ AGN::IAShaderPipeline* AGN::ADeviceDX11::createShaderPipeline(const uint16_t a_a
 
 	delete samplerLayoutDesc;
 
+	// add debug labels
+	ADeviceDX11::setDebugName(vertexInputLayout, "Shader Vertex input layout(" + std::to_string(a_aId) + ")");
+	ADeviceDX11::setDebugName(samplerState, "Shader sampler state(" + std::to_string(a_aId) + ")");
+
 	AShaderPipelineDX11* shaderPipeline = new AShaderPipelineDX11(shaderPipelineData, vertexInputLayout, samplerState);
 
 	return dynamic_cast<IAShaderPipeline*>(shaderPipeline);
+}
+
+void AGN::ADeviceDX11::setDebugName(ID3D11DeviceChild* child, const std::string& name)
+{
+#ifdef AGN_DEBUG
+	if (child != nullptr && name.length() > 0)
+	{
+		child->SetPrivateData(WKPDID_D3DDebugObjectName, (UINT)name.size(), name.c_str());
+	}
+#endif
+}
+
+void AGN::ADeviceDX11::logLiveObjects()
+{
+#ifdef AGN_DEBUG
+	if (m_d3dDebug)	m_d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+#endif // AGN_DEBUG
+}
+
+// TODO: Document
+// TODO: Reference: http://seanmiddleditch.com/direct3d-11-debug-api-tricks/
+void AGN::ADeviceDX11::beginDebugEvent(const std::string& a_eventName)
+{
+#ifdef AGN_DEBUG
+	if (m_debugUDA)
+	{
+		// annoyingly convert to WideChar (Thanks Microsoft!)
+		int wchars_num = MultiByteToWideChar(CP_UTF8, 0, a_eventName.c_str(), -1, NULL, 0);
+		wchar_t* wstr = new wchar_t[wchars_num];
+		MultiByteToWideChar(CP_UTF8, 0, a_eventName.c_str(), -1, wstr, wchars_num);
+		
+		// actually start the actual event
+		m_debugUDA->BeginEvent(wstr);
+		delete[] wstr;
+	}
+#endif
+}
+
+// TODO: Document
+// TODO: Reference: http://seanmiddleditch.com/direct3d-11-debug-api-tricks/
+void AGN::ADeviceDX11::setDebugMarker(const std::string& a_markerName)
+{
+#ifdef AGN_DEBUG
+	if (m_debugUDA)
+	{
+		// annoyingly convert to WideChar (Thanks Microsoft!)
+		int wchars_num = MultiByteToWideChar(CP_UTF8, 0, a_markerName.c_str(), -1, NULL, 0);
+		wchar_t* wstr = new wchar_t[wchars_num];
+		MultiByteToWideChar(CP_UTF8, 0, a_markerName.c_str(), -1, wstr, wchars_num);
+
+		// set the debug marker
+		m_debugUDA->SetMarker(wstr);
+		
+		delete[] wstr;
+	}
+#endif
+}
+
+// TODO: Document
+// TODO: Reference: http://seanmiddleditch.com/direct3d-11-debug-api-tricks/
+void AGN::ADeviceDX11::endDebugEvent()
+{
+#ifdef AGN_DEBUG
+	if (m_debugUDA) m_debugUDA->EndEvent();
+#endif
 }

@@ -70,6 +70,9 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 
 		g_input.registerFrameCompletion();
 
+		// log currently alive objects in gpu memory (currently only working for DX11)
+		//m_renderAPI->logLiveObjects();
+
 		// api specific event handling, input etc
 		m_renderAPI->handleEvents(doQuit);
 	}

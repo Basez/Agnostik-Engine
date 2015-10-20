@@ -11,6 +11,7 @@ namespace AGN
 		virtual void enableVSync(bool a_value) = 0;
 		virtual bool getVSync() = 0;
 		virtual void handleEvents(bool& a_doQuit) = 0;
+		virtual void logLiveObjects() {};
 
 		virtual class IAWindow& getWindow() = 0;
 		virtual class IADevice& getDevice() = 0;

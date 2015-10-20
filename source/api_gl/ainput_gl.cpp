@@ -22,12 +22,12 @@ AGN::SCANCODE AGN::AInputGL::getAGNScanCode(SDL_Scancode a_sdlkey)
 	return (SCANCODE)a_sdlkey;
 }
 
-AGN::AGN_MOUSECODE AGN::AInputGL::getAGNMouse(uint8_t a_sdlMouse)
+AGN::MOUSECODE AGN::AInputGL::getAGNMouse(uint8_t a_sdlMouse)
 {
-	return (AGN_MOUSECODE)a_sdlMouse;
+	return (MOUSECODE)a_sdlMouse;
 }
 
-void AGN::AInputGL::registerMouseClick(AGN::AGN_MOUSECODE a_mouseButton)
+void AGN::AInputGL::registerMouseClick(AGN::MOUSECODE a_mouseButton)
 {
 	// TODO: Implement click callback system for UI's
 	/*
@@ -40,7 +40,7 @@ void AGN::AInputGL::registerMouseClick(AGN::AGN_MOUSECODE a_mouseButton)
 	}*/
 }
 
-void AGN::AInputGL::registerMouseHold(AGN::AGN_MOUSECODE a_mouseButton, bool a_held)
+void AGN::AInputGL::registerMouseHold(AGN::MOUSECODE a_mouseButton, bool a_held)
 {
 	if (m_mouse[(int)a_mouseButton] != a_held)
 	{
@@ -99,7 +99,7 @@ bool AGN::AInputGL::getKey(AGN::SCANCODE a_key)
 	return m_held[(int)a_key];
 }
 
-bool AGN::AInputGL::getMouseDown(AGN::AGN_MOUSECODE a_mouseButton)
+bool AGN::AInputGL::getMouseDown(AGN::MOUSECODE a_mouseButton)
 {
 	if (m_click[(int)a_mouseButton] && m_mouse[(int)a_mouseButton])
 	{
@@ -109,7 +109,7 @@ bool AGN::AInputGL::getMouseDown(AGN::AGN_MOUSECODE a_mouseButton)
 	else return false;
 }
 
-bool AGN::AInputGL::getMouseUp(AGN::AGN_MOUSECODE a_mouseButton)
+bool AGN::AInputGL::getMouseUp(AGN::MOUSECODE a_mouseButton)
 {
 	if (m_click[(int)a_mouseButton] && !m_mouse[(int)a_mouseButton])
 	{
@@ -119,7 +119,7 @@ bool AGN::AInputGL::getMouseUp(AGN::AGN_MOUSECODE a_mouseButton)
 	else return false;
 }
 
-bool AGN::AInputGL::getMouse(AGN::AGN_MOUSECODE a_mouseButton)
+bool AGN::AInputGL::getMouse(AGN::MOUSECODE a_mouseButton)
 {
 	uint32_t mouseState = SDL_GetMouseState(NULL, NULL)&SDL_BUTTON((uint8_t)a_mouseButton);
 	uint32_t buttonState = SDL_BUTTON((uint32_t)a_mouseButton);

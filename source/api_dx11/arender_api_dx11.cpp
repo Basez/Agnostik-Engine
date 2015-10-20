@@ -9,6 +9,7 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <d3d11_1.h>
 
 AGN::ARenderAPIDX11::ARenderAPIDX11()
 	: m_initialized(false)
@@ -75,4 +76,9 @@ void AGN::ARenderAPIDX11::handleEvents(bool& a_doQuit)
 			a_doQuit = true;
 		}
 	}
+}
+
+void AGN::ARenderAPIDX11::logLiveObjects()
+{
+	m_device->logLiveObjects();
 }

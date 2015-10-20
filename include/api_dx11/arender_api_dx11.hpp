@@ -2,6 +2,8 @@
 
 #include "iarender_api.hpp"
 
+struct ID3D11DeviceChild;
+
 namespace AGN
 {
 	class ARenderAPIDX11 : public IARenderAPI
@@ -13,6 +15,7 @@ namespace AGN
 		void enableVSync(bool a_value) override;
 		virtual bool getVSync() { return m_vSync; }
 		void handleEvents(bool& a_doQuit) override;
+		void logLiveObjects() override;
 
 		virtual class IAWindow& getWindow() override;
 		virtual class IADevice& getDevice() override;
@@ -27,3 +30,4 @@ namespace AGN
 		class ARendererDX11* m_renderer;
 	};
 }
+

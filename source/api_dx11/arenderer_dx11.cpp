@@ -216,6 +216,8 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 	AMaterial* material = dynamic_cast<AMaterial*>(data.material);
 	AShaderPipelineDX11* shaderPipeline = dynamic_cast<AShaderPipelineDX11*>(data.shaderPipeline);
 
+	m_deviceReference.beginDebugEvent("Render Mesh: " + mesh->getRelativePath());
+
 	// input assembler stage
 	{
 		// get vertex stride (inputdata size)
@@ -239,10 +241,12 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 		AShaderDX11* dx11VertexShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getShader(EAShaderType::VertexShader));
 
 		ID3D11VertexShader* d3d11VertexShader;
-		if (SUCCEEDED(dx11VertexShader->getD3D11Shader()->QueryInterface(IID_ID3D11VertexShader, (void**)&d3d11VertexShader)))
+		if (FAILED(dx11VertexShader->getD3D11Shader()->QueryInterface(IID_ID3D11VertexShader, (void**)&d3d11VertexShader)))
 		{
-			d3dDeviceContext->VSSetShader(d3d11VertexShader, nullptr, 0);
+			assert(false);
 		}
+
+		d3dDeviceContext->VSSetShader(d3d11VertexShader, nullptr, 0);
 
 		// update VertexConstantBuffer (MVP)
 		// retrieve model matrix from array in struct
@@ -251,11 +255,10 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 		
 		dx11VertexShader->setConstantBufferData("PerObject", &mvp, sizeof(mvp));
 
-		// TODO: get actual constant buffers only for the vertex shader.... this is going to be a problem as it works a bit different in OpenGL
-		// TODO: refactor constant buffers to their individual shader counterparts?
-		//d3dDeviceContext->VSSetConstantBuffers(0, dx11VertexShader->getConstantBuffers().size(), dx11VertexShader->getConstantBuffers()[0]);
 		ID3D11Buffer** ppConstantBuffers = dx11VertexShader->getConstantBufferHandles();
 		d3dDeviceContext->VSSetConstantBuffers(0, dx11VertexShader->getNumConstantBuffers(), ppConstantBuffers);
+
+		d3d11VertexShader->Release();
 	}
 
 	// rasterizer stage
@@ -287,7 +290,8 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 			ID3D11ShaderResourceView* shaderResourceView = diffuse->getShaderResourceView();
 			d3dDeviceContext->PSSetShaderResources(0, 1, &shaderResourceView);
 		}
-		
+
+		d3d11PixelShader->Release();
 	}
 	
 	// output merger stage
@@ -299,9 +303,8 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 	// render the mesh
 	d3dDeviceContext->DrawIndexed((uint32_t)mesh->getIndexCount(), 0, 0);
 
-#ifdef AGN_DEBUG
-	// TODO: get DX11 error
-#endif
+	m_deviceReference.endDebugEvent();
+
 }
 
 void AGN::ARendererDX11::clearBuffer(struct ADrawCommand& a_command)
