@@ -234,14 +234,13 @@ AGN::IAMesh* AGN::ADeviceDX11::createMesh(const uint16_t a_aId, AGN::AMeshData* 
 	D3D11_SUBRESOURCE_DATA resourceData;
 	memset(&resourceData, 0, sizeof(D3D11_SUBRESOURCE_DATA));
 
-
 	AMeshDX11::VertexShaderData* dataToUpload = new AMeshDX11::VertexShaderData[numVertices];
-	
-	// TODO: optimize
+
 	for (uint32_t i = 0; i < numVertices; i++)
 	{
 		dataToUpload[i].position = a_meshData->positions[i];
-		dataToUpload[i].uv = a_meshData->textureCoords[i]; // TODO: refactor
+		dataToUpload[i].normal = a_meshData->normals[i];
+		dataToUpload[i].uv = a_meshData->textureCoords[i]; // TODO: refactor name
 	}
 	
 	resourceData.pSysMem = dataToUpload;
@@ -381,6 +380,8 @@ AGN::IAShader* AGN::ADeviceDX11::createShader(const uint16_t a_aId, const char* 
 	{
 		if (errorBlob)
 		{
+			g_log.error("Error during compilation of HLSL Shader...");
+
 			std::string errorMessage = (char*)errorBlob->GetBufferPointer();
 			g_log.error(errorMessage.c_str());
 

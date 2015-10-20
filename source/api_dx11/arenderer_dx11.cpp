@@ -229,8 +229,7 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 	{
 		// get vertex stride (inputdata size)
 		// TODO: get this from shader parsing(reflection) not hardcoded!
-		//AShaderDX11* vertexShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getVertexShader());
-		const uint32_t vertexStride = sizeof(glm::vec3) + sizeof(glm::vec2);
+		const uint32_t vertexStride = sizeof(AMeshDX11::VertexShaderData);
 		const uint32_t offset = 0;
 
 		ID3D11Buffer* vertexBuffer = mesh->getD3D11VertexBuffer();
@@ -255,12 +254,15 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 
 		d3dDeviceContext->VSSetShader(d3d11VertexShader, nullptr, 0);
 
-		// update VertexConstantBuffer (MVP)
-		// retrieve model matrix from array in struct
-		glm::mat4 modelMatrix = glm::make_mat4(data.modelMatrixArray); // TODO: send model matrix to shader as well for WS coordinate calculation
+		// prepare Vertex input data (MVP)
+		mat4 modelMatrix = glm::make_mat4(data.modelMatrixArray); 		// retrieve model matrix from array in struct
 		mat4 mvp = m_vp * modelMatrix;
 		
-		dx11VertexShader->setConstantBufferData("PerObject", &mvp, sizeof(mvp));
+		unsigned char buffer[128] = { 0 };
+		memcpy(buffer, glm::value_ptr(mvp), sizeof(mvp));
+		memcpy(buffer + sizeof(mvp), glm::value_ptr(modelMatrix), sizeof(modelMatrix));
+
+		dx11VertexShader->setConstantBufferData("PerObject", &buffer, sizeof(buffer));
 
 		ID3D11Buffer** d3d11ConstantBuffers = dx11VertexShader->getConstantBufferHandles();
 		const int numConstBuffers = dx11VertexShader->getNumConstantBuffers();

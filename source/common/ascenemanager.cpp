@@ -57,20 +57,20 @@ void AGN::ASceneManager::loadScrambledScene()
 {
 	AResourceManager& resourceManager = g_application.getResourceManager();
 
-	//std::vector<IAMesh*> crateMeshCollection = resourceManager.loadMeshCollection("crate.dae");
-	//std::vector<IAMesh*> suzanneMeshCollection = resourceManager.loadMeshCollection("suzanne.obj");
-	//std::vector<IAMesh*> skyboxMeshCollection = resourceManager.loadMeshCollection("skybox_fixed.obj");
+	std::vector<IAMesh*> crateMeshCollection = resourceManager.loadMeshCollection("crate.dae");
+	std::vector<IAMesh*> suzanneMeshCollection = resourceManager.loadMeshCollection("suzanne.obj");
+	std::vector<IAMesh*> skyboxMeshCollection = resourceManager.loadMeshCollection("skybox_fixed.obj");
 	std::vector<IAMesh*> triangleCollection = resourceManager.loadMeshCollection("triangle.obj");
 
 	// create materials
 	AMaterial& testMaterial = resourceManager.createMaterial("test_material");
 	testMaterial.diffuseTexture = &resourceManager.loadTexture("test.png", EATextureType::TEXTURE_2D);
 
-	//AMaterial& skyboxMaterial = resourceManager.createMaterial("skybox_material");
-	//skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", EATextureType::TEXTURE_2D);
+	AMaterial& skyboxMaterial = resourceManager.createMaterial("skybox_material");
+	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", EATextureType::TEXTURE_2D);
 
-	//suzanneMeshCollection[0]->setMaterial(&testMaterial);
-	//skyboxMeshCollection[0]->setMaterial(&skyboxMaterial);
+	suzanneMeshCollection[0]->setMaterial(&testMaterial);
+	skyboxMeshCollection[0]->setMaterial(&skyboxMaterial);
 	//triangleCollection[0]->setMaterial(&testMaterial);
 
 	// Skybox entity
@@ -83,10 +83,9 @@ void AGN::ASceneManager::loadScrambledScene()
 	// triangle
 	AEntity* triangleEntity = new AEntity();
 	triangleEntity->setMeshCollection(triangleCollection);
-	triangleEntity->setPosition(vec3(0, 0, 0));
+	triangleEntity->setPosition(vec3(0, 0, 5));
 	m_entities.push_back(triangleEntity);
-
-	/*
+	
 	// create crate entities
 	int index = 0;
 	for (int x = 0; x < 1; x++)
@@ -115,7 +114,7 @@ void AGN::ASceneManager::loadScrambledScene()
 				
 			}
 		}
-	}*/
+	}
 }
 
 void AGN::ASceneManager::loadSponza()
