@@ -318,9 +318,5 @@ void AGN::ARendererDX11::clearBuffer(struct ADrawCommand& a_command)
 		m_deviceReference.getD3D11DeviceContext()->ClearDepthStencilView(m_d3dDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	}
 
-	//AClearBufferData& data = drawCommand.data.clearBufferData;
-	//data.buffersToClear = (uint32_t)ADrawBufferType::COLOR | (uint32_t)ADrawBufferType::DEPTH;
-	//data.clearColor = 0x00FF00;
-
 }
 

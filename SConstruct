@@ -8,30 +8,36 @@ Export('rootDir')
 # parse config file
 configDict = {}
 with open('config.ini', 'r') as configFile:
-        for line in configFile:
-            splitLine = line.split('=')
-            if len(splitLine) != 2 or splitLine[0].startswith('#') or splitLine[0].startswith(';'):
-			    continue
-            key = splitLine[0]
-            value = splitLine[1][splitLine[1].index('[')+1:splitLine[1].index(']')] # store as variable, the content is stripped of its first and last character (the [ and ])
-            configDict[key] = value
+		for line in configFile:
+			splitLine = line.split('=')
+			if len(splitLine) != 2 or splitLine[0].startswith('#') or splitLine[0].startswith(';'):
+				continue
+			key = splitLine[0]
+			# store as variable, the content is stripped of its first and last character (the [ and ])
+			value = splitLine[1][splitLine[1].index('[')+1:splitLine[1].index(']')] 
+			#check if value is already an array
+			if key in configDict:
+				configDict[key].append(value)
+			else:
+				configDict[key] = [value]
 
 # display config variables
 for key in configDict.iterkeys():
 	print "configval %s = %s" % (key, configDict[key])
 
 # check selected compiler	
-buildname = configDict['buildname']
-Export('buildname')
+buildnames = configDict['build']
 
-if buildname == 'win64gl':    
-    SConscript('project_files/SConscript_win64gl')
-elif buildname == 'linux64gl':
-	SConscript('project_files/SConscript_linux64gl')
-elif buildname == 'win64dx11':
-	SConscript('project_files/SConscript_win64dx11')
-else:
-    print "Warning: No valid Build selected! check config.ini"
+for buildname in buildnames:
+	print "buildname %s" % (buildname)
+	if buildname == 'win64gl':    
+		SConscript('project_files/SConscript_win64gl')
+	elif buildname == 'linux64gl':
+		SConscript('project_files/SConscript_linux64gl')
+	elif buildname == 'win64dx11':
+		SConscript('project_files/SConscript_win64dx11')
+	else:
+		print "Warning: No valid Build selected! check config.ini"
 
 Import('env')
 

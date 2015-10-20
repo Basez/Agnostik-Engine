@@ -5,12 +5,10 @@ import filecmp
 import md5
 
 Import('rootDir')
-Import('buildname')
 Import('env')
 
 print "Executing dx11 shader generation SConscript..."
 #print "rootDir: " + rootDir
-#print "buildname: " + buildname
 
 # setup vars
 shaderSourceFolder = rootDir + '/shaders/source_dx11'
