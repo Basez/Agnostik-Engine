@@ -87,7 +87,7 @@ AGN::IAShader* AGN::AShaderPipelineGL::getShader(const EAShaderType a_type)
 {
 	const uint32_t numShaders = sizeof(m_shaders) / sizeof(m_shaders[0]);
 
-	for (int i = 0; i < numShaders; i++)
+	for (uint32_t i = 0; i < numShaders; i++)
 	{
 		if (m_shaders[i]->getType() == a_type) return m_shaders[i];
 	}

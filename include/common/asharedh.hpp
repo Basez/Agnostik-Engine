@@ -6,7 +6,7 @@
 
 // Standard lib
 #include <iostream>
-#include <string>
+#include <string.h>
 #include <ios>
 #include <stdint.h>
 #include <vector>

@@ -1,7 +1,7 @@
 import os
 
 Import('rootDir')
-Import('buildname')
+buildname = 'linux64gl'
 
 env = Environment(	TARGET_ARCH='x86_64',
 					ENV = {'PATH' : os.environ['PATH']},			# required to set path otherwise it cant find G++ & linker
