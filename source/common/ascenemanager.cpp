@@ -37,8 +37,8 @@ void AGN::ASceneManager::init()
 
 void AGN::ASceneManager::loadScene()
 {
-	loadScrambledScene();
-	//loadSponza();
+	//loadScrambledScene();
+	loadSponza();
 }
 
 void AGN::ASceneManager::update(float a_deltaTime)
@@ -71,14 +71,13 @@ void AGN::ASceneManager::loadScrambledScene()
 
 	suzanneMeshCollection[0]->setMaterial(&testMaterial);
 	skyboxMeshCollection[0]->setMaterial(&skyboxMaterial);
-	//triangleCollection[0]->setMaterial(&testMaterial);
 
 	// Skybox entity
-	//AEntity* skyboxEntity = new AEntity();
-	//skyboxEntity->setMeshCollection(skyboxMeshCollection);
-	//skyboxEntity->setPosition(vec3(0, 0, 0));
-	//skyboxEntity->setScale(vec3(10, 10, 10));
-	//m_skyboxEntities.push_back(skyboxEntity);
+	AEntity* skyboxEntity = new AEntity();
+	skyboxEntity->setMeshCollection(skyboxMeshCollection);
+	skyboxEntity->setPosition(vec3(0, 0, 0));
+	skyboxEntity->setScale(vec3(10, 10, 10));
+	m_skyboxEntities.push_back(skyboxEntity);
 
 	// triangle
 	AEntity* triangleEntity = new AEntity();
@@ -122,8 +121,8 @@ void AGN::ASceneManager::loadSponza()
 	AResourceManager& resourceManager = g_application.getResourceManager();
 
 	// load meshes
-	std::vector<IAMesh*> sponzaMeshCollection = resourceManager.loadMeshCollection("sponza/sponza.obj");
-	//std::vector<IAMesh*> sponzaMeshCollection = resourceManager.loadMeshCollection("sibenik/sibenik.obj");
+	//std::vector<IAMesh*> sponzaMeshCollection = resourceManager.loadMeshCollection("sponza/sponza.obj");
+	std::vector<IAMesh*> sponzaMeshCollection = resourceManager.loadMeshCollection("sibenik/sibenik.obj");
 	std::vector<IAMesh*> skyboxMeshCollection = resourceManager.loadMeshCollection("skybox_fixed.obj");
 
 	// create materials

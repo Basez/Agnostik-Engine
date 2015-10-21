@@ -227,7 +227,7 @@ AGN::IAMesh* AGN::ADeviceDX11::createMesh(const uint16_t a_aId, AGN::AMeshData* 
 	memset(&vertexPosBufferDesc, 0, sizeof(D3D11_BUFFER_DESC));
 
 	vertexPosBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // how the buffer will be bound to the pipeline 
-	vertexPosBufferDesc.ByteWidth = static_cast<UINT>(sizeof(AMeshDX11::VertexShaderData) * numVertices);
+	vertexPosBufferDesc.ByteWidth = static_cast<uint32_t>(sizeof(AMeshDX11::VertexShaderData) * numVertices);
 	vertexPosBufferDesc.CPUAccessFlags = 0;
 	vertexPosBufferDesc.Usage = D3D11_USAGE_DEFAULT; // Identify how the buffer is expected to be read from and written to. Frequency of update is a key factor
 
@@ -256,7 +256,7 @@ AGN::IAMesh* AGN::ADeviceDX11::createMesh(const uint16_t a_aId, AGN::AMeshData* 
 	D3D11_BUFFER_DESC indexBufferDesc;
 	memset(&indexBufferDesc, 0, sizeof(D3D11_BUFFER_DESC));
 
-	indexBufferDesc.ByteWidth = static_cast<UINT>(sizeof(uint32_t) * a_meshData->indicies.size());
+	indexBufferDesc.ByteWidth = static_cast<uint32_t>(sizeof(uint32_t) * a_meshData->indicies.size());
 	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	indexBufferDesc.CPUAccessFlags = 0;
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;

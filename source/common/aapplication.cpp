@@ -136,14 +136,13 @@ void AGN::AAplication::loadShaders()
 	meshShaders.push_back(&m_resourceManager->createShader(g_shader_mesh_vert, EAShaderType::VertexShader));
 	meshShaders.push_back(&m_resourceManager->createShader(g_shader_mesh_pix, EAShaderType::PixelShader));
 	m_meshShaderPipeline = &m_resourceManager->createShaderPipeline(meshShaders);
-
-	/*
+	
 	// TODO: RESTORE after HLSL
 	std::vector<AGN::IAShader*> skyboxShaders;
 	skyboxShaders.push_back(&m_resourceManager->createShader(g_shader_skybox_vert, EAShaderType::VertexShader));
 	skyboxShaders.push_back(&m_resourceManager->createShader(g_shader_skybox_pix, EAShaderType::PixelShader));
 	m_skyboxShaderPipeline = &m_resourceManager->createShaderPipeline(skyboxShaders);
-	*/
+	
 }
 
 void AGN::AAplication::render()
@@ -197,8 +196,6 @@ void AGN::AAplication::createDrawQueue()
 		data.clearColor = 0x00FF0000;
 	}
 
-	/*
-	// TODO: Restore after DX11 implementation
 	const std::vector<AEntity*> skyboxEntities = m_sceneManager->getSkyboxEntities();
 	for (unsigned int i = 0; i < skyboxEntities.size(); i++)
 	{
@@ -236,8 +233,7 @@ void AGN::AAplication::createDrawQueue()
 			memcpy(&data.modelMatrixArray[0], glm::value_ptr(modelMatrix), sizeof(data.modelMatrixArray));
 		}
 	}
-	*/
-
+	
 	// TODO: make these static draw commands
 	// Clear Z Buffer after skybox
 	{
@@ -281,7 +277,7 @@ void AGN::AAplication::createDrawQueue()
 		}
 	}*/
 
-
+	
 	// fill commander with entity draw entity commands
 	const std::vector<AEntity*> entities = m_sceneManager->getEntities();
 	for (unsigned int i = 0, depthVectorIndex = 0; i < entities.size(); i++)
@@ -320,6 +316,7 @@ void AGN::AAplication::createDrawQueue()
 			memcpy(&data.modelMatrixArray[0], glm::value_ptr(modelMatrix), sizeof(data.modelMatrixArray));
 		}
 	}
+	
 }
 
 AGN::IARenderAPI& AGN::AAplication::getRenderAPI()

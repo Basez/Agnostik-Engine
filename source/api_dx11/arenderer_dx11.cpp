@@ -266,7 +266,10 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 
 		ID3D11Buffer** d3d11ConstantBuffers = dx11VertexShader->getConstantBufferHandles();
 		const int numConstBuffers = dx11VertexShader->getNumConstantBuffers();
-		d3dDeviceContext->VSSetConstantBuffers(0, numConstBuffers, d3d11ConstantBuffers);
+		if (numConstBuffers > 0)
+		{
+			d3dDeviceContext->VSSetConstantBuffers(0, numConstBuffers, d3d11ConstantBuffers);
+		}
 
 		d3d11VertexShader->Release();
 	}
@@ -306,8 +309,11 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 		// set constant buffer
 		ID3D11Buffer** d3d11ConstantBuffers = dx11PixelShader->getConstantBufferHandles();
 		const int numConstBuffers = dx11PixelShader->getNumConstantBuffers();
-		d3dDeviceContext->PSSetConstantBuffers(0, numConstBuffers, d3d11ConstantBuffers);
 
+		if (numConstBuffers > 0)
+		{
+			d3dDeviceContext->PSSetConstantBuffers(0, numConstBuffers, d3d11ConstantBuffers);
+		}
 
 		// set PS sampler
 		ID3D11SamplerState* sampler = shaderPipeline->getSamplerState();
@@ -324,9 +330,7 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 			d3dDeviceContext->PSSetShaderResources(0, 1, &shaderResourceView);
 		}
 
-
-		
-		d3d11PixelShader->Release();
+		//d3d11PixelShader->Release();
 	}
 	
 	// output merger stage

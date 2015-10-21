@@ -15,6 +15,8 @@ AGN::AShaderDX11::AShaderDX11(ADeviceDX11& a_deviceReference, const uint16_t a_a
 	, m_shaderBlob(a_shaderBlob)
 	, m_shaderReflection(nullptr)
 	, m_shaderReflectionDesc(nullptr)
+	, m_constantBufferHandles(nullptr)
+	, m_constantBufferBindPoints(nullptr)
 {
 	HRESULT hr = D3DReflect(m_shaderBlob->GetBufferPointer(), m_shaderBlob->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&m_shaderReflection);
 
@@ -27,66 +29,62 @@ AGN::AShaderDX11::AShaderDX11(ADeviceDX11& a_deviceReference, const uint16_t a_a
 
 	if (FAILED(hr)) g_log.error("Failed getting reflection desc on shader");
 
-
 	// reflect on constant buffers
 	getConstantBufferDesc(m_constantBufferDescriptions, m_numConstantBuffers);
 
-	m_constantBufferHandles = new ID3D11Buffer*[m_numConstantBuffers];
-	m_constantBufferBindPoints = new int32_t[m_numConstantBuffers];
-
-	// create constant buffers
-	for (uint16_t i = 0; i < m_numConstantBuffers; i++)
+	if (m_numConstantBuffers > 0)
 	{
-		int16_t constantBufferBindPoint = -1;
+		m_constantBufferHandles = new ID3D11Buffer*[m_numConstantBuffers];
+		m_constantBufferBindPoints = new int32_t[m_numConstantBuffers];
 
-		// Find bind point! 
-		for (uint16_t k = 0; k < m_shaderReflectionDesc->BoundResources; ++k)
+		// create constant buffers
+		for (uint16_t i = 0; i < m_numConstantBuffers; i++)
 		{
-			D3D11_SHADER_INPUT_BIND_DESC ibdesc;
-			memset(&ibdesc, 0, sizeof(D3D11_SHADER_INPUT_BIND_DESC));
-			hr = m_shaderReflection->GetResourceBindingDesc(k, &ibdesc);
-			if (FAILED(hr)) g_log.error("Failed getting reflection D3D11_SHADER_INPUT_BIND_DESC on shader");
+			int16_t constantBufferBindPoint = -1;
 
-			if (strcmp(ibdesc.Name, m_constantBufferDescriptions[i].Name) == 0)
+			// Find bind point! 
+			for (uint16_t k = 0; k < m_shaderReflectionDesc->BoundResources; ++k)
 			{
-				constantBufferBindPoint = ibdesc.BindPoint;
-				break;
+				D3D11_SHADER_INPUT_BIND_DESC ibdesc;
+				memset(&ibdesc, 0, sizeof(D3D11_SHADER_INPUT_BIND_DESC));
+				hr = m_shaderReflection->GetResourceBindingDesc(k, &ibdesc);
+				if (FAILED(hr)) g_log.error("Failed getting reflection D3D11_SHADER_INPUT_BIND_DESC on shader");
+
+				if (strcmp(ibdesc.Name, m_constantBufferDescriptions[i].Name) == 0)
+				{
+					constantBufferBindPoint = ibdesc.BindPoint;
+					break;
+				}
+			}
+
+			if (constantBufferBindPoint == -1)
+			{
+				g_log.error("Did not find bindpoint for Constant buffer with the name %s", m_constantBufferDescriptions[i].Name);
+				assert(false);
+			}
+
+			m_constantBufferBindPoints[i] = constantBufferBindPoint;
+
+			// create handle to actual buffer
+			D3D11_BUFFER_DESC newConstantBufferDesc;
+			memset(&newConstantBufferDesc, 0, sizeof(D3D11_BUFFER_DESC));
+
+			newConstantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+			newConstantBufferDesc.ByteWidth = m_constantBufferDescriptions[i].Size;
+			newConstantBufferDesc.CPUAccessFlags = 0;
+			newConstantBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+			newConstantBufferDesc.MiscFlags = 0;
+			newConstantBufferDesc.StructureByteStride = 0;
+			// TODO: think if this is the correct location for this function, in essence, we are doing the devices job in this constructor?
+			HRESULT hr = a_deviceReference.getD3D11Device()->CreateBuffer(&newConstantBufferDesc, nullptr, &m_constantBufferHandles[i]);
+
+			if (FAILED(hr))
+			{
+				g_log.error("failure creating constant buffer");
+				return;
 			}
 		}
-
-		if (constantBufferBindPoint == -1)
-		{
-			g_log.error("Did not find bindpoint for Constant buffer with the name %s", m_constantBufferDescriptions[i].Name);
-			assert(false);
-		}
-
-		m_constantBufferBindPoints[i] = constantBufferBindPoint;
-
-		// create handle to actual buffer
-		D3D11_BUFFER_DESC newConstantBufferDesc;
-		memset(&newConstantBufferDesc, 0, sizeof(D3D11_BUFFER_DESC));
-
-		newConstantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		newConstantBufferDesc.ByteWidth = m_constantBufferDescriptions[i].Size;
-		newConstantBufferDesc.CPUAccessFlags = 0;
-		newConstantBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		newConstantBufferDesc.MiscFlags = 0;
-		newConstantBufferDesc.StructureByteStride = 0;
-		// TODO: think if this is the correct location for this function, in essence, we are doing the devices job in this constructor?
-		HRESULT hr = a_deviceReference.getD3D11Device()->CreateBuffer(&newConstantBufferDesc, nullptr, &m_constantBufferHandles[i]);
-
-		if (FAILED(hr))
-		{
-			g_log.error("failure creating constant buffer");
-			return;
-		}
-
-
-		//m_constantBuffers.push_back(constantBufferDX11);
 	}
-
-	//delete[] constReflectionBufferDesc;
-
 
 #ifdef AGN_DEBUG
 	//AGN::logHResultData(hr);
