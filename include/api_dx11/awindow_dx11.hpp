@@ -24,6 +24,9 @@ namespace AGN
 		void showMessageBox(const char* a_title, const char* a_message) override;
 		void warpCursor(glm::ivec2 a_screenPosition) override;
 		void showCursor(bool a_shown) override;
+		void updateWindowState() override;
+		bool isDirty() override { return m_isDirty; }
+
 
 		glm::ivec2 getDimentions() override { return m_dimentions; }
 		const HWND getWindowHandle() const { return m_windowHandle; }
@@ -31,6 +34,7 @@ namespace AGN
 	private:
 		glm::ivec2 m_dimentions;
 		HWND m_windowHandle = 0;
+		bool m_isDirty;
 
 		LRESULT CALLBACK onWindowEvent(HWND a_hwnd, UINT a_message, WPARAM a_wParam, LPARAM a_lParam);
 		friend LRESULT CALLBACK windowProcedureCallback(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);

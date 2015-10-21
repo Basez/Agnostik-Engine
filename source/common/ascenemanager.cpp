@@ -41,6 +41,11 @@ void AGN::ASceneManager::loadScene()
 	loadSponza();
 }
 
+void AGN::ASceneManager::onWindowUpdated(glm::ivec2 a_dimentions)
+{
+	m_camera->setProjectionRH(60.0f, 0.1f, 10000.0f);
+}
+
 void AGN::ASceneManager::update(float a_deltaTime)
 {
 	m_cameraController->update(a_deltaTime);

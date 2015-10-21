@@ -369,3 +369,91 @@ void AGN::ARendererDX11::clearBuffer(struct ADrawCommand& a_command)
 
 }
 
+void AGN::ARendererDX11::onWindowUpdated(glm::ivec2 a_dimentions)
+{
+	g_log.debug("ARendererDX11::onWindowUpdated()");
+
+	HRESULT hr;
+
+	
+	m_deviceReference.getD3D11DeviceContext()->OMSetRenderTargets(0, 0, 0);
+
+	// Release all outstanding references to the swap chain's buffers.
+	m_d3dRenderTargetView->Release();
+
+	// Preserve the existing buffer count and format.
+	// Automatically choose the width and height to match the client rect for HWNDs.
+	hr = m_deviceReference.getD3D11SwapChain()->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+
+	if (FAILED(hr))
+	{
+		g_log.error("m_d3dSwapChain ResizeBuffers failure");
+		return;
+	}
+
+	m_d3dDepthStencilView->Release();
+	m_d3dDepthStencilBuffer->Release();
+
+	// re-create the depth buffer for use with the depth/stencil view.
+	D3D11_TEXTURE2D_DESC depthStencilBufferDesc;
+	memset(&depthStencilBufferDesc, 0, sizeof(D3D11_TEXTURE2D_DESC));
+
+	depthStencilBufferDesc.ArraySize = 1;									// Number of textures in the texture array
+	depthStencilBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;			// how to bind a resource to the pipeline // indicates that this buffer is to be used as a depth-stencil target for the output-merger stage.
+	depthStencilBufferDesc.CPUAccessFlags = 0;								// No CPU access required.
+	depthStencilBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;			// a 32-bit z-buffer format that supports 24 bits for depth and 8 bits for stencil.
+	depthStencilBufferDesc.Width = a_dimentions.x;
+	depthStencilBufferDesc.Height = a_dimentions.y;
+	depthStencilBufferDesc.MipLevels = 1;									// The maximum number of mipmap levels in the texture // 1 for a multisampled texture; or 0 to generate a full set of subtextures.
+	depthStencilBufferDesc.SampleDesc.Count = 1;							// multisampling parameters for the texture. 
+	depthStencilBufferDesc.SampleDesc.Quality = 0;							// multisampling parameters for the texture. 
+	depthStencilBufferDesc.Usage = D3D11_USAGE_DEFAULT;						// w the texture is to be read from and written to
+
+	
+	hr = m_deviceReference.getD3D11Device()->CreateTexture2D(&depthStencilBufferDesc, nullptr, &m_d3dDepthStencilBuffer);
+
+	if (FAILED(hr))
+	{
+		g_log.error("m_d3dDevice->CreateTexture2D() failure");
+		return;
+	}
+
+	hr = m_deviceReference.getD3D11Device()->CreateDepthStencilView(m_d3dDepthStencilBuffer, nullptr, &m_d3dDepthStencilView);
+	if (FAILED(hr))
+	{
+		g_log.error("CreateDepthStencilView failure");
+		return;
+	}
+
+	// Get buffer and create a render-target-view.
+	ID3D11Texture2D* pBuffer;
+	hr = m_deviceReference.getD3D11SwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBuffer);
+
+	if (FAILED(hr))
+	{
+		g_log.error("m_d3dSwapChain GetBuffer failure");
+		return;
+	}
+
+	hr = m_deviceReference.getD3D11Device()->CreateRenderTargetView(pBuffer, NULL, &m_d3dRenderTargetView);
+
+	if (FAILED(hr))
+	{
+		g_log.error("m_d3dDevice CreateRenderTargetView failure");
+		return;
+	}
+
+	pBuffer->Release();
+
+	m_deviceReference.getD3D11DeviceContext()->OMSetRenderTargets(1, &m_d3dRenderTargetView, NULL);
+
+	// Set up the viewport.
+	m_viewport->Width = static_cast<float>(a_dimentions.x);
+	m_viewport->Height = static_cast<float>(a_dimentions.y);
+	m_viewport->TopLeftX = 0.0f;
+	m_viewport->TopLeftY = 0.0f;
+	m_viewport->MinDepth = 0.0f;
+	m_viewport->MaxDepth = 1.0f;
+
+	m_deviceReference.getD3D11DeviceContext()->RSSetViewports(1, m_viewport);
+}

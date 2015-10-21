@@ -18,6 +18,7 @@ namespace AGN
 		bool init() override;
 		void render(class ADrawCommander& a_drawCommander) override;
 		void setCamera(class ACamera* a_camera) override { m_currentCamera = a_camera; }
+		void onWindowUpdated(glm::ivec2 a_dimentions) override;
 
 	private:
 		void drawEntity(struct ADrawCommand& a_command);

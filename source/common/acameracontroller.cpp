@@ -123,7 +123,7 @@ void AGN::ACameraController::onMouseMotion(int a_mouseX, int a_mouseY)
 		IAWindow& window = g_application.getRenderAPI().getWindow();
 
 		// check if out of bounds
-		static const glm::ivec2 boundaryMargin = glm::ivec2(window.getDimentions().x / 5, window.getDimentions().y / 5);
+		const glm::ivec2 boundaryMargin = glm::ivec2(window.getDimentions().x / 5, window.getDimentions().y / 5);
 
 		glm::ivec2 min = glm::ivec2(boundaryMargin.x, boundaryMargin.y);
 		glm::ivec2 max = glm::ivec2(window.getDimentions().x - boundaryMargin.x, window.getDimentions().y - boundaryMargin.y);

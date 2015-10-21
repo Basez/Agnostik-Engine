@@ -14,7 +14,7 @@ namespace AGN
 
 		const std::vector<class AEntity*> getEntities() const { return m_entities; }
 		const std::vector<class AEntity*> getSkyboxEntities() const { return m_skyboxEntities; }
-
+		void onWindowUpdated(glm::ivec2 a_dimentions);
 		class ACamera* getCurrentCamera() { return m_camera; }
 
 	private:

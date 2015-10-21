@@ -19,6 +19,7 @@ LRESULT CALLBACK AGN::windowProcedureCallback(HWND hwnd, UINT message, WPARAM wP
 
 AGN::AWindowDX11::AWindowDX11(glm::ivec2 a_dimentions)
 	: m_dimentions(a_dimentions)
+	, m_isDirty(false)
 {
 	g_window = this;
 
@@ -71,7 +72,6 @@ AGN::AWindowDX11::AWindowDX11(glm::ivec2 a_dimentions)
 	UpdateWindow(m_windowHandle);
 }
 
-// this function was partly inspired by 3dgep.com
 LRESULT CALLBACK AGN::AWindowDX11::onWindowEvent(HWND a_hwnd, UINT a_message, WPARAM a_wParam, LPARAM a_lParam)
 {
 	PAINTSTRUCT paintStruct;
@@ -80,18 +80,29 @@ LRESULT CALLBACK AGN::AWindowDX11::onWindowEvent(HWND a_hwnd, UINT a_message, WP
 	switch (a_message)
 	{
 	case WM_PAINT:
+	{
 		// erase background
 		hDC = BeginPaint(a_hwnd, &paintStruct);
 		EndPaint(a_hwnd, &paintStruct);
 		break;
-
+	}
 	case WM_DESTROY:
+	{
 		PostQuitMessage(0);
 		break;
-
+	}
 	case WM_SIZE:
-		//m_isDirty = true; // TODO::?
+	{
+		// hack to prevent screen resize event from propigating the first time the window is created
+		static bool firstResize = true;
+		if (firstResize)
+		{
+			firstResize = false;
+			break;
+		}
+		m_isDirty = true; 
 		break;
+	}
 
 	case WM_KEYDOWN:
 	{
@@ -123,8 +134,8 @@ LRESULT CALLBACK AGN::AWindowDX11::onWindowEvent(HWND a_hwnd, UINT a_message, WP
 		//KeyEventArgs keyEventArgs(key, c, KeyEventArgs::Pressed, shift, control, alt);
 		//pWindow->OnKeyPressed(keyEventArgs);
 
+		break;
 	}
-	break;
 	case WM_KEYUP:
 	{
 		bool shift = GetAsyncKeyState(VK_SHIFT) > 0;
@@ -148,9 +159,8 @@ LRESULT CALLBACK AGN::AWindowDX11::onWindowEvent(HWND a_hwnd, UINT a_message, WP
 
 		//KeyEventArgs keyEventArgs(key, c, KeyEventArgs::Released, shift, control, alt);
 		//pWindow->OnKeyReleased(keyEventArgs);
+		break;
 	}
-	break;
-
 	case WM_MOUSEMOVE:
 	{
 		bool lButton = (a_wParam & MK_LBUTTON) != 0;
@@ -163,44 +173,51 @@ LRESULT CALLBACK AGN::AWindowDX11::onWindowEvent(HWND a_hwnd, UINT a_message, WP
 		int mouseY = ((int)(short)HIWORD(a_lParam));
 
 		g_input.registerMouseMotion(mouseX, mouseY);
+		break;
 	}
-	break;
-
 	case WM_LBUTTONDOWN:
+	{
 		g_input.registerMouseHold(AGN::MOUSECODE::LEFT, true);
 		break;
-
+	}
 	case WM_MBUTTONDOWN:
+	{
 		g_input.registerMouseHold(AGN::MOUSECODE::MIDDLE, true);
 		break;
-
+	}
 	case WM_RBUTTONDOWN:
+	{
 		g_input.registerMouseHold(AGN::MOUSECODE::RIGHT, true);
 		break;
-
+	}
 	case WM_LBUTTONUP:
+	{
 		g_input.registerMouseHold(AGN::MOUSECODE::LEFT, false);
 		g_input.registerMouseClick(AGN::MOUSECODE::LEFT);
 		break;
-
+	}
 	case WM_MBUTTONUP:
+	{
 		g_input.registerMouseHold(AGN::MOUSECODE::MIDDLE, false);
 		g_input.registerMouseClick(AGN::MOUSECODE::MIDDLE);
 		break;
-
+	}
 	case WM_RBUTTONUP:
+	{
 		g_input.registerMouseHold(AGN::MOUSECODE::RIGHT, false);
 		g_input.registerMouseClick(AGN::MOUSECODE::RIGHT);
 		break;
-
+	}
 	case WM_MOUSEWHEEL:
+	{
 		g_input.registerMouseScroll(int(((int)(short)HIWORD(a_wParam)) / (float)WHEEL_DELTA));
 		break;
-
+	}
 	default:
+	{
 		return DefWindowProc(a_hwnd, a_message, a_wParam, a_lParam);
 	}
-
+	}
 	return 0;
 }
 
@@ -228,4 +245,23 @@ void AGN::AWindowDX11::warpCursor(glm::ivec2 a_screenPosition)
 void AGN::AWindowDX11::showCursor(bool a_shown)
 {
 	ShowCursor(a_shown);
+}
+
+void AGN::AWindowDX11::updateWindowState()
+{
+	// Setup the projection matrix.
+	RECT clientRect;
+	GetClientRect(m_windowHandle, &clientRect);
+
+	// Compute the exact client dimensions.
+	// This is required for a correct projection matrix.
+	int newWidth = clientRect.right - clientRect.left;
+	int newHeight = clientRect.bottom - clientRect.top;
+
+	m_dimentions.x = newWidth;
+	m_dimentions.y = newHeight;
+
+	m_isDirty = false;
+
+	g_log.info("Resized Window to: %ix%i", m_dimentions.x, m_dimentions.y);
 }

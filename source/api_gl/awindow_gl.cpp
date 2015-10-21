@@ -8,6 +8,7 @@ AGN::AWindowGL::AWindowGL(glm::ivec2 a_dimentions)
 	, m_mouseOnScreen(false)
 	, m_keyboardFocus(false)
 	, m_minimized(false)
+	, m_isDirty(false)
 {
 	Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 
@@ -58,9 +59,7 @@ void AGN::AWindowGL::onWindowEvent(SDL_Event a_event)
 	switch (a_event.window.event)
 	{
 	case SDL_WINDOWEVENT_RESIZED:
-		m_dimentions.x = a_event.window.data1;
-		m_dimentions.y = a_event.window.data2;
-		glViewport(0, 0, m_dimentions.x, m_dimentions.y);
+		m_isDirty = true;
 		break;
 
 	case SDL_WINDOWEVENT_ENTER:
@@ -87,4 +86,16 @@ void AGN::AWindowGL::onWindowEvent(SDL_Event a_event)
 		m_minimized = false;
 		break;
 	}
+}
+
+void AGN::AWindowGL::updateWindowState()
+{
+	SDL_GetWindowSize(m_sdlWindow, &m_dimentions.x, &m_dimentions.y);
+
+	// TODO: move this to engine!
+	glViewport(0, 0, m_dimentions.x, m_dimentions.y);
+
+	m_isDirty = false;
+
+	g_log.info("Resized Window to: %ix%i", m_dimentions.x, m_dimentions.y);
 }

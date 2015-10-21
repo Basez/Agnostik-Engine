@@ -31,7 +31,6 @@ AGN::AAplication& g_application = appTemp;
 
 using namespace glm;
 
-
 AGN::AAplication::AAplication()
 	: m_meshShaderPipeline(nullptr)
 	, m_skyboxShaderPipeline(nullptr)
@@ -75,6 +74,15 @@ void AGN::AAplication::run(class IARenderAPI* a_renderAPI)
 
 		// api specific event handling, input etc
 		m_renderAPI->handleEvents(doQuit);
+
+		// if any window changes occured
+		// TODO: rethink this?
+		if (m_renderAPI->getWindow().isDirty())
+		{
+			m_renderAPI->getWindow().updateWindowState();
+			m_renderAPI->getRenderer().onWindowUpdated(m_renderAPI->getWindow().getDimentions());
+			m_sceneManager->onWindowUpdated(m_renderAPI->getWindow().getDimentions());
+		}
 	}
 }
 
