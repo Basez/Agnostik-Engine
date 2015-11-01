@@ -37,8 +37,8 @@ void AGN::ASceneManager::init()
 
 void AGN::ASceneManager::loadScene()
 {
-	//loadScrambledScene();
-	loadSponza();
+	loadScrambledScene();
+	//loadSponza();
 }
 
 void AGN::ASceneManager::onWindowUpdated(glm::ivec2 a_dimentions)
@@ -92,11 +92,11 @@ void AGN::ASceneManager::loadScrambledScene()
 	
 	// create crate entities
 	int index = 0;
-	for (int x = 0; x < 1; x++)
+	for (int x = 0; x < 10; x++)
 	{
-		for (int y = 0; y < 1; y++)
+		for (int y = 0; y < 10; y++)
 		{
-			for (int z = 0; z < 2; z++)
+			for (int z = 0; z < 10; z++)
 			{
 				// interchange crates & suzannes (worst case scenario in terms of sorting/nosorting)
 				if ((++index % 2) == 1)

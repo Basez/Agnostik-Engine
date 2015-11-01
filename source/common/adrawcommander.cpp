@@ -7,26 +7,19 @@ using namespace glm;
 
 AGN::ADrawCommander::ADrawCommander()
 {
-
 #ifdef AGN_DEBUG
-	// Check to see if total section is still 64
-	uint64_t bitSectionTotal = 0;
-
-	bitSectionTotal += (uint64_t)SortKeyBitAmount::RenderPhase;
-	bitSectionTotal += (uint64_t)SortKeyBitAmount::Layer;
-	bitSectionTotal += (uint64_t)SortKeyBitAmount::TranslucencyType;
-	bitSectionTotal += (uint64_t)SortKeyBitAmount::CMD;
-	bitSectionTotal += (uint64_t)SortKeyBitAmount::ShaderPipelineID;
-	bitSectionTotal += (uint64_t)SortKeyBitAmount::MeshID;
-	bitSectionTotal += (uint64_t)SortKeyBitAmount::MaterialID;
-	bitSectionTotal += (uint64_t)SortKeyBitAmount::Depth;
+	AUSortKey keyasd = { 0 };
 	
-	assert(bitSectionTotal <= 64);
-
+	if (sizeof(keyasd.bitfield) != sizeof(keyasd.value))
+	{
+		g_log.error("Bitfield is not using the same amount as its sortkey counterpart");
+		assert(false);
+	}
 #endif // AGN_DEBUG
+
 }
 
-AGN::ADrawCommand& AGN::ADrawCommander::addDrawCommand(AGN::EADrawCommandType a_type, uint64_t a_sortKey) // TODO: key as argument?
+AGN::ADrawCommand& AGN::ADrawCommander::addDrawCommand(AGN::EADrawCommandType a_type, uint64_t a_sortKey)
 {
 	// TODO: use pooling?
 	ADrawCommand* drawCommandMesh = new ADrawCommand(a_sortKey, a_type);
@@ -65,16 +58,17 @@ uint64_t AGN::ADrawCommander::getSortKey(uint8_t& a_renderPhase,
 	uint16_t& a_materialId,
 	uint32_t& a_depth)
 {
+	
 #ifdef AGN_DEBUG
-	// check if key values are under limit
-	if (a_renderPhase >= static_cast<uint8_t>(1)		<< static_cast<uint8_t>(SortKeyBitAmount::RenderPhase) ||
-		a_layer >= static_cast<uint8_t>(1)				<< static_cast<uint8_t>(SortKeyBitAmount::Layer) ||
-		a_translucencyType >= static_cast<uint8_t>(1)	<< static_cast<uint8_t>(SortKeyBitAmount::TranslucencyType) ||
-		a_cmd >= static_cast<uint8_t>(1)				<< static_cast<uint8_t>(SortKeyBitAmount::CMD) ||
-		a_shaderPipelineId >= static_cast<uint16_t>(1)	<< static_cast<uint16_t>(SortKeyBitAmount::ShaderPipelineID) ||
-		a_meshId >= static_cast<uint32_t>(1)			<< static_cast<uint32_t>(SortKeyBitAmount::MeshID) ||
-		a_materialId >= static_cast<uint16_t>(1)		<< static_cast<uint16_t>(SortKeyBitAmount::MaterialID) ||
-		a_depth >= static_cast<uint32_t>(1)				<< static_cast<uint32_t>(SortKeyBitAmount::Depth))
+	// check if values are overflown
+	if (a_renderPhase >= static_cast<uint8_t>(1)		<< static_cast<uint8_t>(RENDERPHASE_BITS) ||
+		a_layer >= static_cast<uint8_t>(1)				<< static_cast<uint8_t>(LAYER_BITS) ||
+		a_translucencyType >= static_cast<uint8_t>(1)	<< static_cast<uint8_t>(TRANSLUCENCYTYPE_BITS) ||
+		a_cmd >= static_cast<uint8_t>(1)				<< static_cast<uint8_t>(CMD_BITS) ||
+		a_shaderPipelineId >= static_cast<uint16_t>(1)	<< static_cast<uint16_t>(SHADERPIPELINE_BITS) ||
+		a_meshId >= static_cast<uint32_t>(1)			<< static_cast<uint32_t>(MESH_BITS) ||
+		a_materialId >= static_cast<uint16_t>(1)		<< static_cast<uint16_t>(MATERIAL_BITS) ||
+		a_depth >= static_cast<uint32_t>(1)				<< static_cast<uint32_t>(DEPTH_BITS))
 	{
 		g_log.error("Value gone overflow when generating Sortkey!");
 		assert(false);
@@ -82,16 +76,20 @@ uint64_t AGN::ADrawCommander::getSortKey(uint8_t& a_renderPhase,
 	}
 #endif // AGN_DEBUG
 
-	
-	uint64_t sortKey = 0;
-	sortKey += static_cast<uint64_t>(a_renderPhase)			<< static_cast<int>(SortKeyShift::RenderPhase);
-	sortKey += static_cast<uint64_t>(a_layer)				<< static_cast<int>(SortKeyShift::Layer);
-	sortKey += static_cast<uint64_t>(a_translucencyType)	<< static_cast<int>(SortKeyShift::TranslucencyType);
-	sortKey += static_cast<uint64_t>(a_cmd)					<< static_cast<int>(SortKeyShift::CMD);
-	sortKey += static_cast<uint64_t>(a_shaderPipelineId)	<< static_cast<int>(SortKeyShift::ShaderPipelineID);
-	sortKey += static_cast<uint64_t>(a_meshId)				<< static_cast<int>(SortKeyShift::MeshID);
-	sortKey += static_cast<uint64_t>(a_materialId)			<< static_cast<int>(SortKeyShift::MaterialID);
-	sortKey += static_cast<uint64_t>(a_depth)				<< static_cast<int>(SortKeyShift::Depth);
+	// generate sortkey using bitfields
+	AUSortKey AUsortkey;
+	AUsortkey.bitfield.renderPhase = a_renderPhase;
+	AUsortkey.bitfield.layer = a_layer;
+	AUsortkey.bitfield.translucencyType = a_translucencyType;
+	AUsortkey.bitfield.cmd = a_cmd;
+	AUsortkey.bitfield.shaderPipelineID = a_shaderPipelineId;
+	AUsortkey.bitfield.meshID = a_meshId;
+	AUsortkey.bitfield.materialID = a_materialId;
+	AUsortkey.bitfield.depth = a_depth;
 
-	return sortKey;
+	//size_t sizeofbitfield = sizeof(AUsortkey.bitfield);
+	//size_t sizeofsortkeyValue = sizeof(AUsortkey.value);
+	//size_t sizeofUnion = sizeof(AUsortkey);
+
+	return AUsortkey.value;
 }

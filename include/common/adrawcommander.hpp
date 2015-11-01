@@ -24,33 +24,37 @@ namespace AGN
 		struct ADrawCommand& addDrawCommand(EADrawCommandType a_type, uint64_t a_sortKey);
 		std::vector<struct ADrawCommand*> getSortedDrawCommands();
 
-		// num of bits each sort key property is occupying
-		enum class SortKeyBitAmount
-		{
-			Depth = 16,
-			MaterialID = 12,
-			MeshID = 16,
-			ShaderPipelineID = 10,
-			CMD = 2,
-			TranslucencyType = 2,
-			Layer = 3,
-			RenderPhase = 3
-		};
+		// Make sure all the bits add up to a total of 64.
+		static const unsigned int DEPTH_BITS = 16;
+		static const unsigned int MATERIAL_BITS = 12;
+		static const unsigned int MESH_BITS = 16;
+		static const unsigned int SHADERPIPELINE_BITS = 10;
+		static const unsigned int CMD_BITS = 2;
+		static const unsigned int TRANSLUCENCYTYPE_BITS = 2;
+		static const unsigned int LAYER_BITS = 3;
+		static const unsigned int RENDERPHASE_BITS = 3;
 
-		// amount the bits are shifted for these values
-		enum class SortKeyShift
+		// TODO: Implement differently per platform / build target
+		union AUSortKey
 		{
-			Depth = 0,
-			MaterialID = 16,
-			MeshID = 28,
-			ShaderPipelineID = 44,
-			CMD = 54,
-			TranslucencyType = 56,
-			Layer = 58,
-			RenderPhase = 61
+			// Bitfield struct defines number of bits each field takes
+			// in the sort key and also the order of significance.
+			struct 
+			{
+				uint64_t depth : DEPTH_BITS;
+				uint64_t materialID : MATERIAL_BITS;
+				uint64_t meshID : MESH_BITS;
+				uint64_t shaderPipelineID : SHADERPIPELINE_BITS;
+				uint64_t cmd : CMD_BITS;
+				uint64_t translucencyType : TRANSLUCENCYTYPE_BITS;
+				uint64_t layer : LAYER_BITS;
+				uint64_t renderPhase : RENDERPHASE_BITS;
+			} bitfield;
+			uint64_t value;
 		};
+		
+
 	private:
-
 		std::vector<struct ADrawCommand*> m_drawCommands;
 	};
 }
