@@ -1,12 +1,13 @@
 #include "asharedh.hpp"
-#include "asharedapi.hpp" // OpenGL & Glew
 #include "ashaderpipeline_gl.hpp"
 #include "ashader_gl.hpp"
 #include "aosutils.hpp"
+#include "arender_api_gl.hpp"
+#include <GL/glew.h>
 
 using namespace glm;
 
-AGN::AShaderPipelineGL::AShaderPipelineGL(const GLuint a_glprogramId, AShaderPipelineData& a_data)
+AGN::AShaderPipelineGL::AShaderPipelineGL(const uint32_t a_glprogramId, AShaderPipelineData& a_data)
 	: m_aId(a_data.aId)
 	, m_glProgramId(a_glprogramId)
 {
@@ -22,7 +23,7 @@ AGN::AShaderPipelineGL::AShaderPipelineGL(const GLuint a_glprogramId, AShaderPip
 	//glGetProgramiv(m_glProgramId, GL_ACTIVE_UNIFORMS, &m_uniformPropertyCount);
 
 	// get uniform blocks
-	GLint numBlocks;
+	int32_t numBlocks;
 	glGetProgramiv(m_glProgramId, GL_ACTIVE_UNIFORM_BLOCKS, &numBlocks);
 	
 	m_constantBuffers.reserve(numBlocks);
@@ -30,9 +31,9 @@ AGN::AShaderPipelineGL::AShaderPipelineGL(const GLuint a_glprogramId, AShaderPip
 	for (int i = 0; i < numBlocks; i++)
 	{
 		// get block properties
-		GLint nameLen;
-		GLint blockSize;
-		GLint uniformCount;
+		int32_t nameLen;
+		int32_t blockSize;
+		int32_t uniformCount;
 		glGetActiveUniformBlockiv(m_glProgramId, i, GL_UNIFORM_BLOCK_NAME_LENGTH, &nameLen);
 		glGetActiveUniformBlockiv(m_glProgramId, i, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
 		glGetActiveUniformBlockiv(m_glProgramId, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &uniformCount);
@@ -42,7 +43,7 @@ AGN::AShaderPipelineGL::AShaderPipelineGL(const GLuint a_glprogramId, AShaderPip
 		glGetActiveUniformBlockName(m_glProgramId, i, MAX_UNIFORM_NAME, NULL, blockName);
 
 		// get index
-		GLint index = glGetUniformBlockIndex(m_glProgramId, blockName);
+		int32_t index = glGetUniformBlockIndex(m_glProgramId, blockName);
 
 		// TODO: get uniform names
 		//glGetActiveUniformName()
@@ -59,10 +60,10 @@ AGN::AShaderPipelineGL::AShaderPipelineGL(const GLuint a_glprogramId, AShaderPip
 
 		// get uniform indices
 		constantBuffer->uniformCount = uniformCount;
-		constantBuffer->uniformIds = new GLint[uniformCount];
-		constantBuffer->uniformOffsets = new GLint[uniformCount];
+		constantBuffer->uniformIds = new int32_t[uniformCount];
+		constantBuffer->uniformOffsets = new int32_t[uniformCount];
 		glGetActiveUniformBlockiv(m_glProgramId, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, constantBuffer->uniformIds);
-		glGetActiveUniformsiv(m_glProgramId, (GLsizei)uniformCount, (GLuint*)constantBuffer->uniformIds, GL_UNIFORM_OFFSET, constantBuffer->uniformOffsets);
+		glGetActiveUniformsiv(m_glProgramId, (GLsizei)uniformCount, (uint32_t*)constantBuffer->uniformIds, GL_UNIFORM_OFFSET, constantBuffer->uniformOffsets);
 
 		// create & bind buffer
 		glGenBuffers(1, &constantBuffer->uboHandle);
@@ -80,7 +81,7 @@ AGN::AShaderPipelineGL::AShaderPipelineGL(const GLuint a_glprogramId, AShaderPip
 		m_constantBuffers.push_back(constantBuffer);
 	}
 
-	AGN::getOpenGLError();
+	AGN::ARenderAPIGL::getOpenGLError();
 }
 
 AGN::IAShader* AGN::AShaderPipelineGL::getShader(const EAShaderType a_type)
@@ -109,12 +110,12 @@ void AGN::AShaderPipelineGL::bind()
 		glBufferData(GL_UNIFORM_BUFFER, m_constantBuffers[i]->size, m_constantBuffers[i]->buffer, GL_DYNAMIC_DRAW);
 	}
 
-	AGN::getOpenGLError();
+	AGN::ARenderAPIGL::getOpenGLError();
 }
 
-GLint AGN::AShaderPipelineGL::getUniformIdByName(const char* a_name)
+int32_t AGN::AShaderPipelineGL::getUniformIdByName(const char* a_name)
 {
-	GLint uniformID = glGetUniformLocation(m_glProgramId, a_name);
+	int32_t uniformID = glGetUniformLocation(m_glProgramId, a_name);
 
 	if (uniformID == -1)
 	{

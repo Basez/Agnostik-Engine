@@ -1,12 +1,18 @@
 #include "asharedh.hpp"
-#include "asharedapi.hpp" // Glew & OpenGL
 #include "adevice_gl.hpp"
 #include "amesh_gl.hpp"
 #include "atexture_gl.hpp"
 #include "ashader_gl.hpp"
 #include "ashaderpipeline_gl.hpp"
+#include "arender_api_gl.hpp"
+
+#include <GL/glew.h>
 
 using namespace glm;
+
+// used for openGL's VBO initializations
+#define BUFFER_OFFSET(i) ((char*)NULL + (i))
+#define MEMBER_OFFSET(s,m) ((char*)NULL + (offsetof(s,m)))
 
 AGN::ADeviceGL::ADeviceGL()
 {
@@ -28,7 +34,6 @@ AGN::IAMesh* AGN::ADeviceGL::createMesh(const uint16_t a_aId, AGN::AMeshData* a_
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	glGenBuffers(vboCount, vbos);
-
 	
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
 	glBufferData(GL_ARRAY_BUFFER, a_meshData->positions.size() * sizeof(vec3), a_meshData->positions.data(), GL_STATIC_DRAW);
@@ -46,7 +51,7 @@ AGN::IAMesh* AGN::ADeviceGL::createMesh(const uint16_t a_aId, AGN::AMeshData* a_
 	glEnableVertexAttribArray(static_cast<int>(AMeshGL::EAMeshGLAttribute::MESH_TEXCOORD_ATTRIBUTE));
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[3]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, a_meshData->indicies.size() * sizeof(GLuint), a_meshData->indicies.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, a_meshData->indicies.size() * sizeof(uint32_t), a_meshData->indicies.data(), GL_STATIC_DRAW);
 
 	// unbind because we are done
 	glBindVertexArray(0);
@@ -54,7 +59,7 @@ AGN::IAMesh* AGN::ADeviceGL::createMesh(const uint16_t a_aId, AGN::AMeshData* a_
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	// Check if everything went all right
-	AGN::getOpenGLError();
+	AGN::ARenderAPIGL::getOpenGLError();
 
 	// instantiate Mesh Object with pointers to the uploaded data
 	AMeshGL* mesh = new AMeshGL(a_aId, vao, vbos, vboCount, a_meshData);
@@ -66,7 +71,7 @@ AGN::IATexture* AGN::ADeviceGL::createTexture(const uint16_t a_aId, AGN::ATextur
 {
 	GLenum glType = ATextureGL::getGlTypeByTextureType(a_textureData->type);
 
-	GLuint textureID = -1;
+	uint32_t textureID = -1;
 
 	// generate GL texture
 	if (glType == GL_TEXTURE_2D)
@@ -82,7 +87,7 @@ AGN::IATexture* AGN::ADeviceGL::createTexture(const uint16_t a_aId, AGN::ATextur
 	}
 	
 
-	AGN::getOpenGLError();
+	AGN::ARenderAPIGL::getOpenGLError();
 
 	// create actual texture.
 	ATextureGL* texture = new ATextureGL(a_aId, a_textureData, textureID);
@@ -93,21 +98,21 @@ AGN::IATexture* AGN::ADeviceGL::createTexture(const uint16_t a_aId, AGN::ATextur
 AGN::IAShader* AGN::ADeviceGL::createShader(const uint16_t a_aId, const char* a_shaderSource, AGN::EAShaderType a_type)
 {
 	// generate gl shader
-	GLuint shaderGlId = glCreateShader(AShaderGL::getGlShaderType(a_type));
+	uint32_t shaderGlId = glCreateShader(AShaderGL::getGlShaderType(a_type));
 
 	// Load the shader source for each shader object.
-	const GLchar* sources[] = { a_shaderSource };
+	const char* sources[] = { a_shaderSource };
 	glShaderSource(shaderGlId, 1, sources, NULL);
 	glCompileShader(shaderGlId);
 
 	// Check for errors
-	GLint compileStatus;
+	int32_t compileStatus;
 	glGetShaderiv(shaderGlId, GL_COMPILE_STATUS, &compileStatus);
 	if (compileStatus != GL_TRUE)
 	{
-		GLint logLength;
+		int32_t logLength;
 		glGetShaderiv(shaderGlId, GL_INFO_LOG_LENGTH, &logLength);
-		GLchar* infoLog = new GLchar[logLength];
+		char* infoLog = new char[logLength];
 		glGetShaderInfoLog(shaderGlId, logLength, NULL, infoLog);
 
 		g_log.error("Error during shader parsing: %s", infoLog);
@@ -128,7 +133,7 @@ AGN::IAShaderPipeline* AGN::ADeviceGL::createShaderPipeline(const uint16_t a_aId
 	AShaderPipelineData shaderPipelineData = AShaderPipelineData();
 	shaderPipelineData.aId = a_aId;
 
-	GLuint programGl = glCreateProgram();
+	uint32_t programGl = glCreateProgram();
 
 	for (unsigned int i = 0; i < a_shaders.size(); i++)
 	{
@@ -172,11 +177,11 @@ AGN::IAShaderPipeline* AGN::ADeviceGL::createShaderPipeline(const uint16_t a_aId
 	glLinkProgram(programGl);
 
 	// Check the link status.
-	GLint linkStatus;
+	int32_t linkStatus;
 	glGetProgramiv(programGl, GL_LINK_STATUS, &linkStatus);
 	if (linkStatus != GL_TRUE)
 	{
-		GLint logLength;
+		int32_t logLength;
 		glGetProgramiv(programGl, GL_INFO_LOG_LENGTH, &logLength);
 		GLchar* infoLog = new GLchar[logLength];
 
@@ -187,8 +192,8 @@ AGN::IAShaderPipeline* AGN::ADeviceGL::createShaderPipeline(const uint16_t a_aId
 		delete infoLog;
 		return nullptr;
 	}
-
-	if (programGl == (GLuint)-1)
+	
+	if (programGl == (uint32_t)-1)
 	{
 		g_log.error("something went wrong with loading / compiling shader");
 		return nullptr;

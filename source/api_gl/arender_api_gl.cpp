@@ -1,12 +1,17 @@
 #include "asharedh.hpp"
-#include "asharedapi.hpp" // Glew & OpenGL
 #include "arender_api_gl.hpp"
+
+#include <GL/glew.h>
+#include <SDL/SDL.h>
+
 #include "awindow_gl.hpp"
 #include "adevice_gl.hpp"
 #include "arenderer_gl.hpp"
 #include "aconfigmanager.hpp"
 #include "ainput_gl.hpp"
 #include "aaplication.hpp"
+
+
 
 AGN::ARenderAPIGL::ARenderAPIGL()
 	: m_initialized(false)
@@ -32,7 +37,7 @@ bool AGN::ARenderAPIGL::init()
 	g_log.info("Renderer: %s", glGetString(GL_RENDERER));
 
 	// log num extensions
-	GLint numExtensions = -1;
+	int32_t numExtensions = -1;
 	glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
 	g_log.info("GL extensions count: %i", numExtensions);
 
@@ -43,7 +48,7 @@ bool AGN::ARenderAPIGL::init()
 
 	m_initialized = true;
 
-	AGN::getOpenGLError();
+	AGN::ARenderAPIGL::getOpenGLError();
 
 	return true;
 }
@@ -89,7 +94,7 @@ bool AGN::ARenderAPIGL::initOpenGL()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-	AGN::getOpenGLError();
+	AGN::ARenderAPIGL::getOpenGLError();
 
 	return true;
 }
@@ -153,14 +158,27 @@ void AGN::ARenderAPIGL::logAvailableGLExtensions()
 		return;
 	}
 
-	GLint numExtensions = -1;
+	int32_t numExtensions = -1;
 	glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
 
 	g_log.debug("Number of GL extensions available: %i", numExtensions);
-	for (GLint i = 1; i < numExtensions; i++)
+	for (int32_t i = 1; i < numExtensions; i++)
 	{
 		g_log.debug("Extension Enabled: %s", glGetStringi(GL_EXTENSIONS, i));
 	}
+}
+
+void AGN::ARenderAPIGL::getOpenGLError()
+{
+	GLenum errorType = GL_NO_ERROR;
+	while ((errorType = glGetError()) != GL_NO_ERROR)
+	{
+		g_log.error("An OpenGL error occurred: %X", errorType);
+	}
+
+#ifdef AGN_DEBUG
+		//assert(false);
+#endif
 }
 
 void AGN::ARenderAPIGL::enableVSync(bool a_value)
@@ -192,10 +210,8 @@ void AGN::ARenderAPIGL::handleEvents(bool& a_doQuit)
 			break;
 
 		case SDL_KEYDOWN:
-			g_log.debug("GL scancode: %i, agnscancode: %u", (uint16_t)event.key.keysym.scancode, (uint16_t)AInputGL::getAGNScanCode(event.key.keysym.scancode));
-
-
 			g_input.registerHold(AInputGL::getAGNScanCode(event.key.keysym.scancode), true);
+			//g_log.debug("GL scancode: %i, agnscancode: %u", (uint16_t)event.key.keysym.scancode, (uint16_t)AInputGL::getAGNScanCode(event.key.keysym.scancode));
 			break;
 
 		case SDL_KEYUP:

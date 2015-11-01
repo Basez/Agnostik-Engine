@@ -1,7 +1,9 @@
 #include "asharedh.hpp"
-#include "asharedapi.hpp" // Glew & OpenGL
 #include "awindow_gl.hpp"
 #include "aosutils.hpp"
+
+#include <SDL/SDL.h>
+#include <GL/glew.h>
 
 AGN::AWindowGL::AWindowGL(glm::ivec2 a_dimentions)
 	: m_dimentions(a_dimentions)
@@ -54,7 +56,7 @@ void AGN::AWindowGL::showCursor(bool a_shown)
 	SDL_ShowCursor(a_shown);
 }
 
-void AGN::AWindowGL::onWindowEvent(SDL_Event a_event)
+void AGN::AWindowGL::onWindowEvent(SDL_Event& a_event)
 {
 	switch (a_event.window.event)
 	{

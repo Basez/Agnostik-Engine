@@ -1,7 +1,7 @@
 #include "asharedh.hpp"
-#include "asharedapi.hpp" // Glew & OpenGL
 #include "ainput_gl.hpp"
 
+#include <SDL/SDL.h>
 // set static reference of g_input to the GL input
 AGN::AInputGL inputGL = AGN::AInputGL();
 AGN::IAInput& g_input = inputGL;
@@ -17,7 +17,7 @@ AGN::AInputGL::AInputGL()
 	memset(m_click, false, sizeof(m_click));
 }
 
-AGN::SCANCODE AGN::AInputGL::getAGNScanCode(SDL_Scancode a_sdlkey)
+AGN::SCANCODE AGN::AInputGL::getAGNScanCode(uint32_t a_sdlkey)
 {
 	return (SCANCODE)a_sdlkey;
 }

@@ -1,5 +1,4 @@
 #include "asharedh.hpp"
-#include "asharedapi.hpp" // Glew & OpenGL
 #include "arenderer_gl.hpp"
 #include "adrawcommand.hpp"
 #include "adrawcommander.hpp"
@@ -16,6 +15,9 @@
 #include "iashader.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
+
+#include <SDL/SDL.h>
+#include <GL/glew.h>
 
 using namespace glm;
 
@@ -104,7 +106,7 @@ void AGN::ARendererGL::drawEntity(ADrawCommand* a_command)
 		ATextureGL* specular = dynamic_cast<ATextureGL*>(material->specularTexture);	// TODO:
 
 		// TODO: refactor
-		//GLuint texturesToBind[3] = { m_textureDiffuse, m_textureNormal, m_textureSpecular };
+		//uint32_t texturesToBind[3] = { m_textureDiffuse, m_textureNormal, m_textureSpecular };
 		if (diffuse != nullptr)
 		{
 			ATextureGL* texturesToBind[1] = { diffuse };
@@ -150,15 +152,15 @@ void AGN::ARendererGL::drawEntity(ADrawCommand* a_command)
 	}
 
 	// render the entity
-	glDrawElements(GL_TRIANGLES, mesh->getIndexCount(), GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+	glDrawElements(GL_TRIANGLES, mesh->getIndexCount(), GL_UNSIGNED_INT, 0);
 	
 #ifdef AGN_DEBUG
-	AGN::getOpenGLError();
+	AGN::ARenderAPIGL::getOpenGLError();
 #endif
 
 }
 
-void AGN::ARendererGL::bindTexturesToShader(GLuint a_shaderProgram, GLuint a_textureCount, ATextureGL** a_textureArray)
+void AGN::ARendererGL::bindTexturesToShader(uint32_t a_shaderProgram, uint32_t a_textureCount, ATextureGL** a_textureArray)
 {
 	if (a_textureCount > 32)
 	{
@@ -169,14 +171,14 @@ void AGN::ARendererGL::bindTexturesToShader(GLuint a_shaderProgram, GLuint a_tex
 	// bind them one by one
 	for (unsigned int i = 0; i < a_textureCount; i++)
 	{
-		if (a_textureArray[i]->getGlId() == GLuint(-1))
+		if (a_textureArray[i]->getGlId() == uint32_t(-1))
 		{
 			g_log.error("one of the textures is invalid (-1)");
 			return;
 		}
 
 		std::string samplerName = std::string("textureSampler").append(std::to_string(i));
-		GLuint uniformSampler = glGetUniformLocation(a_shaderProgram, samplerName.c_str());
+		uint32_t uniformSampler = glGetUniformLocation(a_shaderProgram, samplerName.c_str());
 
 		if (uniformSampler == (unsigned int)(-1))
 		{

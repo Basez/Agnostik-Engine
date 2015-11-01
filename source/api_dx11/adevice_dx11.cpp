@@ -6,6 +6,7 @@
 #include "ashaderpipeline_dx11.hpp"
 #include "awindow_dx11.hpp"
 #include "aconfigmanager.hpp"
+#include <string.h>
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -65,11 +66,6 @@ bool AGN::ADeviceDX11::init()
 	{
 		D3D_FEATURE_LEVEL_11_1,
 		D3D_FEATURE_LEVEL_11_0
-		//D3D_FEATURE_LEVEL_10_1,
-		//D3D_FEATURE_LEVEL_10_0,
-		//D3D_FEATURE_LEVEL_9_3,
-		//D3D_FEATURE_LEVEL_9_2,
-		//D3D_FEATURE_LEVEL_9_1
 	};
 
 	// This will be the feature level that 
@@ -270,8 +266,8 @@ AGN::IAMesh* AGN::ADeviceDX11::createMesh(const uint16_t a_aId, AGN::AMeshData* 
 	}
 
 	// apply debug names
-	ADeviceDX11::setDebugName(d3d11VertexBuffer, "Mesh Vertex buffer (" + a_meshData->relativePath + ")");
-	ADeviceDX11::setDebugName(d3d11IndexBuffer, "Mesh Index buffer (" + a_meshData->relativePath + ")");
+	D3D11_SET_DEBUG_NAME(d3d11VertexBuffer, "Mesh Vertex buffer (" + a_meshData->relativePath + ")");
+	D3D11_SET_DEBUG_NAME(d3d11IndexBuffer, "Mesh Index buffer (" + a_meshData->relativePath + ")");
 
 	// create agnostik texture holding the info.
 	AMeshDX11* mesh = new AMeshDX11(a_aId, a_meshData, d3d11VertexBuffer, d3d11IndexBuffer);
@@ -340,8 +336,8 @@ AGN::IATexture* AGN::ADeviceDX11::createTexture(const uint16_t a_aId, AGN::AText
 	}
 
 	// give debug names 
-	ADeviceDX11::setDebugName(textureHandle, "Texture handle (" + a_textureData->relativePath + ")");
-	ADeviceDX11::setDebugName(shaderResourceView, "Shader Resource View (" + a_textureData->relativePath + ")");
+	D3D11_SET_DEBUG_NAME(textureHandle, "Texture handle (" + a_textureData->relativePath + ")");
+	D3D11_SET_DEBUG_NAME(shaderResourceView, "Shader Resource View (" + a_textureData->relativePath + ")");
 
 	// create agnostik texture holding the info.
 	ATextureDX11* texture = new ATextureDX11(a_aId, a_textureData, textureHandle, shaderResourceView);
@@ -403,13 +399,13 @@ AGN::IAShader* AGN::ADeviceDX11::createShader(const uint16_t a_aId, const char* 
 	case EAShaderType::PixelShader:
 		hr = m_d3d11Device->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &pixelShader);
 		d3d11Shader = dynamic_cast<ID3D11DeviceChild*>(pixelShader);
-		ADeviceDX11::setDebugName(d3d11Shader, "Pixel Shader a_ID(" + std::to_string(a_aId) + ")");
+		D3D11_SET_DEBUG_NAME(d3d11Shader, "Pixel Shader a_ID(" + std::to_string(a_aId) + ")");
 		break;
 
 	case EAShaderType::VertexShader:
 		hr = m_d3d11Device->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &vertexShader);
 		d3d11Shader = dynamic_cast<ID3D11DeviceChild*>(vertexShader);
-		ADeviceDX11::setDebugName(d3d11Shader, "Vertex Shader a_ID(" + std::to_string(a_aId) + ")");
+		D3D11_SET_DEBUG_NAME(d3d11Shader, "Vertex Shader a_ID(" + std::to_string(a_aId) + ")");
 		break;
 
 	default:
@@ -529,20 +525,26 @@ AGN::IAShaderPipeline* AGN::ADeviceDX11::createShaderPipeline(const uint16_t a_a
 	delete samplerLayoutDesc;
 
 	// add debug labels
-	ADeviceDX11::setDebugName(vertexInputLayout, "Shader Vertex input layout(" + std::to_string(a_aId) + ")");
-	ADeviceDX11::setDebugName(samplerState, "Shader sampler state(" + std::to_string(a_aId) + ")");
+	D3D11_SET_DEBUG_NAME(vertexInputLayout, "Shader Vertex input layout(" + std::to_string(a_aId) + ")");
+	D3D11_SET_DEBUG_NAME(samplerState, "Shader sampler state(" + std::to_string(a_aId) + ")");
 
 	AShaderPipelineDX11* shaderPipeline = new AShaderPipelineDX11(shaderPipelineData, vertexInputLayout, samplerState);
 
 	return dynamic_cast<IAShaderPipeline*>(shaderPipeline);
 }
 
-void AGN::ADeviceDX11::setDebugName(ID3D11DeviceChild* child, const std::string& name)
+void AGN::ADeviceDX11::setDebugName(ID3D11DeviceChild* a_child, const std::string& a_name, const uint32_t a_lineNum, const char* a_fileName)
 {
 #ifdef AGN_DEBUG
-	if (child != nullptr && name.length() > 0)
+	if (a_child != nullptr && a_name.length() > 0)
 	{
-		child->SetPrivateData(WKPDID_D3DDebugObjectName, (UINT)name.size(), name.c_str());
+		std::string label = a_name;
+		if (a_lineNum != 0 && strlen(a_fileName) > 0)
+		{
+			label += " - LineNum: " + std::to_string(a_lineNum) + " - File: " + std::string(a_fileName);
+		}
+
+		a_child->SetPrivateData(WKPDID_D3DDebugObjectName, (UINT)label.size(), label.c_str());
 	}
 #endif
 }

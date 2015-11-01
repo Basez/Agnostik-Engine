@@ -3,6 +3,8 @@
 #include "iawindow.hpp"
 
 struct SDL_Window;
+union SDL_Event;
+
 namespace AGN
 {
 	class AWindowGL : public IAWindow
@@ -19,7 +21,7 @@ namespace AGN
 
 		glm::ivec2 getDimentions() override { return m_dimentions; }
 		SDL_Window* getSDLWindow() { return m_sdlWindow; }
-		void onWindowEvent(SDL_Event a_event);
+		void onWindowEvent(SDL_Event& a_event);
 	
 	private:
 		

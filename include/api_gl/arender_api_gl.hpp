@@ -13,12 +13,13 @@ namespace AGN
 		void enableVSync(bool a_value) override;
 		bool getVSync() override { return m_vSync; }
 		void handleEvents(bool& a_doQuit) override;
-		
+
 
 		virtual class IAWindow& getWindow() override;
 		virtual class IADevice& getDevice() override;
 		virtual class IARenderer& getRenderer() override;
 
+		static void getOpenGLError();
 		void logAvailableGLExtensions();
 
 	private:

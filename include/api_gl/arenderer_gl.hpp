@@ -14,7 +14,7 @@ namespace AGN
 
 	private:
 		void drawEntity(struct ADrawCommand* a_command);
-		void bindTexturesToShader(GLuint a_shaderProgram, GLuint a_textureCount, class ATextureGL** a_textureArray);
+		void bindTexturesToShader(uint32_t a_shaderProgram, uint32_t a_textureCount, class ATextureGL** a_textureArray);
 
 		uint32_t getGlEnumBuffers(uint32_t a_agnostikEnums);
 

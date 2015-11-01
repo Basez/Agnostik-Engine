@@ -30,10 +30,11 @@ namespace AGN
 		IDXGISwapChain* getD3D11SwapChain() { return m_d3d11SwapChain; }
 		
 		// debug functionality
-		static void setDebugName(ID3D11DeviceChild* child, const std::string& name);
+		static void setDebugName(ID3D11DeviceChild* a_child, const std::string& a_name, const uint32_t a_lineNum = 0, const char* a_fileName = "");
 		void beginDebugEvent(const std::string& a_eventName);
 		void setDebugMarker(const std::string& a_markerName);
 		void endDebugEvent();
+
 
 	private:
 
@@ -46,3 +47,5 @@ namespace AGN
 		ID3DUserDefinedAnnotation* m_debugUDA;
 	};
 }
+
+#define D3D11_SET_DEBUG_NAME(child, name) AGN::ADeviceDX11::setDebugName(child, name, __LINE__, __FILE__)
