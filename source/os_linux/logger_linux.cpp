@@ -98,7 +98,7 @@ void AGN::LoggerLinux::error(const char *a_info, ...)
 
 void AGN::LoggerLinux::log(const char *a_log)
 {
-	if (m_outputTypes & (int)EALoggerOutputType::Window)
+	if (m_outputTypes & (int)ELoggerOutputType::Window)
 	{
 		printf("%s", a_log);
 	}
