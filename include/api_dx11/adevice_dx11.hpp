@@ -35,7 +35,6 @@ namespace AGN
 		void setDebugMarker(const std::string& a_markerName);
 		void endDebugEvent();
 
-
 	private:
 
 		class AWindowDX11* m_window;
