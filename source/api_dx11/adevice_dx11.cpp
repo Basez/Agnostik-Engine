@@ -145,6 +145,7 @@ bool AGN::ADeviceDX11::init()
 DXGI_RATIONAL AGN::ADeviceDX11::queryRefreshRate(bool a_vsync)
 {
 	DXGI_RATIONAL refreshRate = { 0, 1 };
+
 	if (a_vsync)
 	{
 		IDXGIFactory* factory;
