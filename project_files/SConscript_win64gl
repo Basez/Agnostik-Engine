@@ -22,8 +22,8 @@ env.AppendUnique(LINKFLAGS = ['/MACHINE:X64'])
 env['CCPDBFLAGS'] = '/Z7 /Fd${TARGET}.pdb'				# Generate pdb for code debugging (both release and debug) NOTE: changed to /Z7 instead of Zi because that doesnt work with precompiled headers
 
 # specify include folder & libs folder
-libPaths= ['../libs/win64']
-additionalIncludes = ['../include/common', '../include/api_gl', '../include/os_win', '../libs/win64/include', '../shaders/output_gl']
+libPaths= ['../libs/win64', '../libs/common']
+additionalIncludes = ['../include/common', '../include/api_gl', '../include/os_win', '../libs/win64/include', '../libs/common/include','../shaders/output_gl']
 env.Append(CPPPATH = additionalIncludes)					
 
 #specify main entrypoint cpp

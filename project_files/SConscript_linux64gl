@@ -20,8 +20,8 @@ env.AppendUnique(CXXFLAGS=Split("-std=c++11"))						# specify c++11 mode is used
 env.AppendUnique(CXXFLAGS=Split(""))
 
 # specify include folder & libs folder
-libPaths= ['../libs/linux64']
-additionalIncludes = ['../include/common', '../include/api_gl', '../include/os_linux', '../libs/linux64/include', '../shaders/output_gl']
+libPaths= ['../libs/linux64', '../libs/common']
+additionalIncludes = ['../include/common', '../include/api_gl', '../include/os_linux', '../libs/linux64/include', '../libs/common/include', '../shaders/output_gl']
 env.Append(CPPPATH = additionalIncludes)					
 
 # set warnings
@@ -55,18 +55,18 @@ buildEntrypoint = 'main_linux64gl.cpp'
 envRelease = env.Clone()
 envRelease.AppendUnique(CPPDEFINES = ['AGN_RELEASE']) 
 
-envRelease.VariantDir('../genfiles/gen-common-release', '../source/common', duplicate=0)		# specify intermediate folder for generated .obj files
-envRelease.VariantDir('../genfiles/gen-api_gl-release', '../source/api_gl', duplicate=0)
-envRelease.VariantDir('../genfiles/gen-os_linux-release', '../source/os_linux', duplicate=0)
-envRelease.VariantDir('../genfiles/gen-build-release', '../source/', duplicate=0)
+envRelease.VariantDir('../genfiles/'+buildname+'/gen-common-release', '../source/common', duplicate=0)		# specify intermediate folder for generated .obj files
+envRelease.VariantDir('../genfiles/'+buildname+'/gen-api_gl-release', '../source/api_gl', duplicate=0)
+envRelease.VariantDir('../genfiles/'+buildname+'/gen-os_linux-release', '../source/os_linux', duplicate=0)
+envRelease.VariantDir('../genfiles/'+buildname+'/gen-build-release', '../source/', duplicate=0)
 
 envRelease.AppendUnique(CXXFLAGS=['-O3'])	 													# Level 3 optimizations (release only)
 
 # Gather all cpp files
-objsCommonRelease = [file for file in envRelease.Glob('../genfiles/gen-common-release/*.cpp')]
-objsAPIRelease = [file for file in envRelease.Glob('../genfiles/gen-api_gl-release/*.cpp')]
-objsOSRelease = [file for file in envRelease.Glob('../genfiles/gen-os_linux-release/*.cpp')]
-objsBuildRelease = ['../genfiles/gen-build-release/' + buildEntrypoint]
+objsCommonRelease = [file for file in envRelease.Glob('../genfiles/'+buildname+'/gen-common-release/*.cpp')]
+objsAPIRelease = [file for file in envRelease.Glob('../genfiles/'+buildname+'/gen-api_gl-release/*.cpp')]
+objsOSRelease = [file for file in envRelease.Glob('../genfiles/'+buildname+'/gen-os_linux-release/*.cpp')]
+objsBuildRelease = ['../genfiles/'+buildname+'/gen-build-release/' + buildEntrypoint]
 
 """
 # debug/test to display files included 
@@ -88,16 +88,16 @@ envDebug.AppendUnique(CXXFLAGS=['-gsplit-dwarf'])							# debug flag in dwarf ou
 envDebug.AppendUnique(CXXFLAGS=['-g'])										# debug flag
 envDebug.Append(CPPDEFINES = ['AGN_DEBUG'])
 
-envDebug.VariantDir('../genfiles/gen-common-debug', '../source/common', duplicate=0)		# specify intermediate folder for generated .obj files
-envDebug.VariantDir('../genfiles/gen-api_gl-debug', '../source/api_gl', duplicate=0)
-envDebug.VariantDir('../genfiles/gen-os_linux-debug', '../source/os_linux', duplicate=0)
-envDebug.VariantDir('../genfiles/gen-build-debug', '../source/', duplicate=0)
+envDebug.VariantDir('../genfiles/'+buildname+'/gen-common-debug', '../source/common', duplicate=0)		# specify intermediate folder for generated .obj files
+envDebug.VariantDir('../genfiles/'+buildname+'/gen-api_gl-debug', '../source/api_gl', duplicate=0)
+envDebug.VariantDir('../genfiles/'+buildname+'/gen-os_linux-debug', '../source/os_linux', duplicate=0)
+envDebug.VariantDir('../genfiles/'+buildname+'/gen-build-debug', '../source/', duplicate=0)
 
 # Gather all cpp files
-objsCommonDebug = [file for file in envDebug.Glob('../genfiles/gen-common-debug/*.cpp')]
-objsAPIDebug = [file for file in envDebug.Glob('../genfiles/gen-api_gl-debug/*.cpp')]
-objsOSDebug = [file for file in envDebug.Glob('../genfiles/gen-os_linux-debug/*.cpp')]
-objsBuildDebug = ['../genfiles/gen-build-debug/' + buildEntrypoint]
+objsCommonDebug = [file for file in envDebug.Glob('../genfiles/'+buildname+'/gen-common-debug/*.cpp')]
+objsAPIDebug = [file for file in envDebug.Glob('../genfiles/'+buildname+'/gen-api_gl-debug/*.cpp')]
+objsOSDebug = [file for file in envDebug.Glob('../genfiles/'+buildname+'/gen-os_linux-debug/*.cpp')]
+objsBuildDebug = ['../genfiles/'+buildname+'/gen-build-debug/' + buildEntrypoint]
 
 #specify release libs
 debugLibNames=['SDL2', 'SDL2main', 'GL', 'GLU', 'GLEW', 'assimp']
