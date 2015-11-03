@@ -92,9 +92,9 @@ void AGN::ASceneManager::loadScrambledScene()
 	
 	// create crate entities
 	int index = 0;
-	for (int x = 0; x < 10; x++)
+	for (int x = 0; x < 1; x++)
 	{
-		for (int y = 0; y < 10; y++)
+		for (int y = 0; y < 1; y++)
 		{
 			for (int z = 0; z < 10; z++)
 			{

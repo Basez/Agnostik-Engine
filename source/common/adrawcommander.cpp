@@ -7,23 +7,15 @@ using namespace glm;
 
 AGN::ADrawCommander::ADrawCommander()
 {
-
-#ifdef AGN_DEBUG
-	// Check to see if total section is still 64
-	uint64_t bitSectionTotal = 0;
-
-	bitSectionTotal += (uint64_t)SortKeyBitAmount::RenderPhase;
-	bitSectionTotal += (uint64_t)SortKeyBitAmount::Layer;
-	bitSectionTotal += (uint64_t)SortKeyBitAmount::TranslucencyType;
-	bitSectionTotal += (uint64_t)SortKeyBitAmount::CMD;
-	bitSectionTotal += (uint64_t)SortKeyBitAmount::ShaderPipelineID;
-	bitSectionTotal += (uint64_t)SortKeyBitAmount::MeshID;
-	bitSectionTotal += (uint64_t)SortKeyBitAmount::MaterialID;
-	bitSectionTotal += (uint64_t)SortKeyBitAmount::Depth;
-	
-	assert(bitSectionTotal <= 64);
-
-#endif // AGN_DEBUG
+	// TODO: Check if this works on gcc
+	static_assert((uint64_t)SortKeyBitAmount::RenderPhase +
+		(uint64_t)SortKeyBitAmount::Layer +
+		(uint64_t)SortKeyBitAmount::TranslucencyType +
+		(uint64_t)SortKeyBitAmount::CMD +
+		(uint64_t)SortKeyBitAmount::ShaderPipelineID +
+		(uint64_t)SortKeyBitAmount::MeshID +
+		(uint64_t)SortKeyBitAmount::MaterialID +
+		(uint64_t)SortKeyBitAmount::Depth == 64, "Sortkey bits do not add up to 64!");
 }
 
 AGN::ADrawCommand& AGN::ADrawCommander::addDrawCommand(AGN::EADrawCommandType a_type, uint64_t a_sortKey) // TODO: key as argument?
@@ -81,7 +73,6 @@ uint64_t AGN::ADrawCommander::getSortKey(uint8_t& a_renderPhase,
 		return 0;
 	}
 #endif // AGN_DEBUG
-
 	
 	uint64_t sortKey = 0;
 	sortKey += static_cast<uint64_t>(a_renderPhase)			<< static_cast<int>(SortKeyShift::RenderPhase);

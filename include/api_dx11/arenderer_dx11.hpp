@@ -23,7 +23,7 @@ namespace AGN
 	private:
 		void drawEntity(struct ADrawCommand& a_command);
 		void clearBuffer(struct ADrawCommand& a_command);
-
+		void setStaticStages();
 		class ADeviceDX11& m_deviceReference;
 		class AWindowDX11& m_windowReference;
 		class ARenderAPIDX11& m_renderAPIReference;
@@ -32,9 +32,9 @@ namespace AGN
 		glm::mat4 m_vp;
 
 		// TODO: experiment with this, as I am not sure if keeping track of bound mesh/material/shaders will improve performence for either DX11 or OpenGL!
-		//class AMeshDX11* m_boundMesh;
-		//class AMaterial* m_boundMaterial;
-		//class AShaderPipelineDX11* m_boundShaderPipeline;
+		class AMeshDX11* m_boundMesh;
+		class AMaterial* m_boundMaterial;
+		class AShaderPipelineDX11* m_boundShaderPipeline;
 
 		ID3D11RenderTargetView* m_d3dRenderTargetView;		// Render target view for the back buffer of the swap chain.
 		ID3D11DepthStencilView* m_d3dDepthStencilView;		// Depth/stencil view for use as a depth buffer.

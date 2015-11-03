@@ -40,6 +40,9 @@ AGN::ARendererDX11::ARendererDX11(ARenderAPIDX11& a_renderAPIReference, ADeviceD
 	, m_d3dDepthStencilState(nullptr)
 	, m_d3dRasterizerState(nullptr)
 	, m_viewport(nullptr)
+	, m_boundMesh(nullptr)
+	, m_boundMaterial(nullptr)
+	, m_boundShaderPipeline(nullptr)
 {
 
 }
@@ -172,9 +175,9 @@ void AGN::ARendererDX11::render(AGN::ADrawCommander& a_drawCommander)
 		return;
 	}
 
-	//m_boundMesh = nullptr;
-	//m_boundMaterial = nullptr;
-	//m_boundShaderPipeline = nullptr;
+	m_boundMesh = nullptr;
+	m_boundMaterial = nullptr;
+	m_boundShaderPipeline = nullptr;
 
 	// make sure the camera has the correct ViewSettings
 	m_currentCamera->setProjectionRH(60.0f, 0.1f, 10000.0f);
@@ -188,6 +191,8 @@ void AGN::ARendererDX11::render(AGN::ADrawCommander& a_drawCommander)
 	g_log.debug("vp: %f - %f - %f - %f", m_vp[2][0], m_vp[2][1], m_vp[2][2], m_vp[2][3]);
 	g_log.debug("vp: %f - %f - %f - %f", m_vp[3][0], m_vp[3][1], m_vp[3][2], m_vp[3][3]);
 	*/
+
+	setStaticStages();
 
 	// loop through sorted draw commands & draw em
 	std::vector<ADrawCommand*> list = a_drawCommander.getSortedDrawCommands();
@@ -226,7 +231,10 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 	m_deviceReference.beginDebugEvent("Render Mesh: " + mesh->getRelativePath());
 
 	// input assembler stage
+	if (m_boundMesh == nullptr || m_boundMesh->getAId() != mesh->getAId())
 	{
+		m_boundMesh = mesh;
+		
 		// get vertex stride (inputdata size)
 		// TODO: get this from shader parsing(reflection) not hardcoded!
 		const uint32_t vertexStride = sizeof(AMeshDX11::VertexShaderData);
@@ -234,54 +242,67 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 
 		ID3D11Buffer* vertexBuffer = mesh->getD3D11VertexBuffer();
 		ID3D11Buffer* indexBuffer = mesh->getD3D11IndexBuffer();
-		ID3D11InputLayout* vertexInputLayout = shaderPipeline->getVertexInputLayout();
 
 		d3dDeviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexStride, &offset);
-		d3dDeviceContext->IASetInputLayout(vertexInputLayout);
 		d3dDeviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-		d3dDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
 
 	// Vertex shader stage
+	if (m_boundShaderPipeline == nullptr || m_boundShaderPipeline->getAId() != shaderPipeline->getAId())
 	{
-		AShaderDX11* dx11VertexShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getShader(EAShaderType::VertexShader));
+		m_boundShaderPipeline = shaderPipeline;
 
-		ID3D11VertexShader* d3d11VertexShader;
-		if (FAILED(dx11VertexShader->getD3D11Shader()->QueryInterface(IID_ID3D11VertexShader, (void**)&d3d11VertexShader)))
+		// set new vertex shader
 		{
-			assert(false);
+			AShaderDX11* dx11VertexShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getShader(EAShaderType::VertexShader));
+			ID3D11VertexShader* d3d11VertexShader;
+			if (FAILED(dx11VertexShader->getD3D11Shader()->QueryInterface(IID_ID3D11VertexShader, (void**)&d3d11VertexShader)))
+			{
+				assert(false);
+			}
+
+			d3dDeviceContext->VSSetShader(d3d11VertexShader, nullptr, 0);
+
+			d3d11VertexShader->Release();
 		}
 
-		d3dDeviceContext->VSSetShader(d3d11VertexShader, nullptr, 0);
-
-		// prepare Vertex input data (MVP)
-		mat4 modelMatrix = glm::make_mat4(data.modelMatrixArray); 		// retrieve model matrix from array in struct
-		mat4 mvp = m_vp * modelMatrix;
-		
-		unsigned char buffer[128] = { 0 };
-		memcpy(buffer, glm::value_ptr(mvp), sizeof(mvp));
-		memcpy(buffer + sizeof(mvp), glm::value_ptr(modelMatrix), sizeof(modelMatrix));
-
-		dx11VertexShader->setConstantBufferData("PerObject", &buffer, sizeof(buffer));
-
-		ID3D11Buffer** d3d11ConstantBuffers = dx11VertexShader->getConstantBufferHandles();
-		const int numConstBuffers = dx11VertexShader->getNumConstantBuffers();
-		if (numConstBuffers > 0)
+		// pixel shader stage
 		{
-			d3dDeviceContext->VSSetConstantBuffers(0, numConstBuffers, d3d11ConstantBuffers);
+			AShaderDX11* dx11PixelShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getShader(EAShaderType::PixelShader));
+
+			ID3D11PixelShader* d3d11PixelShader;
+			if (SUCCEEDED(dx11PixelShader->getD3D11Shader()->QueryInterface(IID_ID3D11PixelShader, (void**)&d3d11PixelShader)))
+			{
+				d3dDeviceContext->PSSetShader(d3d11PixelShader, nullptr, 0);
+			}
+
+			// set constant buffer
+			ID3D11Buffer** d3d11ConstantBuffers = dx11PixelShader->getConstantBufferHandles();
+			const int numConstBuffers = dx11PixelShader->getNumConstantBuffers();
+
+			if (numConstBuffers > 0)
+			{
+				d3dDeviceContext->PSSetConstantBuffers(0, numConstBuffers, d3d11ConstantBuffers);
+			}
+
+			// set PS sampler
+			ID3D11SamplerState* sampler = shaderPipeline->getSamplerState();
+			d3dDeviceContext->PSSetSamplers(0, 1, &sampler);
+
+			d3d11PixelShader->Release();
 		}
 
-		d3d11VertexShader->Release();
+		// inputlayout
+		ID3D11InputLayout* vertexInputLayout = shaderPipeline->getVertexInputLayout();
+		d3dDeviceContext->IASetInputLayout(vertexInputLayout);
+
 	}
 
-	// rasterizer stage
+	// set material data
+	if (m_boundMaterial == nullptr || m_boundMaterial->getAId() != material->getAId())
 	{
-		d3dDeviceContext->RSSetState(m_d3dRasterizerState);
-		d3dDeviceContext->RSSetViewports(1, m_viewport);
-	}
+		m_boundMaterial = material;
 
-	// pixel shader stage
-	{
 		// set material constant buffer
 		// TODO: move to only when material changes!
 		if (shaderPipeline->hasConstantBuffer(EAShaderType::PixelShader, "MaterialProperties"))
@@ -298,27 +319,7 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 			shaderPipeline->setConstantBufferData(EAShaderType::PixelShader, "MaterialProperties", &buffer, bufferSize);
 		}
 
-		AShaderDX11* dx11PixelShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getShader(EAShaderType::PixelShader));
-
-		ID3D11PixelShader* d3d11PixelShader;
-		if (SUCCEEDED(dx11PixelShader->getD3D11Shader()->QueryInterface(IID_ID3D11PixelShader, (void**)&d3d11PixelShader)))
-		{
-			d3dDeviceContext->PSSetShader(d3d11PixelShader, nullptr, 0);
-		}
-
-		// set constant buffer
-		ID3D11Buffer** d3d11ConstantBuffers = dx11PixelShader->getConstantBufferHandles();
-		const int numConstBuffers = dx11PixelShader->getNumConstantBuffers();
-
-		if (numConstBuffers > 0)
-		{
-			d3dDeviceContext->PSSetConstantBuffers(0, numConstBuffers, d3d11ConstantBuffers);
-		}
-
-		// set PS sampler
-		ID3D11SamplerState* sampler = shaderPipeline->getSamplerState();
-		d3dDeviceContext->PSSetSamplers(0, 1, &sampler);
-
+		// set textures
 		ATextureDX11* diffuse = dynamic_cast<ATextureDX11*>(material->diffuseTexture);
 		ATextureDX11* normal = dynamic_cast<ATextureDX11*>(material->normalTexture);
 		ATextureDX11* specular = dynamic_cast<ATextureDX11*>(material->specularTexture);
@@ -330,20 +331,41 @@ void AGN::ARendererDX11::drawEntity(ADrawCommand& a_command)
 			d3dDeviceContext->PSSetShaderResources(0, 1, &shaderResourceView);
 		}
 
-		//d3d11PixelShader->Release();
 	}
-	
-	// output merger stage
+
+	// set vertex shader data (different per object
 	{
-		d3dDeviceContext->OMSetRenderTargets(1, &m_d3dRenderTargetView, m_d3dDepthStencilView);
-		d3dDeviceContext->OMSetDepthStencilState(m_d3dDepthStencilState, 1);
+		AShaderDX11* aDx11VertexShader = dynamic_cast<AShaderDX11*>(shaderPipeline->getShader(EAShaderType::VertexShader));
+		ID3D11VertexShader* d3d11VertexShader;
+		if (FAILED(aDx11VertexShader->getD3D11Shader()->QueryInterface(IID_ID3D11VertexShader, (void**)&d3d11VertexShader)))
+		{
+			assert(false);
+		}
+
+		// prepare Vertex input data (MVP)
+		mat4 modelMatrix = glm::make_mat4(data.modelMatrixArray); 		// retrieve model matrix from array in struct
+		mat4 mvp = m_vp * modelMatrix;
+
+		unsigned char buffer[128] = { 0 };
+		memcpy(buffer, glm::value_ptr(mvp), sizeof(mvp));
+		memcpy(buffer + sizeof(mvp), glm::value_ptr(modelMatrix), sizeof(modelMatrix));
+
+		aDx11VertexShader->setConstantBufferData("PerObject", &buffer, sizeof(buffer));
+
+		ID3D11Buffer** d3d11ConstantBuffers = aDx11VertexShader->getConstantBufferHandles();
+		const int numConstBuffers = aDx11VertexShader->getNumConstantBuffers();
+		if (numConstBuffers > 0)
+		{
+			d3dDeviceContext->VSSetConstantBuffers(0, numConstBuffers, d3d11ConstantBuffers);
+		}
+
+		d3d11VertexShader->Release();
 	}
 
 	// render the mesh
 	d3dDeviceContext->DrawIndexed((uint32_t)mesh->getIndexCount(), 0, 0);
 
 	m_deviceReference.endDebugEvent();
-
 }
 
 void AGN::ARendererDX11::clearBuffer(struct ADrawCommand& a_command)
@@ -367,6 +389,32 @@ void AGN::ARendererDX11::clearBuffer(struct ADrawCommand& a_command)
 		m_deviceReference.getD3D11DeviceContext()->ClearDepthStencilView(m_d3dDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	}
 
+}
+
+/*
+	Set the stages that do not change each frame
+	// TODO: perhaps change these up to stages that do not change at all ever and each frame?
+*/
+void AGN::ARendererDX11::setStaticStages()
+{
+	ID3D11DeviceContext* const d3dDeviceContext = m_deviceReference.getD3D11DeviceContext();
+
+	// input assembler stage
+	{
+		d3dDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	}
+
+	// rasterizer Stage
+	{
+		d3dDeviceContext->RSSetState(m_d3dRasterizerState);
+		d3dDeviceContext->RSSetViewports(1, m_viewport);
+	}
+
+	// output merger stage
+	{
+		d3dDeviceContext->OMSetRenderTargets(1, &m_d3dRenderTargetView, m_d3dDepthStencilView);
+		d3dDeviceContext->OMSetDepthStencilState(m_d3dDepthStencilState, 1);
+	}
 }
 
 void AGN::ARendererDX11::onWindowUpdated(glm::ivec2 a_dimentions)
