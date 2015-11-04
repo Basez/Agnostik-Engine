@@ -247,6 +247,8 @@
 ////
 ////
 
+#pragma warning(push, 0)        
+
 #ifndef INCLUDE_STB_TEXTEDIT_H
 #define INCLUDE_STB_TEXTEDIT_H
 
@@ -1259,3 +1261,4 @@ static void stb_textedit_initialize_state(STB_TexteditState *state, int is_singl
    stb_textedit_clear_state(state, is_single_line);
 }
 #endif//STB_TEXTEDIT_IMPLEMENTATION
+#pragma warning(pop)

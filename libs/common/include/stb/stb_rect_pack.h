@@ -31,6 +31,8 @@
 //       INCLUDE SECTION
 //
 
+#pragma warning(push, 0)        
+
 #ifndef STB_INCLUDE_STB_RECT_PACK_H
 #define STB_INCLUDE_STB_RECT_PACK_H
 
@@ -545,3 +547,4 @@ STBRP_DEF void stbrp_pack_rects(stbrp_context *context, stbrp_rect *rects, int n
       rects[i].was_packed = !(rects[i].x == STBRP__MAXVAL && rects[i].y == STBRP__MAXVAL);
 }
 #endif
+#pragma warning(pop)

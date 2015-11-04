@@ -210,6 +210,7 @@ License:
    and modify this file however you want.
 
 */
+#pragma warning(push, 0)        
 
 #ifndef STBI_INCLUDE_STB_IMAGE_H
 #define STBI_INCLUDE_STB_IMAGE_H
@@ -6441,3 +6442,4 @@ STBIDEF int stbi_info_from_callbacks(stbi_io_callbacks const *c, void *user, int
       0.50  (2006-11-19)
               first released version
 */
+#pragma warning(pop)

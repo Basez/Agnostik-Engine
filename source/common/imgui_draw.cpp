@@ -7,6 +7,7 @@
 // - ImFontAtlas
 // - ImFont
 // - Default font data
+#pragma warning(push, 0)     // added to suppress GCC warnings   
 
 #if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS)
 #define _CRT_SECURE_NO_WARNINGS
@@ -2240,3 +2241,5 @@ static const char* GetDefaultCompressedFontDataTTFBase85()
 {
     return proggy_clean_ttf_compressed_data_base85;
 }
+
+#pragma warning(pop)

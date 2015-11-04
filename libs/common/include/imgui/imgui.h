@@ -8,6 +8,8 @@
 
 #pragma once
 
+#pragma warning(push, 0)        
+
 #if !defined(IMGUI_DISABLE_INCLUDE_IMCONFIG_H) || defined(IMGUI_INCLUDE_IMCONFIG_H)
 #include "imgui/imconfig.h"       // User-editable configuration file
 #endif
@@ -1298,3 +1300,5 @@ struct ImFont
 #ifdef IMGUI_INCLUDE_IMGUI_USER_H
 #include "imgui/imgui_user.h"
 #endif
+
+#pragma warning(pop)

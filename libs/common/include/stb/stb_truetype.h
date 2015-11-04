@@ -229,6 +229,8 @@
 //
 //  Incomplete text-in-3d-api example, which draws quads properly aligned to be lossless
 //
+#pragma warning(push, 0)        
+
 #if 0
 #define STB_TRUETYPE_IMPLEMENTATION  // force following include to generate implementation
 #include "stb_truetype.h"
@@ -3219,3 +3221,4 @@ STBTT_DEF int stbtt_FindMatchingFont(const unsigned char *font_collection, const
 //   0.2  (2009-03-11) Fix unsigned/signed char warnings
 //   0.1  (2009-03-09) First public release
 //
+#pragma warning(pop)

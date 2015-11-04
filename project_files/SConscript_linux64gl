@@ -30,9 +30,10 @@ env.AppendUnique(CXXFLAGS=['-Wextra'])
 # env.AppendUnique(CXXFLAGS=['-fms-extensions']) 						# Source: https://gcc.gnu.org/onlinedocs/gcc/Unnamed-Fields.html
 
 # disable certain warinings (Enable when refactoring code)
-env.AppendUnique(CXXFLAGS=['-Wno-unused-variable'])				# disable the unused variable warning
-env.AppendUnique(CXXFLAGS=['-Wno-unused-parameter']) 			# disable the unused parameter variable warning
-env.AppendUnique(CXXFLAGS=['-Wno-unused-function']) 			# disable the unused function variable warning
+env.AppendUnique(CXXFLAGS=['-Wno-unknown-pragmas'])				
+env.AppendUnique(CXXFLAGS=['-Wno-unused-variable'])
+env.AppendUnique(CXXFLAGS=['-Wno-unused-parameter'])
+env.AppendUnique(CXXFLAGS=['-Wno-unused-function'])
 env.AppendUnique(CXXFLAGS=['-Wno-comment']) 					# disable the "/*" warning
 
 """

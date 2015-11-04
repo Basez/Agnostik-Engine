@@ -16,11 +16,11 @@ namespace AGN
 		void processEvent(SDL_Event* a_event);
 		void shutdown() override;
 		void update(float a_deltaTime) override;
-
+		void render(ImDrawData* draw_data);
+		
 	private:
-		friend static void renderDrawLists(ImDrawData* draw_data);
+		friend void renderDrawLists(ImDrawData* draw_data);
 
-		// Use if you want to reset your rendering device without losing ImGui state.
 		void invalidateDeviceObjects();
 		void createDeviceObjects();
 		void createImGUIFont();

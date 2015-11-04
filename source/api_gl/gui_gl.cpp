@@ -3,13 +3,14 @@
 #include "render_api_gl.hpp"
 #include "i_input.hpp"
 #include <imgui/imgui.h>
-#include <gl/glew.h>
+
+#include <GL/glew.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_syswm.h>
 
-static AGN::GUIGL* g_instance = nullptr;
+static AGN::GUIGL* g_instance = nullptr; // TODO: refactor
 
-void AGN::renderDrawLists(ImDrawData* draw_data)
+void AGN::GUIGL::render(ImDrawData* draw_data)
 {
 	// Backup GL state
 	GLint last_program; glGetIntegerv(GL_CURRENT_PROGRAM, &last_program);
@@ -38,7 +39,7 @@ void AGN::renderDrawLists(ImDrawData* draw_data)
 
 	// Handle cases of screen coordinates != from framebuffer coordinates (e.g. retina displays)
 	ImGuiIO& io = ImGui::GetIO();
-	float fb_height = io.DisplaySize.y * io.DisplayFramebufferScale.y;
+	float fbHeight = io.DisplaySize.y * io.DisplayFramebufferScale.y;
 	draw_data->ScaleClipRects(io.DisplayFramebufferScale);
 
 	// Setup viewport, orthographic projection matrix
@@ -50,20 +51,20 @@ void AGN::renderDrawLists(ImDrawData* draw_data)
 		{ 0.0f,                  0.0f,                  -1.0f, 0.0f },
 		{ -1.0f,                  1.0f,                   0.0f, 1.0f },
 	};
-	glUseProgram(g_instance->m_shaderHandle);
-	glUniform1i(g_instance->m_attribLocationTex, 0);
-	glUniformMatrix4fv(g_instance->m_attribLocationProjMtx, 1, GL_FALSE, &ortho_projection[0][0]);
-	glBindVertexArray(g_instance->m_vaoHandle);
+	glUseProgram(m_shaderHandle);
+	glUniform1i(m_attribLocationTex, 0);
+	glUniformMatrix4fv(m_attribLocationProjMtx, 1, GL_FALSE, &ortho_projection[0][0]);
+	glBindVertexArray(m_vaoHandle);
 
 	for (int n = 0; n < draw_data->CmdListsCount; n++)
 	{
 		const ImDrawList* cmd_list = draw_data->CmdLists[n];
 		const ImDrawIdx* idx_buffer_offset = 0;
 
-		glBindBuffer(GL_ARRAY_BUFFER, g_instance->m_vboHandle);
+		glBindBuffer(GL_ARRAY_BUFFER, m_vboHandle);
 		glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)cmd_list->VtxBuffer.size() * sizeof(ImDrawVert), (GLvoid*)&cmd_list->VtxBuffer.front(), GL_STREAM_DRAW);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_instance->m_elementsHandle);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_elementsHandle);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)cmd_list->IdxBuffer.size() * sizeof(ImDrawIdx), (GLvoid*)&cmd_list->IdxBuffer.front(), GL_STREAM_DRAW);
 
 		for (const ImDrawCmd* pcmd = cmd_list->CmdBuffer.begin(); pcmd != cmd_list->CmdBuffer.end(); pcmd++)
@@ -75,7 +76,7 @@ void AGN::renderDrawLists(ImDrawData* draw_data)
 			else
 			{
 				glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->TextureId);
-				glScissor((int)pcmd->ClipRect.x, (int)(fb_height - pcmd->ClipRect.w), (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y));
+				glScissor((int)pcmd->ClipRect.x, (int)(fbHeight - pcmd->ClipRect.w), (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y));
 				glDrawElements(GL_TRIANGLES, (GLsizei)pcmd->ElemCount, GL_UNSIGNED_SHORT, idx_buffer_offset);
 			}
 			idx_buffer_offset += pcmd->ElemCount;
@@ -97,6 +98,11 @@ void AGN::renderDrawLists(ImDrawData* draw_data)
 	glViewport(last_viewport[0], last_viewport[1], (GLsizei)last_viewport[2], (GLsizei)last_viewport[3]);
 	
 	AGN::RenderAPIGL::getOpenGLErrors();
+}
+
+void renderDrawLists(ImDrawData* draw_data)
+{
+	g_instance->render(draw_data);
 }
 
 static const char* ImGui_ImplSdl_GetClipboardText()

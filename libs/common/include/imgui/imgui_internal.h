@@ -5,6 +5,8 @@
 // Implement maths operators for ImVec2 (disabled by default to not collide with using IM_VEC2_CLASS_EXTRA along with your own math types+operators)
 //   #define IMGUI_DEFINE_MATH_OPERATORS
 
+#pragma warning(push, 0)        
+
 #pragma once
 
 #ifndef IMGUI_VERSION
@@ -709,3 +711,5 @@ namespace ImGui
 #ifdef _MSC_VER
 #pragma warning (pop)
 #endif
+
+#pragma warning(pop)
