@@ -1,17 +1,15 @@
 #include "shared.hpp"
 #include "render_api_gl.hpp"
-
-#include <GL/glew.h>
-#include <SDL/SDL.h>
-
 #include "window_gl.hpp"
 #include "device_gl.hpp"
 #include "renderer_gl.hpp"
 #include "config_manager.hpp"
 #include "input_gl.hpp"
 #include "application.hpp"
+#include "gui_gl.hpp"
 
-
+#include <GL/glew.h>
+#include <SDL/SDL.h>
 
 AGN::RenderAPIGL::RenderAPIGL()
 	: m_initialized(false)
@@ -21,6 +19,7 @@ AGN::RenderAPIGL::RenderAPIGL()
 {
 	m_device = new DeviceGL();
 	m_renderer = new RendererGL();
+	m_gui = new GUIGL();
 }
 
 bool AGN::RenderAPIGL::init()
@@ -45,6 +44,8 @@ bool AGN::RenderAPIGL::init()
 	m_renderer->init();
 
 	enableVSync(g_configManager.getConfigPropertyAsBool("vsync"));
+
+	m_gui->init(m_window->getSDLWindow());
 
 	m_initialized = true;
 
@@ -76,6 +77,7 @@ bool AGN::RenderAPIGL::initOpenGL()
 	SDL_GL_SetSwapInterval(1);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
 	// anti aliasing
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
@@ -150,6 +152,12 @@ AGN::IRenderer& AGN::RenderAPIGL::getRenderer()
 	return dynamic_cast<IRenderer&>(*m_renderer);
 }
 
+AGN::IGUI& AGN::RenderAPIGL::getGUI()
+{
+	return dynamic_cast<AGN::IGUI&>(*m_gui);
+	
+}
+
 void AGN::RenderAPIGL::logAvailableGLExtensions()
 {
 	if (!m_initialized)
@@ -199,50 +207,52 @@ void AGN::RenderAPIGL::enableVSync(bool a_value)
 void AGN::RenderAPIGL::handleEvents(bool& a_doQuit)
 {
 	a_doQuit = false;
-	SDL_Event event;
+	SDL_Event sdlEvent;
 
-	while (SDL_PollEvent(&event))
+	while (SDL_PollEvent(&sdlEvent))
 	{
-		switch (event.type)
+		m_gui->processEvent(&sdlEvent);
+
+		switch (sdlEvent.type)
 		{
 		case SDL_QUIT:	
 			a_doQuit = true;
 			break;
 
 		case SDL_KEYDOWN:
-			g_input.registerHold(InputGL::getAGNScanCode(event.key.keysym.scancode), true);
+			g_input.registerHold(InputGL::getAGNScanCode(sdlEvent.key.keysym.scancode), true);
 			//g_log.debug("GL scancode: %i, agnscancode: %u", (uint16_t)event.key.keysym.scancode, (uint16_t)AInputGL::getAGNScanCode(event.key.keysym.scancode));
 			break;
 
 		case SDL_KEYUP:
-			g_input.registerHold(InputGL::getAGNScanCode(event.key.keysym.scancode), false);
+			g_input.registerHold(InputGL::getAGNScanCode(sdlEvent.key.keysym.scancode), false);
 			break;
 
 		case SDL_MOUSEBUTTONDOWN:
-			g_input.registerMouseHold(InputGL::getAGNMouse(event.button.button), true);
+			g_input.registerMouseHold(InputGL::getAGNMouse(sdlEvent.button.button), true);
 			break;
 
 		case SDL_MOUSEBUTTONUP:
-			g_input.registerMouseHold(InputGL::getAGNMouse(event.button.button), false);
-			g_input.registerMouseClick(InputGL::getAGNMouse(event.button.button));
+			g_input.registerMouseHold(InputGL::getAGNMouse(sdlEvent.button.button), false);
+			g_input.registerMouseClick(InputGL::getAGNMouse(sdlEvent.button.button));
 			break;
 
 		case SDL_MOUSEMOTION:
-			g_input.registerMouseMotion(event.motion.x, event.motion.y);
+			g_input.registerMouseMotion(sdlEvent.motion.x, sdlEvent.motion.y);
 			//g_cameraController->onMouseMotion(event.motion.x, event.motion.y);
 			break;
 
 		case SDL_MOUSEWHEEL:
-			g_input.registerMouseScroll((int)event.wheel.y);
+			g_input.registerMouseScroll((int)sdlEvent.wheel.y);
 			break;
 
 		case SDL_WINDOWEVENT:
-			m_window->onWindowEvent(event);
+			m_window->onWindowEvent(sdlEvent);
 
-			if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+			if (sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED)
 			{
-				int windowSizeX = event.window.data1;
-				int windowSizeY = event.window.data2;
+				int windowSizeX = sdlEvent.window.data1;
+				int windowSizeY = sdlEvent.window.data2;
 				g_log.info("window resized to %i/%i", windowSizeX, windowSizeY);
 			}
 			break;

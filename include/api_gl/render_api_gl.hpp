@@ -18,6 +18,7 @@ namespace AGN
 		virtual class IWindow& getWindow() override;
 		virtual class IDevice& getDevice() override;
 		virtual class IRenderer& getRenderer() override;
+		virtual class IGUI& getGUI() override;
 
 		static void getOpenGLError();
 		void logAvailableGLExtensions();
@@ -31,5 +32,6 @@ namespace AGN
 		class WindowGL* m_window;
 		class DeviceGL* m_device;
 		class RendererGL* m_renderer;
+		class GUIGL* m_gui;
 	};
 }

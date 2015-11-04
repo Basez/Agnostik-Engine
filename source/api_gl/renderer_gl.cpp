@@ -14,6 +14,7 @@
 #include "shaderpipeline_gl.hpp"
 #include "i_shader.hpp"
 
+#include <imgui/imgui.h>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <SDL/SDL.h>
@@ -72,6 +73,10 @@ void AGN::RendererGL::render(AGN::DrawCommander& a_drawCommander)
 
 		case EDrawCommandType::DrawEntity:
 			drawEntity(command);
+			break;
+
+		case EDrawCommandType::DrawGUI:
+			ImGui::Render();
 			break;
 
 		case EDrawCommandType::SwapBackBuffer:

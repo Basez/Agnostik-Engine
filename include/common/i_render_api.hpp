@@ -16,5 +16,6 @@ namespace AGN
 		virtual class IWindow& getWindow() = 0;
 		virtual class IDevice& getDevice() = 0;
 		virtual class IRenderer& getRenderer() = 0;
+		virtual class IGUI& getGUI() = 0;
 	};
 }

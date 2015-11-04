@@ -6,6 +6,7 @@
 #include "i_mesh.hpp"
 #include "i_shader_pipeline.hpp"
 #include "i_shader.hpp"
+#include "i_gui.hpp"
 #include "application.hpp"
 #include "material.hpp"
 #include "entity.hpp"
@@ -17,6 +18,7 @@
 #include "camera.hpp"
 
 #include <chrono>
+#include <imgui/imgui.h>	// TODO: remove 
 
 // shaders
 // TODO: make these shaders more crossplatform friendly.
@@ -38,7 +40,7 @@ AGN::Application::Application()
 
 }
 
-void AGN::Application::run(class IRenderAPI* a_renderAPI)
+void AGN::Application::run(IRenderAPI* a_renderAPI)
 {
 	m_renderAPI = a_renderAPI;
 
@@ -63,6 +65,9 @@ void AGN::Application::run(class IRenderAPI* a_renderAPI)
 	bool doQuit = false;
 	while (!doQuit)
 	{
+		// api specific event handling, input etc
+		m_renderAPI->handleEvents(doQuit);
+
 		update();
 
 		render();
@@ -72,8 +77,6 @@ void AGN::Application::run(class IRenderAPI* a_renderAPI)
 		// log currently alive objects in gpu memory (currently only working for DX11)
 		//m_renderAPI->logLiveObjects();
 
-		// api specific event handling, input etc
-		m_renderAPI->handleEvents(doQuit);
 
 		// if any window changes occured
 		// TODO: rethink this?
@@ -83,6 +86,7 @@ void AGN::Application::run(class IRenderAPI* a_renderAPI)
 			m_renderAPI->getRenderer().onWindowUpdated(m_renderAPI->getWindow().getDimentions());
 			m_sceneManager->onWindowUpdated(m_renderAPI->getWindow().getDimentions());
 		}
+
 	}
 }
 
@@ -109,6 +113,8 @@ void AGN::Application::update()
 	// logic
 	m_sceneManager->update(deltaTime);
 	if (m_meshShaderPipeline) updateMeshShaderProperties(deltaTime);
+
+	m_renderAPI->getGUI().update(deltaTime);
 }
 
 void AGN::Application::updateMeshShaderProperties(float a_deltaTime)
@@ -159,6 +165,22 @@ void AGN::Application::render()
 	createDrawQueue();
 	m_drawCommander->sortCommandList();
 
+	// 1. Show a simple window
+	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
+	{
+		static ImVec4 clear_color = ImColor(114, 144, 154);
+		static float f = 0.0f;
+		bool show_test_window = true;
+		bool show_another_window = true;
+
+		ImGui::Text("Hello, world!");
+		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+		ImGui::ColorEdit3("clear color", (float*)&clear_color);
+		if (ImGui::Button("Test Window")) show_test_window ^= 1;
+		if (ImGui::Button("Another Window")) show_another_window ^= 1;
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	}
+
 	// api specific rendering
 	m_renderAPI->getRenderer().render(*m_drawCommander);
 
@@ -184,6 +206,23 @@ void AGN::Application::createDrawQueue()
 
 		DrawCommand& drawCommand = m_drawCommander->addDrawCommand(EDrawCommandType::SwapBackBuffer, sortkey);
 	}
+
+	// TODO: make static
+	// Draw GUI command
+	{
+		uint8_t renderPhase = (uint8_t)ERenderPhase::GUIViewport;
+		uint8_t layer = 0;
+		uint8_t translucencyType = 0;
+		uint8_t cmd = 0;
+		uint16_t shaderPipelineId = 0;
+		uint32_t meshId = 0;
+		uint16_t materialId = 0;
+		uint32_t depth = 0;
+		uint64_t sortkey = DrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, shaderPipelineId, meshId, materialId, depth);
+
+		DrawCommand& drawCommand = m_drawCommander->addDrawCommand(EDrawCommandType::DrawGUI, sortkey);
+	}
+
 
 	// TODO: make these static draw commands
 	// PREDRAW clear buffer

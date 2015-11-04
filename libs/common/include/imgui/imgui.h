@@ -9,7 +9,7 @@
 #pragma once
 
 #if !defined(IMGUI_DISABLE_INCLUDE_IMCONFIG_H) || defined(IMGUI_INCLUDE_IMCONFIG_H)
-#include "imconfig.h"       // User-editable configuration file
+#include "imgui/imconfig.h"       // User-editable configuration file
 #endif
 #include <float.h>          // FLT_MAX
 #include <stdarg.h>         // va_list
@@ -1296,5 +1296,5 @@ struct ImFont
 //---- So you can include code that extends ImGui using any of the types declared above.
 //---- (also convenient for user to only explicitly include vanilla imgui.h)
 #ifdef IMGUI_INCLUDE_IMGUI_USER_H
-#include "imgui_user.h"
+#include "imgui/imgui_user.h"
 #endif
