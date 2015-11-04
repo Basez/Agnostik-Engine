@@ -66,7 +66,7 @@ void AGN::TextureGL::setTextureParams(unsigned int a_flags)
 
 	glBindTexture(m_glType, 0);
 
-	AGN::RenderAPIGL::getOpenGLError();
+	AGN::RenderAPIGL::getOpenGLErrors();
 }
 
 
@@ -87,7 +87,7 @@ void AGN::TextureGL::pullBuffer()
 	glGetTexImage(m_glType, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_textureData->buffer);
 	glBindTexture(m_glType, 0);
 
-	AGN::RenderAPIGL::getOpenGLError();
+	AGN::RenderAPIGL::getOpenGLErrors();
 }
 
 // generates a new texture on the GPU memory with the currently stored pixeldata
@@ -103,7 +103,7 @@ void AGN::TextureGL::pushBuffer()
 	glTexImage2D(m_glType, 0, GL_RGBA, m_textureData->width, m_textureData->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_textureData->buffer);
 	glBindTexture(m_glType, 0);
 
-	AGN::RenderAPIGL::getOpenGLError();
+	AGN::RenderAPIGL::getOpenGLErrors();
 }
 
 uint32_t AGN::TextureGL::getGlTypeByTextureType(ETextureType a_type)

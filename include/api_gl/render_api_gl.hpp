@@ -20,7 +20,7 @@ namespace AGN
 		virtual class IRenderer& getRenderer() override;
 		virtual class IGUI& getGUI() override;
 
-		static void getOpenGLError();
+		static void getOpenGLErrors();
 		void logAvailableGLExtensions();
 
 	private:

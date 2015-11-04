@@ -59,7 +59,7 @@ AGN::IMesh* AGN::DeviceGL::createMesh(const uint16_t a_aId, AGN::MeshData* a_mes
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	// Check if everything went all right
-	AGN::RenderAPIGL::getOpenGLError();
+	AGN::RenderAPIGL::getOpenGLErrors();
 
 	// instantiate Mesh Object with pointers to the uploaded data
 	MeshGL* mesh = new MeshGL(a_aId, vao, vbos, vboCount, a_meshData);
@@ -87,7 +87,7 @@ AGN::ITexture* AGN::DeviceGL::createTexture(const uint16_t a_aId, AGN::TextureDa
 	}
 	
 
-	AGN::RenderAPIGL::getOpenGLError();
+	AGN::RenderAPIGL::getOpenGLErrors();
 
 	// create actual texture.
 	TextureGL* texture = new TextureGL(a_aId, a_textureData, textureID);

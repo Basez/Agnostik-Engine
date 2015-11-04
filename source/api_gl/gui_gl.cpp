@@ -1,45 +1,40 @@
 #include "shared.hpp"
 #include "gui_gl.hpp"
 #include "render_api_gl.hpp"
-
+#include "i_input.hpp"
 #include <imgui/imgui.h>
 #include <gl/glew.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_syswm.h>
-#include <SDL/SDL_opengl.h>
 
-// ImGui SDL2 binding with OpenGL
-// You can copy and use unmodified imgui_impl_* files in your project. 
-// If you use this binding you'll need to call 4 functions: ImGui_ImplXXXX_Init(), ImGui_ImplXXXX_NewFrame(), ImGui::Render() and ImGui_ImplXXXX_Shutdown().
-// See main.cpp for an example of using this.
-// https://github.com/ocornut/imgui
+static AGN::GUIGL* g_instance = nullptr;
 
-// Data
-static double       g_time = 0.0f;
-static bool         g_mousePressed[3] = { false, false, false };
-static float        g_mouseWheel = 0.0f;
-static uint32_t     g_fontTexture = 0;
-
-// This is the main rendering function that you have to implement and provide to ImGui (via setting up 'RenderDrawListsFn' in the ImGuiIO structure)
-// If text or lines are blurry when integrating ImGui in your engine:
-// - in your Render function, try translating your projection matrix by (0.5f,0.5f) or (0.375f,0.375f)
-void renderDrawLists(ImDrawData* draw_data)
+void AGN::renderDrawLists(ImDrawData* draw_data)
 {
-	// We are using the OpenGL fixed pipeline to make the example code simpler to read!
-	// Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled, vertex/texcoord/color pointers.
+	// Backup GL state
+	GLint last_program; glGetIntegerv(GL_CURRENT_PROGRAM, &last_program);
 	GLint last_texture; glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
+	GLint last_array_buffer; glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
+	GLint last_element_array_buffer; glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &last_element_array_buffer);
+	GLint last_vertex_array; glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &last_vertex_array);
+	GLint last_blend_src; glGetIntegerv(GL_BLEND_SRC, &last_blend_src);
+	GLint last_blend_dst; glGetIntegerv(GL_BLEND_DST, &last_blend_dst);
+	GLint last_blend_equation_rgb; glGetIntegerv(GL_BLEND_EQUATION_RGB, &last_blend_equation_rgb);
+	GLint last_blend_equation_alpha; glGetIntegerv(GL_BLEND_EQUATION_ALPHA, &last_blend_equation_alpha);
 	GLint last_viewport[4]; glGetIntegerv(GL_VIEWPORT, last_viewport);
-	glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_TRANSFORM_BIT);
+	GLboolean last_enable_blend = glIsEnabled(GL_BLEND);
+	GLboolean last_enable_cull_face = glIsEnabled(GL_CULL_FACE);
+	GLboolean last_enable_depth_test = glIsEnabled(GL_DEPTH_TEST);
+	GLboolean last_enable_scissor_test = glIsEnabled(GL_SCISSOR_TEST);
+
+	// Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled
 	glEnable(GL_BLEND);
+	glBlendEquation(GL_FUNC_ADD);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_SCISSOR_TEST);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnable(GL_TEXTURE_2D);
-	glUseProgram(0); // You may want this if using this code in an OpenGL 3+ context
+	glActiveTexture(GL_TEXTURE0);
 
 	// Handle cases of screen coordinates != from framebuffer coordinates (e.g. retina displays)
 	ImGuiIO& io = ImGui::GetIO();
@@ -48,62 +43,60 @@ void renderDrawLists(ImDrawData* draw_data)
 
 	// Setup viewport, orthographic projection matrix
 	glViewport(0, 0, (GLsizei)io.DisplaySize.x, (GLsizei)io.DisplaySize.y);
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	glOrtho(0.0f, io.DisplaySize.x, io.DisplaySize.y, 0.0f, -1.0f, +1.0f);
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
+	const float ortho_projection[4][4] =
+	{
+		{ 2.0f / io.DisplaySize.x, 0.0f,                   0.0f, 0.0f },
+		{ 0.0f,                  2.0f / -io.DisplaySize.y, 0.0f, 0.0f },
+		{ 0.0f,                  0.0f,                  -1.0f, 0.0f },
+		{ -1.0f,                  1.0f,                   0.0f, 1.0f },
+	};
+	glUseProgram(g_instance->m_shaderHandle);
+	glUniform1i(g_instance->m_attribLocationTex, 0);
+	glUniformMatrix4fv(g_instance->m_attribLocationProjMtx, 1, GL_FALSE, &ortho_projection[0][0]);
+	glBindVertexArray(g_instance->m_vaoHandle);
 
-	// Render command lists	
-#define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))		// TODO: lolwut
 	for (int n = 0; n < draw_data->CmdListsCount; n++)
 	{
 		const ImDrawList* cmd_list = draw_data->CmdLists[n];
-		const unsigned char* vtx_buffer = (const unsigned char*)&cmd_list->VtxBuffer.front();
-		const ImDrawIdx* idx_buffer = &cmd_list->IdxBuffer.front();
-		glVertexPointer(2, GL_FLOAT, sizeof(ImDrawVert), (void*)(vtx_buffer + OFFSETOF(ImDrawVert, pos)));
-		glTexCoordPointer(2, GL_FLOAT, sizeof(ImDrawVert), (void*)(vtx_buffer + OFFSETOF(ImDrawVert, uv)));
-		glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(ImDrawVert), (void*)(vtx_buffer + OFFSETOF(ImDrawVert, col)));
+		const ImDrawIdx* idx_buffer_offset = 0;
 
-		for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.size(); cmd_i++)
+		glBindBuffer(GL_ARRAY_BUFFER, g_instance->m_vboHandle);
+		glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)cmd_list->VtxBuffer.size() * sizeof(ImDrawVert), (GLvoid*)&cmd_list->VtxBuffer.front(), GL_STREAM_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_instance->m_elementsHandle);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)cmd_list->IdxBuffer.size() * sizeof(ImDrawIdx), (GLvoid*)&cmd_list->IdxBuffer.front(), GL_STREAM_DRAW);
+
+		for (const ImDrawCmd* pcmd = cmd_list->CmdBuffer.begin(); pcmd != cmd_list->CmdBuffer.end(); pcmd++)
 		{
-			const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
 			if (pcmd->UserCallback)
 			{
 				pcmd->UserCallback(cmd_list, pcmd);
 			}
 			else
 			{
-				glBindTexture(GL_TEXTURE_2D, (uint32_t)(intptr_t)pcmd->TextureId);
+				glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->TextureId);
 				glScissor((int)pcmd->ClipRect.x, (int)(fb_height - pcmd->ClipRect.w), (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y));
-				glDrawElements(GL_TRIANGLES, (GLsizei)pcmd->ElemCount, GL_UNSIGNED_SHORT, idx_buffer);
+				glDrawElements(GL_TRIANGLES, (GLsizei)pcmd->ElemCount, GL_UNSIGNED_SHORT, idx_buffer_offset);
 			}
-			idx_buffer += pcmd->ElemCount;
+			idx_buffer_offset += pcmd->ElemCount;
 		}
 	}
-#undef OFFSETOF // TODO: lolwut
 
-	// Restore modified state
-	glDisable(GL_BLEND);
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
-
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
+	// Restore modified GL state
+	glUseProgram(last_program);
 	glBindTexture(GL_TEXTURE_2D, last_texture);
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glPopAttrib();
+	glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, last_element_array_buffer);
+	glBindVertexArray(last_vertex_array);
+	glBlendEquationSeparate(last_blend_equation_rgb, last_blend_equation_alpha);
+	glBlendFunc(last_blend_src, last_blend_dst);
+	if (last_enable_blend) glEnable(GL_BLEND); else glDisable(GL_BLEND);
+	if (last_enable_cull_face) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
+	if (last_enable_depth_test) glEnable(GL_DEPTH_TEST); else glDisable(GL_DEPTH_TEST);
+	if (last_enable_scissor_test) glEnable(GL_SCISSOR_TEST); else glDisable(GL_SCISSOR_TEST);
 	glViewport(last_viewport[0], last_viewport[1], (GLsizei)last_viewport[2], (GLsizei)last_viewport[3]);
-
-	AGN::RenderAPIGL::getOpenGLError();
-
-	// TODO: properly restore state
+	
+	AGN::RenderAPIGL::getOpenGLErrors();
 }
 
 static const char* ImGui_ImplSdl_GetClipboardText()
@@ -116,31 +109,17 @@ static void ImGui_ImplSdl_SetClipboardText(const char* text)
 	SDL_SetClipboardText(text);
 }
 
-bool AGN::GUIGL::processEvent(SDL_Event* event)
+void AGN::GUIGL::processEvent(SDL_Event* event)
 {
+	// handle custom events for GUI (implemented seperately from InputManager)
 	ImGuiIO& io = ImGui::GetIO();
 	switch (event->type)
 	{
-	case SDL_MOUSEWHEEL:
-	{
-		if (event->wheel.y > 0)
-			g_mouseWheel = 1;
-		if (event->wheel.y < 0)
-			g_mouseWheel = -1;
-		return true;
-	}
-	case SDL_MOUSEBUTTONDOWN:
-	{
-		if (event->button.button == SDL_BUTTON_LEFT) g_mousePressed[0] = true;
-		if (event->button.button == SDL_BUTTON_RIGHT) g_mousePressed[1] = true;
-		if (event->button.button == SDL_BUTTON_MIDDLE) g_mousePressed[2] = true;
-		return true;
-	}
 	case SDL_TEXTINPUT:
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		io.AddInputCharactersUTF8(event->text.text);
-		return true;
+		return;
 	}
 	case SDL_KEYDOWN:
 	case SDL_KEYUP:
@@ -150,57 +129,90 @@ bool AGN::GUIGL::processEvent(SDL_Event* event)
 		io.KeyShift = ((SDL_GetModState() & KMOD_SHIFT) != 0);
 		io.KeyCtrl = ((SDL_GetModState() & KMOD_CTRL) != 0);
 		io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
-		return true;
+		return;
 	}
 	}
-	return false;
 }
 
 void AGN::GUIGL::createDeviceObjects()
 {
+	// Backup GL state
+	GLint last_texture, last_array_buffer, last_vertex_array;
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
+	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
+	glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &last_vertex_array);
+
+	const GLchar *vertex_shader =
+		"#version 330\n"
+		"uniform mat4 ProjMtx;\n"
+		"in vec2 Position;\n"
+		"in vec2 UV;\n"
+		"in vec4 Color;\n"
+		"out vec2 Frag_UV;\n"
+		"out vec4 Frag_Color;\n"
+		"void main()\n"
+		"{\n"
+		"	Frag_UV = UV;\n"
+		"	Frag_Color = Color;\n"
+		"	gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
+		"}\n";
+
+	const GLchar* fragment_shader =
+		"#version 330\n"
+		"uniform sampler2D Texture;\n"
+		"in vec2 Frag_UV;\n"
+		"in vec4 Frag_Color;\n"
+		"out vec4 Out_Color;\n"
+		"void main()\n"
+		"{\n"
+		"	Out_Color = Frag_Color * texture( Texture, Frag_UV.st);\n"
+		"}\n";
+
+	m_shaderHandle = glCreateProgram();
+	m_vertHandle = glCreateShader(GL_VERTEX_SHADER);
+	m_fragHandle = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(m_vertHandle, 1, &vertex_shader, 0);
+	glShaderSource(m_fragHandle, 1, &fragment_shader, 0);
+	glCompileShader(m_vertHandle);
+	glCompileShader(m_fragHandle);
+	glAttachShader(m_shaderHandle, m_vertHandle);
+	glAttachShader(m_shaderHandle, m_fragHandle);
+	glLinkProgram(m_shaderHandle);
+
+	m_attribLocationTex = glGetUniformLocation(m_shaderHandle, "Texture");
+	m_attribLocationProjMtx = glGetUniformLocation(m_shaderHandle, "ProjMtx");
+	m_attribLocationPosition = glGetAttribLocation(m_shaderHandle, "Position");
+	m_attribLocationUV = glGetAttribLocation(m_shaderHandle, "UV");
+	m_attribLocationColor = glGetAttribLocation(m_shaderHandle, "Color");
+
+	glGenBuffers(1, &m_vboHandle);
+	glGenBuffers(1, &m_elementsHandle);
+
+	glGenVertexArrays(1, &m_vaoHandle);
+	glBindVertexArray(m_vaoHandle);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vboHandle);
+	glEnableVertexAttribArray(m_attribLocationPosition);
+	glEnableVertexAttribArray(m_attribLocationUV);
+	glEnableVertexAttribArray(m_attribLocationColor);
+
+#define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
+	glVertexAttribPointer(m_attribLocationPosition, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, pos));
+	glVertexAttribPointer(m_attribLocationUV, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, uv));
+	glVertexAttribPointer(m_attribLocationColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, col));
+#undef OFFSETOF
+
 	createImGUIFont();
-	createShaders();
 
-}
+	// Restore modified GL state
+	glBindTexture(GL_TEXTURE_2D, last_texture);
+	glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer);
+	glBindVertexArray(last_vertex_array);
 
-void AGN::GUIGL::createShaders()
-{
-	// TODO:
+	RenderAPIGL::getOpenGLErrors();
 }
 
 void AGN::GUIGL::createImGUIFont()
 {
-
-	/*
-	// OLD code; Build texture
-	ImGuiIO& io = ImGui::GetIO();
-
-	unsigned char* pixels;
-	int width, height;
-	io.Fonts->GetTexDataAsAlpha8(&pixels, &width, &height);
-
-	AGN::RenderAPIGL::getOpenGLError();
-
-	// Create texture
-	glGenTextures(1, &g_fontTexture);
-	glBindTexture(GL_TEXTURE_2D, g_fontTexture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	AGN::RenderAPIGL::getOpenGLError();
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, pixels);
-	AGN::RenderAPIGL::getOpenGLError();
-
-	// Store our identifier
-	io.Fonts->TexID = (void *)(intptr_t)g_fontTexture;
-
-	AGN::RenderAPIGL::getOpenGLError();
-
-	// Cleanup (don't clear the input data if you want to append new fonts later)
-	io.Fonts->ClearInputData();
-	io.Fonts->ClearTexData();
-	*/
-
 	ImGuiIO& io = ImGui::GetIO();
 
 	// Build texture atlas
@@ -209,31 +221,49 @@ void AGN::GUIGL::createImGUIFont()
 	io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);   // Load as RGBA 32-bits for OpenGL3 demo because it is more likely to be compatible with user's existing shader.
 
 	// Create OpenGL texture
-	glGenTextures(1, &g_fontTexture);
-	glBindTexture(GL_TEXTURE_2D, g_fontTexture);
+	glGenTextures(1, &m_fontTexture);
+	glBindTexture(GL_TEXTURE_2D, m_fontTexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
 	// Store our identifier
-	io.Fonts->TexID = (void *)(intptr_t)g_fontTexture;
+	io.Fonts->TexID = (void *)(intptr_t)m_fontTexture;
 
 	// Cleanup (don't clear the input data if you want to append new fonts later)
 	io.Fonts->ClearInputData();
 	io.Fonts->ClearTexData();
 
 
-	AGN::RenderAPIGL::getOpenGLError();
+	AGN::RenderAPIGL::getOpenGLErrors();
 }
 
 void AGN::GUIGL::invalidateDeviceObjects()
 {
-	if (g_fontTexture)
+	if (m_fontTexture)
 	{
-		glDeleteTextures(1, &g_fontTexture);
+		glDeleteTextures(1, &m_fontTexture);
 		ImGui::GetIO().Fonts->TexID = 0;
-		g_fontTexture = 0;
+		m_fontTexture = 0;
 	}
+}
+
+AGN::GUIGL::GUIGL()
+	: m_shaderHandle(0)
+	, m_vertHandle(0)
+	, m_fragHandle(0)
+	, m_attribLocationTex(0)
+	, m_attribLocationProjMtx(0)
+	, m_attribLocationPosition(0)
+	, m_attribLocationUV(0)
+	, m_attribLocationColor(0)
+	, m_vboHandle(0)
+	, m_vaoHandle(0)
+	, m_elementsHandle(0)
+	, m_fontTexture(0)
+{
+	if (g_instance != nullptr) assert(false); // ensure only one gui can exist // TODO: refactor
+	g_instance = this;
 }
 
 bool AGN::GUIGL::init(SDL_Window *a_window)
@@ -272,7 +302,7 @@ bool AGN::GUIGL::init(SDL_Window *a_window)
 	io.ImeWindowHandle = wmInfo.info.win.window;
 #endif
 
-	AGN::RenderAPIGL::getOpenGLError();
+	AGN::RenderAPIGL::getOpenGLErrors();
 
 	return true;
 }
@@ -285,7 +315,7 @@ void AGN::GUIGL::shutdown()
 
 void AGN::GUIGL::update(float a_deltaTime)
 {
-	if (!g_fontTexture)
+	if (!m_fontTexture)
 	{
 		createDeviceObjects();
 	}
@@ -305,27 +335,22 @@ void AGN::GUIGL::update(float a_deltaTime)
 	// (we already got mouse wheel, keyboard keys & characters from glfw callbacks polled in glfwPollEvents())
 	int mx, my;
 	Uint32 mouseMask = SDL_GetMouseState(&mx, &my);
-	if (SDL_GetWindowFlags(m_window) & SDL_WINDOW_MOUSE_FOCUS)
-	{
-		io.MousePos = ImVec2((float)mx, (float)my);   // Mouse position, in pixels (set to -1,-1 if no mouse / on another screen, etc.)
-	}
-	else
-	{
-		io.MousePos = ImVec2(-1, -1);
-	}
 
-	io.MouseDown[0] = g_mousePressed[0] || (mouseMask & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;		// If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.
-	io.MouseDown[1] = g_mousePressed[1] || (mouseMask & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;
-	io.MouseDown[2] = g_mousePressed[2] || (mouseMask & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0;
-	g_mousePressed[0] = g_mousePressed[1] = g_mousePressed[2] = false;
+	io.MousePos = ImVec2(	static_cast<float>(g_input.getMouseX()),
+							static_cast<float>(g_input.getMouseY()));
 
-	io.MouseWheel = g_mouseWheel;
-	g_mouseWheel = 0.0f;
+	io.MouseDown[0] = g_input.getMouse(EMOUSECODE::LEFT);
+	io.MouseDown[1] = g_input.getMouse(EMOUSECODE::RIGHT);
+	io.MouseDown[2] = g_input.getMouse(EMOUSECODE::MIDDLE);
 
+	if (g_input.getMouseScroll() > 0) io.MouseWheel = 1;
+	else if (g_input.getMouseScroll() < 0) io.MouseWheel = -1;
+	else io.MouseWheel = 0;
+	
 	// Hide OS mouse cursor if ImGui is drawing it
 	SDL_ShowCursor(io.MouseDrawCursor ? 0 : 1);
 
-	AGN::RenderAPIGL::getOpenGLError();
+	AGN::RenderAPIGL::getOpenGLErrors();
 
 	// Start the frame
 	ImGui::NewFrame();

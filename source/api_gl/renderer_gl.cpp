@@ -160,7 +160,7 @@ void AGN::RendererGL::drawEntity(DrawCommand* a_command)
 	glDrawElements(GL_TRIANGLES, mesh->getIndexCount(), GL_UNSIGNED_INT, 0);
 	
 #ifdef AGN_DEBUG
-	AGN::RenderAPIGL::getOpenGLError();
+	AGN::RenderAPIGL::getOpenGLErrors();
 #endif
 
 }

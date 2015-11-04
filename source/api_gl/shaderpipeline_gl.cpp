@@ -81,7 +81,7 @@ AGN::ShaderPipelineGL::ShaderPipelineGL(const uint32_t a_glprogramId, ShaderPipe
 		m_constantBuffers.push_back(constantBuffer);
 	}
 
-	AGN::RenderAPIGL::getOpenGLError();
+	AGN::RenderAPIGL::getOpenGLErrors();
 }
 
 AGN::IShader* AGN::ShaderPipelineGL::getShader(const EShaderType a_type)
@@ -110,7 +110,7 @@ void AGN::ShaderPipelineGL::bind()
 		glBufferData(GL_UNIFORM_BUFFER, m_constantBuffers[i]->size, m_constantBuffers[i]->buffer, GL_DYNAMIC_DRAW);
 	}
 
-	AGN::RenderAPIGL::getOpenGLError();
+	AGN::RenderAPIGL::getOpenGLErrors();
 }
 
 int32_t AGN::ShaderPipelineGL::getUniformIdByName(const char* a_name)

@@ -49,7 +49,7 @@ bool AGN::RenderAPIGL::init()
 
 	m_initialized = true;
 
-	AGN::RenderAPIGL::getOpenGLError();
+	AGN::RenderAPIGL::getOpenGLErrors();
 
 	return true;
 }
@@ -96,7 +96,7 @@ bool AGN::RenderAPIGL::initOpenGL()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-	AGN::RenderAPIGL::getOpenGLError();
+	AGN::RenderAPIGL::getOpenGLErrors();
 
 	return true;
 }
@@ -176,7 +176,7 @@ void AGN::RenderAPIGL::logAvailableGLExtensions()
 	}
 }
 
-void AGN::RenderAPIGL::getOpenGLError()
+void AGN::RenderAPIGL::getOpenGLErrors()
 {
 	GLenum errorType = GL_NO_ERROR;
 	while ((errorType = glGetError()) != GL_NO_ERROR)

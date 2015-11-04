@@ -11,18 +11,33 @@ namespace AGN
 	class GUIGL : public IGUI
 	{
 	public:
+		GUIGL();
 		bool init(SDL_Window* a_window);
-		bool processEvent(SDL_Event* a_event);
-
+		void processEvent(SDL_Event* a_event);
 		void shutdown() override;
 		void update(float a_deltaTime) override;
 
 	private:
+		friend static void renderDrawLists(ImDrawData* draw_data);
+
 		// Use if you want to reset your rendering device without losing ImGui state.
 		void invalidateDeviceObjects();
 		void createDeviceObjects();
-		void createShaders();
 		void createImGUIFont();
+
 		SDL_Window* m_window;
+		int32_t m_shaderHandle;
+		int32_t m_vertHandle;
+		int32_t m_fragHandle;
+		int32_t m_attribLocationTex;
+		int32_t m_attribLocationProjMtx;
+		int32_t m_attribLocationPosition;
+		int32_t m_attribLocationUV;
+		int32_t m_attribLocationColor;
+		uint32_t m_vboHandle;
+		uint32_t m_vaoHandle;
+		uint32_t m_elementsHandle;
+		uint32_t m_fontTexture;
+
 	};
 }
