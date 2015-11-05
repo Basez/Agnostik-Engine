@@ -22,7 +22,7 @@ namespace AGN
 	private:
 	
 #if defined(__GNUC__) || defined(__GNUG__)
-		// GCC doesnt support static friend
+		// GCC doesnt support static friend functions
 		friend void renderDrawLists(ImDrawData* draw_data);
 #else
 		static friend void renderDrawLists(ImDrawData* draw_data);

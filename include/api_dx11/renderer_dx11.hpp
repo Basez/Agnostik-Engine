@@ -2,12 +2,14 @@
 
 #include "i_renderer.hpp"
 
+// fwd declarations
 struct ID3D11RenderTargetView;
 struct ID3D11DepthStencilView;
 struct ID3D11Texture2D;
 struct ID3D11DepthStencilState;
 struct ID3D11RasterizerState;
 struct D3D11_VIEWPORT;
+struct ID3D11BlendState;
 
 namespace AGN
 {
@@ -41,6 +43,7 @@ namespace AGN
 		ID3D11Texture2D* m_d3dDepthStencilBuffer;			// A texture to associate to the depth stencil view.
 		ID3D11DepthStencilState* m_d3dDepthStencilState;	// Define the functionality of the depth/stencil stages.
 		ID3D11RasterizerState* m_d3dRasterizerState;		// Define the functionality of the rasterizer stage.
+		ID3D11BlendState* m_d3dDefaultblendState;
 		D3D11_VIEWPORT* m_viewport;
 
 	};

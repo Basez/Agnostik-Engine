@@ -19,6 +19,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <d3d11_1.h>
 #include <d3dcompiler.h>
+#include <imgui/imgui.h>
 
 using namespace glm;
 
@@ -39,6 +40,7 @@ AGN::RendererDX11::RendererDX11(RenderAPIDX11& a_renderAPIReference, DeviceDX11&
 	, m_d3dDepthStencilBuffer(nullptr)
 	, m_d3dDepthStencilState(nullptr)
 	, m_d3dRasterizerState(nullptr)
+	, m_d3dDefaultblendState(nullptr)
 	, m_viewport(nullptr)
 	, m_boundMesh(nullptr)
 	, m_boundMaterial(nullptr)
@@ -119,10 +121,10 @@ bool AGN::RendererDX11::init()
 	D3D11_DEPTH_STENCIL_DESC depthStencilStateDesc;
 	memset(&depthStencilStateDesc, 0, sizeof(D3D11_DEPTH_STENCIL_DESC));
 
-	depthStencilStateDesc.DepthEnable = TRUE;									// Set to TRUE to enable depth testing, or set to FALSE to disable depth testing.
+	depthStencilStateDesc.DepthEnable = true;									// Set to TRUE to enable depth testing, or set to FALSE to disable depth testing.
 	depthStencilStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;			// Identify a portion of the depth-stencil buffer that can be modified by depth data // Turn on writes to the depth-stencil buffer.
 	depthStencilStateDesc.DepthFunc = D3D11_COMPARISON_LESS;					// compares depth data against existing depth data
-	depthStencilStateDesc.StencilEnable = FALSE;
+	depthStencilStateDesc.StencilEnable = false;
 
 	hr = d3d11Device->CreateDepthStencilState(&depthStencilStateDesc, &m_d3dDepthStencilState);
 
@@ -136,15 +138,15 @@ bool AGN::RendererDX11::init()
 	D3D11_RASTERIZER_DESC rasterizerDesc;
 	memset(&rasterizerDesc, 0, sizeof(D3D11_RASTERIZER_DESC));
 
-	rasterizerDesc.AntialiasedLineEnable = FALSE;		// antialiasing; only applies if doing line drawing and MultisampleEnable is FALSE.
+	rasterizerDesc.AntialiasedLineEnable = false;		// antialiasing; only applies if doing line drawing and MultisampleEnable is FALSE.
 	rasterizerDesc.CullMode = D3D11_CULL_BACK;
 	rasterizerDesc.DepthBias = 0;
 	rasterizerDesc.DepthBiasClamp = 0.0f;
-	rasterizerDesc.DepthClipEnable = TRUE;				// Enable clipping based on distance
+	rasterizerDesc.DepthClipEnable = true;				// Enable clipping based on distance
 	rasterizerDesc.FillMode = D3D11_FILL_SOLID;			// Determines the fill mode to use when rendering // change to D3D11_FILL_WIREFRAME for wireframes
-	rasterizerDesc.FrontCounterClockwise = TRUE;		// Determines if a triangle is front- or back-facing
-	rasterizerDesc.MultisampleEnable = FALSE;			// MSAA
-	rasterizerDesc.ScissorEnable = FALSE;				// Enable scissor-rectangle culling
+	rasterizerDesc.FrontCounterClockwise = true;		// Determines if a triangle is front- or back-facing
+	rasterizerDesc.MultisampleEnable = false;			// MSAA
+	rasterizerDesc.ScissorEnable = false;				// Enable scissor-rectangle culling
 	rasterizerDesc.SlopeScaledDepthBias = 0.0f;
 
 	// Create the rasterizer state object.
@@ -163,6 +165,23 @@ bool AGN::RendererDX11::init()
 	m_viewport->TopLeftY = 0.0f;
 	m_viewport->MinDepth = 0.0f;
 	m_viewport->MaxDepth = 1.0f;
+
+	// create default blend state
+	{
+		D3D11_BLEND_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.AlphaToCoverageEnable = false;
+		desc.IndependentBlendEnable = false;
+		desc.RenderTarget[0].BlendEnable = false;
+		desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+		desc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
+		desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+		desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		d3d11Device->CreateBlendState(&desc, &m_d3dDefaultblendState);
+	}
 
 	return true;
 }
@@ -209,6 +228,13 @@ void AGN::RendererDX11::render(AGN::DrawCommander& a_drawCommander)
 
 		case EDrawCommandType::DrawEntity:
 			drawEntity(*command);
+			break;
+
+		case EDrawCommandType::DrawGUI:
+			m_deviceReference.beginDebugEvent("Render ImGui");
+			ImGui::Render();
+			m_deviceReference.endDebugEvent();
+
 			break;
 
 		case EDrawCommandType::SwapBackBuffer:
@@ -415,6 +441,13 @@ void AGN::RendererDX11::setStaticStages()
 		d3dDeviceContext->OMSetRenderTargets(1, &m_d3dRenderTargetView, m_d3dDepthStencilView);
 		d3dDeviceContext->OMSetDepthStencilState(m_d3dDepthStencilState, 1);
 	}
+
+	// blend state
+	{
+		const float blendFactor[4] = { 0.f, 0.f, 0.f, 0.f };
+		d3dDeviceContext->OMSetBlendState(m_d3dDefaultblendState, blendFactor, 0xffffffff);
+	}
+
 }
 
 void AGN::RendererDX11::onWindowUpdated(glm::ivec2 a_dimentions)
@@ -457,7 +490,6 @@ void AGN::RendererDX11::onWindowUpdated(glm::ivec2 a_dimentions)
 	depthStencilBufferDesc.SampleDesc.Quality = 0;							// multisampling parameters for the texture. 
 	depthStencilBufferDesc.Usage = D3D11_USAGE_DEFAULT;						// w the texture is to be read from and written to
 
-	
 	hr = m_deviceReference.getD3D11Device()->CreateTexture2D(&depthStencilBufferDesc, nullptr, &m_d3dDepthStencilBuffer);
 
 	if (FAILED(hr))

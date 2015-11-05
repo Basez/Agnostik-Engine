@@ -23,7 +23,6 @@ namespace AGN
 		virtual class IGUI& getGUI() override;
 
 	private:
-
 		bool m_initialized;
 		bool m_vSync;
 		class WindowDX11* m_window;

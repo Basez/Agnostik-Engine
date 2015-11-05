@@ -20,5 +20,4 @@ build/linux64gl/agnostik_release
 build/linux64gl/agnostik_debug
 shaders/output_gl/
 shaders/output_dx11/
-project_files/imgui.ini
-/imgui.ini
+imgui.ini

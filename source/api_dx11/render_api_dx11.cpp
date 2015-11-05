@@ -36,8 +36,8 @@ bool AGN::RenderAPIDX11::init()
 	if (!m_renderer->init()) return false;
 	
 	m_gui = new GUIDX11();
-	//m_gui->init(m_window); // TODO:
-
+	m_gui->init(this);
+	
 	return true;
 }
 
