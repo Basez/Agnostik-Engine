@@ -100,10 +100,18 @@ void AGN::GUIGL::render(ImDrawData* draw_data)
 	AGN::RenderAPIGL::getOpenGLErrors();
 }
 
+#if defined(__GNUC__) || defined(__GNUG__)
+// static friend functions are not supported in GCC
 void renderDrawLists(ImDrawData* draw_data)
 {
 	g_instance->render(draw_data);
 }
+#else
+void AGN::renderDrawLists(ImDrawData* draw_data)
+{
+	g_instance->render(draw_data);
+}	
+#endif
 
 static const char* ImGui_ImplSdl_GetClipboardText()
 {
@@ -267,6 +275,7 @@ AGN::GUIGL::GUIGL()
 	, m_vaoHandle(0)
 	, m_elementsHandle(0)
 	, m_fontTexture(0)
+	, m_isEnabled(false)
 {
 	if (g_instance != nullptr) assert(false); // ensure only one gui can exist // TODO: refactor
 	g_instance = this;
@@ -275,6 +284,7 @@ AGN::GUIGL::GUIGL()
 bool AGN::GUIGL::init(SDL_Window *a_window)
 {
 	m_window = a_window;
+	m_isEnabled = true;
 
 	ImGuiIO& io = ImGui::GetIO();
 	io.KeyMap[ImGuiKey_Tab] = SDLK_TAB;                     // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array.

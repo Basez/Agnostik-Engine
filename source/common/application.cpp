@@ -143,6 +143,25 @@ void AGN::Application::updateMeshShaderProperties(float a_deltaTime)
 	m_meshShaderPipeline->setConstantBufferData(EShaderType::PixelShader,"LightSettings", &buffer, 48);
 }
 
+void AGN::Application::renderGUIElements()
+{
+	// 1. Show a simple window
+	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
+	{
+		static ImVec4 clear_color = ImColor(114, 144, 154);
+		static float f = 0.0f;
+		bool show_test_window = true;
+		bool show_another_window = true;
+
+		ImGui::Text("Hello, world!");
+		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+		ImGui::ColorEdit3("clear color", (float*)&clear_color);
+		if (ImGui::Button("Test Window")) show_test_window ^= 1;
+		if (ImGui::Button("Another Window")) show_another_window ^= 1;
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	}
+}
+
 void AGN::Application::loadShaders()
 {
 	// create shaders
@@ -165,22 +184,11 @@ void AGN::Application::render()
 	createDrawQueue();
 	m_drawCommander->sortCommandList();
 
-	// 1. Show a simple window
-	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
+	if (m_renderAPI->getGUI().isEnabled())
 	{
-		static ImVec4 clear_color = ImColor(114, 144, 154);
-		static float f = 0.0f;
-		bool show_test_window = true;
-		bool show_another_window = true;
-
-		ImGui::Text("Hello, world!");
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-		ImGui::ColorEdit3("clear color", (float*)&clear_color);
-		if (ImGui::Button("Test Window")) show_test_window ^= 1;
-		if (ImGui::Button("Another Window")) show_another_window ^= 1;
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		renderGUIElements();
 	}
-
+	
 	// api specific rendering
 	m_renderAPI->getRenderer().render(*m_drawCommander);
 

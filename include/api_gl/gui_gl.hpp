@@ -17,9 +17,17 @@ namespace AGN
 		void shutdown() override;
 		void update(float a_deltaTime) override;
 		void render(ImDrawData* draw_data);
-		
+		bool isEnabled() override { return m_isEnabled; }
+
 	private:
+	
+#if defined(__GNUC__) || defined(__GNUG__)
+		// GCC doesnt support static friend
 		friend void renderDrawLists(ImDrawData* draw_data);
+#else
+		static friend void renderDrawLists(ImDrawData* draw_data);
+#endif
+
 
 		void invalidateDeviceObjects();
 		void createDeviceObjects();
@@ -38,6 +46,6 @@ namespace AGN
 		uint32_t m_vaoHandle;
 		uint32_t m_elementsHandle;
 		uint32_t m_fontTexture;
-
+		bool m_isEnabled;
 	};
 }

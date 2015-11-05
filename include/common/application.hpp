@@ -15,6 +15,7 @@ namespace AGN
 	private:
 		void update();
 		void render();
+		void renderGUIElements();
 		void createDrawQueue();
 		void loadShaders();
 		void updateMeshShaderProperties(float a_deltaTime);

@@ -6,6 +6,7 @@
 #include "config_manager.hpp"
 #include "input_dx11.hpp"
 #include "application.hpp"
+#include "gui_dx11.hpp"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -16,6 +17,7 @@ AGN::RenderAPIDX11::RenderAPIDX11()
 	, m_window(nullptr)
 	, m_device(nullptr)
 	, m_renderer(nullptr)
+	, m_gui(nullptr)
 {
 
 }
@@ -32,6 +34,9 @@ bool AGN::RenderAPIDX11::init()
 
 	m_renderer = new RendererDX11(*this, *m_device, *m_window);
 	if (!m_renderer->init()) return false;
+	
+	m_gui = new GUIDX11();
+	//m_gui->init(m_window); // TODO:
 
 	return true;
 }
@@ -49,6 +54,11 @@ AGN::IDevice& AGN::RenderAPIDX11::getDevice()
 AGN::IRenderer& AGN::RenderAPIDX11::getRenderer()
 {
 	return dynamic_cast<IRenderer&>(*m_renderer);
+}
+
+AGN::IGUI& AGN::RenderAPIDX11::getGUI()
+{
+	return dynamic_cast<AGN::IGUI&>(*m_gui);
 }
 
 void AGN::RenderAPIDX11::enableVSync(bool a_value)

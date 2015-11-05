@@ -16,6 +16,7 @@ AGN::RenderAPIGL::RenderAPIGL()
 	, m_window(nullptr)
 	, m_device(nullptr)
 	, m_renderer(nullptr)
+	, m_gui(nullptr)
 {
 	m_device = new DeviceGL();
 	m_renderer = new RendererGL();
@@ -155,7 +156,6 @@ AGN::IRenderer& AGN::RenderAPIGL::getRenderer()
 AGN::IGUI& AGN::RenderAPIGL::getGUI()
 {
 	return dynamic_cast<AGN::IGUI&>(*m_gui);
-	
 }
 
 void AGN::RenderAPIGL::logAvailableGLExtensions()
