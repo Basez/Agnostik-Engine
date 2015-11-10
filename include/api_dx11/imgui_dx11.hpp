@@ -1,5 +1,5 @@
 #pragma once
-#include "i_gui.hpp"
+#include "i_imgui.hpp"
 #include <imgui/imgui.h>	// TODO: refactor out later
 
 // fwd declare
@@ -17,10 +17,10 @@ struct ID3D11BlendState;
 
 namespace AGN
 {
-	class GUIDX11 : public IGUI
+	class ImGuiDX11 : public IImGui
 	{
 	public:
-		GUIDX11();
+		ImGuiDX11();
 		void init(class RenderAPIDX11* a_api);
 		//void processEvent(SDL_Event* a_event);
 		void shutdown() override;

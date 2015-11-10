@@ -35,10 +35,33 @@ void AGN::SceneManager::init()
 	m_cameraController = new CameraController(*m_camera, false);
 }
 
-void AGN::SceneManager::loadScene()
+void AGN::SceneManager::loadScene(int16_t a_index)
 {
-	loadScrambledScene();
-	//loadSponza();
+	cleanupScene();
+
+	// TODO: refactor into proper scene management functionality
+	switch (a_index)
+	{
+	case 0:
+		loadSponza();
+		break;
+
+	case 1:
+		loadSibenik();
+		break;
+
+	case 2:
+		loadSuzannaCrate();
+		break;
+
+	case 3:
+		loadEmpty();
+		break;
+
+	default:
+		g_log.error("Invalid scene index!");
+		break;
+	}
 }
 
 void AGN::SceneManager::onWindowUpdated(glm::ivec2 a_dimentions)
@@ -58,7 +81,73 @@ void AGN::SceneManager::update(float a_deltaTime)
 	}
 }
 
-void AGN::SceneManager::loadScrambledScene()
+
+void AGN::SceneManager::loadSponza()
+{
+	ResourceManager& resourceManager = g_application.getResourceManager();
+
+	// load meshes
+	std::vector<IMesh*> sponzaMeshCollection = resourceManager.loadMeshCollection("sponza/sponza.obj");
+	std::vector<IMesh*> skyboxMeshCollection = resourceManager.loadMeshCollection("skybox_fixed.obj");
+
+	// create materials
+	Material& testMaterial = resourceManager.createMaterial("test_material");
+	testMaterial.diffuseTexture = &resourceManager.loadTexture("test.png", ETextureType::TEXTURE_2D);
+
+	Material& crateMaterial = resourceManager.createMaterial("crate_material");
+	crateMaterial.diffuseTexture = &resourceManager.loadTexture("market_props_crate_1_texture.png", ETextureType::TEXTURE_2D);
+
+	Material& skyboxMaterial = resourceManager.createMaterial("skybox_material");
+	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", ETextureType::TEXTURE_2D);
+	skyboxMaterial.diffuseTexture->setTextureParams((unsigned int)ETextureRenderFlags::USE_CLAMP);
+	skyboxMeshCollection[0]->setMaterial(&skyboxMaterial);
+
+	// create entities
+	Entity* sponzaEntity = new Entity();
+	sponzaEntity->setMeshCollection(sponzaMeshCollection);
+	sponzaEntity->setPosition(vec3(0, 0, 0));
+	m_entities.push_back(sponzaEntity);
+
+	Entity* skyboxEntity = new Entity();
+	skyboxEntity->setMeshCollection(skyboxMeshCollection);
+	skyboxEntity->setPosition(vec3(0, 0, 0));
+	m_skyboxEntities.push_back(skyboxEntity);
+}
+
+
+void AGN::SceneManager::loadSibenik()
+{
+	ResourceManager& resourceManager = g_application.getResourceManager();
+
+	// load meshes
+	std::vector<IMesh*> sibenikMeshCollection = resourceManager.loadMeshCollection("sibenik/sibenik.obj");
+	std::vector<IMesh*> skyboxMeshCollection = resourceManager.loadMeshCollection("skybox_fixed.obj");
+
+	// create materials
+	Material& testMaterial = resourceManager.createMaterial("test_material");
+	testMaterial.diffuseTexture = &resourceManager.loadTexture("test.png", ETextureType::TEXTURE_2D);
+
+	Material& crateMaterial = resourceManager.createMaterial("crate_material");
+	crateMaterial.diffuseTexture = &resourceManager.loadTexture("market_props_crate_1_texture.png", ETextureType::TEXTURE_2D);
+
+	Material& skyboxMaterial = resourceManager.createMaterial("skybox_material");
+	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", ETextureType::TEXTURE_2D);
+	skyboxMaterial.diffuseTexture->setTextureParams((unsigned int)ETextureRenderFlags::USE_CLAMP);
+	skyboxMeshCollection[0]->setMaterial(&skyboxMaterial);
+
+	// create entities
+	Entity* sibenikEntity = new Entity();
+	sibenikEntity->setMeshCollection(sibenikMeshCollection);
+	sibenikEntity->setPosition(vec3(0, 0, 0));
+	m_entities.push_back(sibenikEntity);
+
+	Entity* skyboxEntity = new Entity();
+	skyboxEntity->setMeshCollection(skyboxMeshCollection);
+	skyboxEntity->setPosition(vec3(0, 0, 0));
+	m_skyboxEntities.push_back(skyboxEntity);
+}
+
+void AGN::SceneManager::loadSuzannaCrate()
 {
 	ResourceManager& resourceManager = g_application.getResourceManager();
 
@@ -121,35 +210,33 @@ void AGN::SceneManager::loadScrambledScene()
 	}
 }
 
-void AGN::SceneManager::loadSponza()
+void AGN::SceneManager::loadEmpty()
 {
 	ResourceManager& resourceManager = g_application.getResourceManager();
 
-	// load meshes
-	//std::vector<IAMesh*> sponzaMeshCollection = resourceManager.loadMeshCollection("sponza/sponza.obj");
-	std::vector<IMesh*> sponzaMeshCollection = resourceManager.loadMeshCollection("sibenik/sibenik.obj");
 	std::vector<IMesh*> skyboxMeshCollection = resourceManager.loadMeshCollection("skybox_fixed.obj");
 
 	// create materials
-	Material& testMaterial = resourceManager.createMaterial("test_material");
-	testMaterial.diffuseTexture = &resourceManager.loadTexture("test.png", ETextureType::TEXTURE_2D);
-
-	Material& crateMaterial = resourceManager.createMaterial("crate_material");
-	crateMaterial.diffuseTexture = &resourceManager.loadTexture("market_props_crate_1_texture.png", ETextureType::TEXTURE_2D);
-
 	Material& skyboxMaterial = resourceManager.createMaterial("skybox_material");
 	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", ETextureType::TEXTURE_2D);
-	skyboxMaterial.diffuseTexture->setTextureParams((unsigned int)ETextureRenderFlags::USE_CLAMP);
+
 	skyboxMeshCollection[0]->setMaterial(&skyboxMaterial);
 
-	// create entities
-	Entity* sponzaEntity = new Entity();
-	sponzaEntity->setMeshCollection(sponzaMeshCollection);
-	sponzaEntity->setPosition(vec3(0, 0, 0));
-	m_entities.push_back(sponzaEntity);
-
+	// Skybox entity
 	Entity* skyboxEntity = new Entity();
 	skyboxEntity->setMeshCollection(skyboxMeshCollection);
 	skyboxEntity->setPosition(vec3(0, 0, 0));
+	skyboxEntity->setScale(vec3(10, 10, 10));
 	m_skyboxEntities.push_back(skyboxEntity);
+}
+
+void AGN::SceneManager::cleanupScene()
+{
+	for (Entity* entity : m_entities) delete entity;
+	m_entities.clear();
+
+	for (Entity* skyboxEntity : m_skyboxEntities) delete skyboxEntity;
+	m_skyboxEntities.clear();
+
+	// TODO: cleanup on GPU size aswell
 }

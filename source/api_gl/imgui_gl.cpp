@@ -1,5 +1,5 @@
 #include "shared.hpp"
-#include "gui_gl.hpp"
+#include "imgui_gl.hpp"
 #include "render_api_gl.hpp"
 #include "i_input.hpp"
 #include <imgui/imgui.h>
@@ -8,9 +8,9 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_syswm.h>
 
-static AGN::GUIGL* g_instance = nullptr; // TODO: refactor
+static AGN::ImGuiGL* g_instance = nullptr; // TODO: refactor
 
-void AGN::GUIGL::render(ImDrawData* draw_data)
+void AGN::ImGuiGL::render(ImDrawData* draw_data)
 {
 	// Backup GL state
 	GLint last_program; glGetIntegerv(GL_CURRENT_PROGRAM, &last_program);
@@ -123,7 +123,7 @@ static void ImGui_ImplSdl_SetClipboardText(const char* text)
 	SDL_SetClipboardText(text);
 }
 
-void AGN::GUIGL::processEvent(SDL_Event* event)
+void AGN::ImGuiGL::processEvent(SDL_Event* event)
 {
 	// handle custom events for GUI (implemented seperately from InputManager)
 	ImGuiIO& io = ImGui::GetIO();
@@ -148,7 +148,7 @@ void AGN::GUIGL::processEvent(SDL_Event* event)
 	}
 }
 
-void AGN::GUIGL::createDeviceObjects()
+void AGN::ImGuiGL::createDeviceObjects()
 {
 	// Backup GL state
 	GLint last_texture, last_array_buffer, last_vertex_array;
@@ -225,7 +225,7 @@ void AGN::GUIGL::createDeviceObjects()
 	RenderAPIGL::getOpenGLErrors();
 }
 
-void AGN::GUIGL::createImGUIFont()
+void AGN::ImGuiGL::createImGUIFont()
 {
 	ImGuiIO& io = ImGui::GetIO();
 
@@ -252,7 +252,7 @@ void AGN::GUIGL::createImGUIFont()
 	AGN::RenderAPIGL::getOpenGLErrors();
 }
 
-void AGN::GUIGL::invalidateDeviceObjects()
+void AGN::ImGuiGL::invalidateDeviceObjects()
 {
 	if (m_fontTexture)
 	{
@@ -262,7 +262,7 @@ void AGN::GUIGL::invalidateDeviceObjects()
 	}
 }
 
-AGN::GUIGL::GUIGL()
+AGN::ImGuiGL::ImGuiGL()
 	: m_shaderHandle(0)
 	, m_vertHandle(0)
 	, m_fragHandle(0)
@@ -281,7 +281,7 @@ AGN::GUIGL::GUIGL()
 	g_instance = this;
 }
 
-bool AGN::GUIGL::init(SDL_Window *a_window)
+bool AGN::ImGuiGL::init(SDL_Window *a_window)
 {
 	m_window = a_window;
 	m_isEnabled = true;
@@ -323,13 +323,13 @@ bool AGN::GUIGL::init(SDL_Window *a_window)
 	return true;
 }
 
-void AGN::GUIGL::shutdown()
+void AGN::ImGuiGL::shutdown()
 {
 	invalidateDeviceObjects();
 	ImGui::Shutdown();
 }
 
-void AGN::GUIGL::update(float a_deltaTime)
+void AGN::ImGuiGL::update(float a_deltaTime)
 {
 	if (!m_fontTexture)
 	{

@@ -1,5 +1,5 @@
 #include "shared.hpp"
-#include "gui_dx11.hpp"
+#include "imgui_dx11.hpp"
 #include "render_api_dx11.hpp"
 #include "window_dx11.hpp"
 #include "i_input.hpp"
@@ -11,14 +11,14 @@
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
-static AGN::GUIDX11* g_instance = nullptr; // TODO: refactor
+static AGN::ImGuiDX11* g_instance = nullptr; // TODO: refactor
 
 struct VERTEX_CONSTANT_BUFFER
 {
 	float mvp[4][4];
 };
 
-void AGN::GUIDX11::render(ImDrawData* draw_data)
+void AGN::ImGuiDX11::render(ImDrawData* draw_data)
 {
 	DeviceDX11& deviceDX11 = dynamic_cast<DeviceDX11&>(m_renderAPI->getDevice());
 	ID3D11Device* d3dDevice = deviceDX11.getD3D11Device();
@@ -235,7 +235,7 @@ IMGUI_API LRESULT ImGui_ImplDX11_WndProcHandler(HWND, UINT msg, WPARAM wParam, L
 	return 0;
 }*/
 
-void AGN::GUIDX11::createDeviceObjects()
+void AGN::ImGuiDX11::createDeviceObjects()
 {
 	if (m_fontSampler) invalidateDeviceObjects();
 
@@ -374,7 +374,7 @@ void AGN::GUIDX11::createDeviceObjects()
 	createImGUIFont();
 }
 
-void AGN::GUIDX11::createImGUIFont()
+void AGN::ImGuiDX11::createImGUIFont()
 {
 	ImGuiIO& io = ImGui::GetIO();
 
@@ -442,7 +442,7 @@ void AGN::GUIDX11::createImGUIFont()
 	io.Fonts->ClearTexData();
 }
 
-void AGN::GUIDX11::invalidateDeviceObjects()
+void AGN::ImGuiDX11::invalidateDeviceObjects()
 {
 	if (m_fontSampler) { m_fontSampler->Release(); m_fontSampler = nullptr; }
 	if (m_fontTextureView) { m_fontTextureView->Release(); m_fontTextureView = nullptr; ImGui::GetIO().Fonts->TexID = 0; }
@@ -459,7 +459,7 @@ void AGN::GUIDX11::invalidateDeviceObjects()
 	if (m_vertexShaderBlob) { m_vertexShaderBlob->Release(); m_vertexShaderBlob = nullptr; }
 }
 
-AGN::GUIDX11::GUIDX11()
+AGN::ImGuiDX11::ImGuiDX11()
 	: m_isEnabled(false)
 	, m_renderAPI(nullptr)
 	, m_vertexBuffer(nullptr)
@@ -481,7 +481,7 @@ AGN::GUIDX11::GUIDX11()
 	g_instance = this;
 }
 
-void AGN::GUIDX11::init(RenderAPIDX11* a_api)
+void AGN::ImGuiDX11::init(RenderAPIDX11* a_api)
 {
 	m_renderAPI = a_api;
 	m_isEnabled = true;
@@ -512,13 +512,13 @@ void AGN::GUIDX11::init(RenderAPIDX11* a_api)
 	io.KeyMap[ImGuiKey_Z] = 'Z';
 }
 
-void AGN::GUIDX11::shutdown()
+void AGN::ImGuiDX11::shutdown()
 {
 	invalidateDeviceObjects();
 	ImGui::Shutdown();
 }
 
-void AGN::GUIDX11::update(float a_deltaTime)
+void AGN::ImGuiDX11::update(float a_deltaTime)
 {
 	if (!m_vertexBuffer) createDeviceObjects();
 

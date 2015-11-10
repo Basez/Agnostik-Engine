@@ -6,7 +6,7 @@
 #include "config_manager.hpp"
 #include "input_gl.hpp"
 #include "application.hpp"
-#include "gui_gl.hpp"
+#include "imgui_gl.hpp"
 
 #include <GL/glew.h>
 #include <SDL/SDL.h>
@@ -16,11 +16,11 @@ AGN::RenderAPIGL::RenderAPIGL()
 	, m_window(nullptr)
 	, m_device(nullptr)
 	, m_renderer(nullptr)
-	, m_gui(nullptr)
+	, m_imgui(nullptr)
 {
 	m_device = new DeviceGL();
 	m_renderer = new RendererGL();
-	m_gui = new GUIGL();
+	m_imgui = new ImGuiGL();
 }
 
 bool AGN::RenderAPIGL::init()
@@ -46,7 +46,7 @@ bool AGN::RenderAPIGL::init()
 
 	enableVSync(g_configManager.getConfigPropertyAsBool("vsync"));
 
-	m_gui->init(m_window->getSDLWindow());
+	m_imgui->init(m_window->getSDLWindow());
 
 	m_initialized = true;
 
@@ -153,9 +153,9 @@ AGN::IRenderer& AGN::RenderAPIGL::getRenderer()
 	return dynamic_cast<IRenderer&>(*m_renderer);
 }
 
-AGN::IGUI& AGN::RenderAPIGL::getGUI()
+AGN::IImGui& AGN::RenderAPIGL::getImGui()
 {
-	return dynamic_cast<AGN::IGUI&>(*m_gui);
+	return dynamic_cast<AGN::IImGui&>(*m_imgui);
 }
 
 void AGN::RenderAPIGL::logAvailableGLExtensions()
@@ -211,7 +211,7 @@ void AGN::RenderAPIGL::handleEvents(bool& a_doQuit)
 
 	while (SDL_PollEvent(&sdlEvent))
 	{
-		m_gui->processEvent(&sdlEvent);
+		m_imgui->processEvent(&sdlEvent);
 
 		switch (sdlEvent.type)
 		{

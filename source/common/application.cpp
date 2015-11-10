@@ -6,7 +6,7 @@
 #include "i_mesh.hpp"
 #include "i_shader_pipeline.hpp"
 #include "i_shader.hpp"
-#include "i_gui.hpp"
+#include "i_imgui.hpp"
 #include "application.hpp"
 #include "material.hpp"
 #include "entity.hpp"
@@ -18,10 +18,10 @@
 #include "camera.hpp"
 
 #include <chrono>
-#include <imgui/imgui.h>	// TODO: remove 
+#include <imgui/imgui.h>
 
 // shaders
-// TODO: make these shaders more crossplatform friendly.
+// TODO: make these shaders more cross-platform friendly.
 // TODO: Perhaps let the pre-build step figure it out or generate both types in the same file, with a special getter
 #include "shader_mesh_pix.hpp"
 #include "shader_mesh_vert.hpp"
@@ -58,7 +58,7 @@ void AGN::Application::run(IRenderAPI* a_renderAPI)
 
 	m_sceneManager = new SceneManager();
 	m_sceneManager->init();
-	m_sceneManager->loadScene();
+	m_sceneManager->loadScene(0);
 
 	m_renderAPI->getRenderer().setCamera(m_sceneManager->getCurrentCamera());
 
@@ -114,7 +114,7 @@ void AGN::Application::update()
 	m_sceneManager->update(deltaTime);
 	if (m_meshShaderPipeline) updateMeshShaderProperties(deltaTime);
 
-	m_renderAPI->getGUI().update(deltaTime);
+	m_renderAPI->getImGui().update(deltaTime);
 }
 
 void AGN::Application::updateMeshShaderProperties(float a_deltaTime)
@@ -145,26 +145,37 @@ void AGN::Application::updateMeshShaderProperties(float a_deltaTime)
 
 void AGN::Application::renderGUIElements()
 {
-	// 1. Show a simple window
-	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
+	static bool configIsOpen = true;
+	static int32_t selectedSceneIndex = 0;
+	static bool enableVsync = g_configManager.getConfigPropertyAsBool("vsync");
+
+	ImGui::Begin("Config Menu", &configIsOpen);
 	{
-		bool open = true;
-		ImGui::Begin("TestWindow", &open);
+		// Select scene part
+		ImGui::Text("Select Scene:");
+		const char* sceneNames[] = { "Sponza", "Sibenik", "SuzannaCrate", "Empty" };
+		ImGui::Combo("", &selectedSceneIndex, sceneNames, (int)(sizeof(sceneNames) / sizeof(*sceneNames)));
+		if (ImGui::Button("Load"))
+		{
+			// TODO:
+			g_log.debug("TODO: load %s scene", sceneNames[selectedSceneIndex]);
+			m_sceneManager->loadScene(selectedSceneIndex);
+		}
 
-		static ImVec4 clear_color = ImColor(114, 144, 154);
-		static float f = 0.0f;
-		bool show_test_window = true;
-		bool show_another_window = true;
+		ImGui::Separator();
+		ImGui::Text("Configuration Settings:");
+		
+		// vsync checkbox & functionality
+		bool prevEnableVsync = enableVsync;
+		ImGui::Checkbox("Enable VSync", &enableVsync);
+		if (prevEnableVsync != enableVsync) m_renderAPI->enableVSync(enableVsync);
 
-		ImGui::Text("Hello, world!");
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-		ImGui::ColorEdit3("clear color", (float*)&clear_color);
-		if (ImGui::Button("Test Window")) show_test_window ^= 1;
-		if (ImGui::Button("Another Window")) show_another_window ^= 1;
+		// FPS and other stats
+		ImGui::Separator();
+		ImGui::Text("Stats");
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
-		ImGui::End();
 	}
+	ImGui::End();
 }
 
 void AGN::Application::loadShaders()
@@ -189,7 +200,7 @@ void AGN::Application::render()
 	createDrawQueue();
 	m_drawCommander->sortCommandList();
 
-	if (m_renderAPI->getGUI().isEnabled())
+	if (m_renderAPI->getImGui().isEnabled())
 	{
 		renderGUIElements();
 	}

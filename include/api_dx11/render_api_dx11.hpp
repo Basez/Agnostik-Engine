@@ -20,7 +20,7 @@ namespace AGN
 		virtual class IWindow& getWindow() override;
 		virtual class IDevice& getDevice() override;
 		virtual class IRenderer& getRenderer() override;
-		virtual class IGUI& getGUI() override;
+		virtual class IImGui& getImGui() override;
 
 	private:
 		bool m_initialized;
@@ -28,7 +28,7 @@ namespace AGN
 		class WindowDX11* m_window;
 		class DeviceDX11* m_device;
 		class RendererDX11* m_renderer;
-		class GUIDX11* m_gui;
+		class ImGuiDX11* m_imgui;
 	};
 }
 
