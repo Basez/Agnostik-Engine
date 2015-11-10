@@ -63,7 +63,10 @@ bool AGN::RendererDX11::init()
 
 	// initialize the back buffer of the swap chain and associate it to a render target view.
 	ID3D11Texture2D* backBuffer;
-	HRESULT hr = m_deviceReference.getD3D11SwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
+	IDXGISwapChain* swapChain = m_deviceReference.getD3D11SwapChain();
+
+	// get backbuffer 
+	HRESULT hr = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
 	if (FAILED(hr))
 	{
 		g_log.error("d3dSwapChain->GetBuffer() Failure");
@@ -231,10 +234,7 @@ void AGN::RendererDX11::render(AGN::DrawCommander& a_drawCommander)
 			break;
 
 		case EDrawCommandType::DrawGUI:
-			m_deviceReference.beginDebugEvent("Render ImGui");
-			ImGui::Render();
-			m_deviceReference.endDebugEvent();
-
+			renderGUI();
 			break;
 
 		case EDrawCommandType::SwapBackBuffer:
@@ -448,6 +448,22 @@ void AGN::RendererDX11::setStaticStages()
 		d3dDeviceContext->OMSetBlendState(m_d3dDefaultblendState, blendFactor, 0xffffffff);
 	}
 
+}
+
+void AGN::RendererDX11::renderGUI()
+{
+	m_deviceReference.beginDebugEvent("Render ImGui");
+
+	ID3D11DeviceContext* const d3dDeviceContext = m_deviceReference.getD3D11DeviceContext();
+
+	// disable depth checking on render target for gui
+	d3dDeviceContext->OMSetRenderTargets(1, &m_d3dRenderTargetView, nullptr);	
+
+	ImGui::Render();
+
+	// enable depth checking again
+	d3dDeviceContext->OMSetRenderTargets(1, &m_d3dRenderTargetView, m_d3dDepthStencilView);	
+	m_deviceReference.endDebugEvent();
 }
 
 void AGN::RendererDX11::onWindowUpdated(glm::ivec2 a_dimentions)

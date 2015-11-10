@@ -26,6 +26,7 @@ namespace AGN
 		void drawEntity(struct DrawCommand& a_command);
 		void clearBuffer(struct DrawCommand& a_command);
 		void setStaticStages();
+		void renderGUI();
 		class DeviceDX11& m_deviceReference;
 		class WindowDX11& m_windowReference;
 		class RenderAPIDX11& m_renderAPIReference;

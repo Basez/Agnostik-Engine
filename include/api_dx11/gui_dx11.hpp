@@ -42,19 +42,19 @@ namespace AGN
 
 		bool m_isEnabled;
 		class RenderAPIDX11* m_renderAPI;
-		ID3D11Buffer* m_vertexBuffer = NULL;
-		ID3D11Buffer* m_indexBuffer = NULL;
-		ID3D10Blob* m_vertexShaderBlob = NULL;
-		ID3D11VertexShader* m_vertexShader = NULL;
-		ID3D11InputLayout* m_inputLayout = NULL;
-		ID3D11Buffer* m_vertexConstantBuffer = NULL;
-		ID3D10Blob* m_pixelShaderBlob = NULL;
-		ID3D11PixelShader* m_pixelShader = NULL;
-		ID3D11SamplerState* m_fontSampler = NULL;
-		ID3D11ShaderResourceView* m_fontTextureView = NULL;
-		ID3D11RasterizerState* m_rasterizerState = NULL;
-		ID3D11BlendState* m_blendState = NULL;
-		int32_t m_vertexBufferSize = 5000;
-		int32_t m_indexBufferSize = 10000;
+		ID3D11Buffer* m_vertexBuffer;
+		ID3D11Buffer* m_indexBuffer;
+		ID3D10Blob* m_vertexShaderBlob;
+		ID3D11VertexShader* m_vertexShader;
+		ID3D11InputLayout* m_inputLayout;
+		ID3D11Buffer* m_vertexConstantBuffer;
+		ID3D10Blob* m_pixelShaderBlob;
+		ID3D11PixelShader* m_pixelShader;
+		ID3D11SamplerState* m_fontSampler;
+		ID3D11ShaderResourceView* m_fontTextureView;
+		ID3D11RasterizerState* m_rasterizerState;
+		ID3D11BlendState* m_blendState;
+		int32_t m_vertexBufferSize;
+		int32_t m_indexBufferSize;
 	};
 }

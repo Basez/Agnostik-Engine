@@ -241,6 +241,7 @@ void AGN::GUIDX11::createDeviceObjects()
 
 	DeviceDX11& deviceDX11 = dynamic_cast<DeviceDX11&>(m_renderAPI->getDevice());
 	ID3D11Device* d3dDevice = deviceDX11.getD3D11Device();
+	HRESULT hr = S_OK;
 
 	// Create the vertex shader
 	{
@@ -272,7 +273,7 @@ void AGN::GUIDX11::createDeviceObjects()
 			return output;\
 			}";
 
-		D3DCompile(vertexShader, strlen(vertexShader), nullptr, nullptr, nullptr, "main", "vs_5_0", 0, 0, &m_vertexShaderBlob, nullptr);
+		hr = D3DCompile(vertexShader, strlen(vertexShader), nullptr, nullptr, nullptr, "main", "vs_5_0", 0, 0, &m_vertexShaderBlob, nullptr);
 		if (m_vertexShaderBlob == nullptr)
 		{
 			// NB: Pass ID3D10Blob* pErrorBlob to D3DCompile() to get error showing in (const char*)pErrorBlob->GetBufferPointer(). Make sure to Release() the blob!
@@ -307,7 +308,7 @@ void AGN::GUIDX11::createDeviceObjects()
 			cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 			cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 			cbDesc.MiscFlags = 0;
-			d3dDevice->CreateBuffer(&cbDesc, nullptr, &m_vertexConstantBuffer);
+			hr = d3dDevice->CreateBuffer(&cbDesc, nullptr, &m_vertexConstantBuffer);
 		}
 	}
 
@@ -329,7 +330,7 @@ void AGN::GUIDX11::createDeviceObjects()
 			return out_col; \
 			}";
 
-		D3DCompile(pixelShader, strlen(pixelShader), nullptr, nullptr, nullptr, "main", "ps_5_0", 0, 0, &m_pixelShaderBlob, nullptr);
+		hr = D3DCompile(pixelShader, strlen(pixelShader), nullptr, nullptr, nullptr, "main", "ps_5_0", 0, 0, &m_pixelShaderBlob, nullptr);
 		if (m_pixelShaderBlob == nullptr)
 		{
 			// NB: Pass ID3D10Blob* pErrorBlob to D3DCompile() to get error showing in (const char*)pErrorBlob->GetBufferPointer(). Make sure to Release() the blob!
@@ -356,7 +357,7 @@ void AGN::GUIDX11::createDeviceObjects()
 		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-		d3dDevice->CreateBlendState(&blendDesc, &m_blendState);
+		hr = d3dDevice->CreateBlendState(&blendDesc, &m_blendState);
 	}
 
 	// Create the rasterizer state
@@ -367,7 +368,7 @@ void AGN::GUIDX11::createDeviceObjects()
 		rasterizerDesc.CullMode = D3D11_CULL_NONE;
 		rasterizerDesc.ScissorEnable = true;
 		rasterizerDesc.DepthClipEnable = true;
-		d3dDevice->CreateRasterizerState(&rasterizerDesc, &m_rasterizerState);
+		hr = d3dDevice->CreateRasterizerState(&rasterizerDesc, &m_rasterizerState);
 	}
 
 	createImGUIFont();
@@ -381,6 +382,7 @@ void AGN::GUIDX11::createImGUIFont()
 	ID3D11Device* d3dDevice = deviceDX11.getD3D11Device();
 
 	// Build
+	HRESULT hr = S_OK;
 	unsigned char* pixels;
 	int32_t width, height;
 	io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
@@ -404,7 +406,7 @@ void AGN::GUIDX11::createImGUIFont()
 		subResource.pSysMem = pixels;
 		subResource.SysMemPitch = texDesc.Width * 4;
 		subResource.SysMemSlicePitch = 0;
-		d3dDevice->CreateTexture2D(&texDesc, &subResource, &pTexture);
+		hr = d3dDevice->CreateTexture2D(&texDesc, &subResource, &pTexture);
 
 		// Create texture view
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
@@ -413,7 +415,7 @@ void AGN::GUIDX11::createImGUIFont()
 		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 		srvDesc.Texture2D.MipLevels = texDesc.MipLevels;
 		srvDesc.Texture2D.MostDetailedMip = 0;
-		d3dDevice->CreateShaderResourceView(pTexture, &srvDesc, &m_fontTextureView);
+		hr = d3dDevice->CreateShaderResourceView(pTexture, &srvDesc, &m_fontTextureView);
 		pTexture->Release();
 	}
 
@@ -432,7 +434,7 @@ void AGN::GUIDX11::createImGUIFont()
 		samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
 		samplerDesc.MinLOD = 0.f;
 		samplerDesc.MaxLOD = 0.f;
-		d3dDevice->CreateSamplerState(&samplerDesc, &m_fontSampler);
+		hr = d3dDevice->CreateSamplerState(&samplerDesc, &m_fontSampler);
 	}
 
 	// Cleanup (don't clear the input data if you want to append new fonts later)
@@ -459,6 +461,21 @@ void AGN::GUIDX11::invalidateDeviceObjects()
 
 AGN::GUIDX11::GUIDX11()
 	: m_isEnabled(false)
+	, m_renderAPI(nullptr)
+	, m_vertexBuffer(nullptr)
+	, m_indexBuffer(nullptr)
+	, m_vertexShaderBlob(nullptr)
+	, m_vertexShader(nullptr)
+	, m_inputLayout(nullptr)
+	, m_vertexConstantBuffer(nullptr)
+	, m_pixelShaderBlob(nullptr)
+	, m_pixelShader(nullptr)
+	, m_fontSampler(nullptr)
+	, m_fontTextureView(nullptr)
+	, m_rasterizerState(nullptr)
+	, m_blendState(nullptr)
+	, m_vertexBufferSize(5000)
+	, m_indexBufferSize(10000)
 {
 	if (g_instance != nullptr) assert(false); // ensure only one gui can exist // TODO: refactor
 	g_instance = this;
