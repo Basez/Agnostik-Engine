@@ -31,7 +31,10 @@ AGN::RenderAPIGL::RenderAPIGL()
 
 AGN::RenderAPIGL::~RenderAPIGL()
 {
-	g_log.warning("TODO: CLEAN RenderAPIGL::~RenderAPIGL()");
+	delete m_window;
+	delete m_imgui;
+	delete m_renderer;
+	delete m_device;
 }
 
 bool AGN::RenderAPIGL::init()

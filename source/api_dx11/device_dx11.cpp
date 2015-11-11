@@ -34,8 +34,6 @@ AGN::DeviceDX11::DeviceDX11()
 
 AGN::DeviceDX11::~DeviceDX11()
 {
-	g_log.warning("TODO: CLEAN DeviceDX11::~DeviceDX11()");
-
 	safeRelease(m_d3d11Device);
 	safeRelease(m_d3d11DeviceContext);
 	safeRelease(m_d3d11SwapChain);
@@ -147,15 +145,14 @@ bool AGN::DeviceDX11::init(class WindowDX11* a_window)
 			filter.DenyList.NumIDs = _countof(hide);
 			filter.DenyList.pIDList = hide;
 			d3dInfoQueue->AddStorageFilterEntries(&filter);
-			d3dInfoQueue->Release();
+			safeRelease(d3dInfoQueue);
 		}
-
-		// TODO: usefull for memory leak D3D memory leak detection
 	}
 
-
-	if (SUCCEEDED(m_d3d11DeviceContext->QueryInterface(IID_PPV_ARGS(&m_debugUDA))))
+	if (FAILED(m_d3d11DeviceContext->QueryInterface(IID_PPV_ARGS(&m_debugUDA))))
 	{
+		g_log.error("Failure getting debugUDA");
+		return false;
 	}
 
 	return true;
@@ -224,9 +221,9 @@ DXGI_RATIONAL AGN::DeviceDX11::queryRefreshRate(bool a_vsync)
 
 		delete[] displayModeList;
 
-		adapterOutput->Release(); adapterOutput = nullptr;
-		adapter->Release(); adapter = nullptr;
-		factory->Release(); factory = nullptr;
+		safeRelease(adapterOutput);
+		safeRelease(adapter);
+		safeRelease(factory);
 	}
 
 	return refreshRate;
@@ -257,7 +254,7 @@ AGN::IMesh* AGN::DeviceDX11::createMesh(const uint16_t a_aId, AGN::MeshData* a_m
 	{
 		vsDataToUpload[i].position = a_meshData->positions[i];
 		vsDataToUpload[i].normal = a_meshData->normals[i];
-		vsDataToUpload[i].uv = a_meshData->textureCoords[i]; // TODO: refactor name
+		vsDataToUpload[i].textureCoords = a_meshData->textureCoords[i];
 	}
 	
 	resourceDataVertexBuffer.pSysMem = vsDataToUpload;
@@ -408,8 +405,8 @@ AGN::IShader* AGN::DeviceDX11::createShader(const uint16_t a_aId, const char* a_
 			std::string errorMessage = (char*)errorBlob->GetBufferPointer();
 			g_log.error(errorMessage.c_str());
 
-			if (shaderBlob != nullptr) shaderBlob->Release();
-			if (errorBlob != nullptr) errorBlob->Release();
+			safeRelease(shaderBlob);
+			safeRelease(errorBlob);
 
 			assert(false);
 		}
@@ -446,11 +443,7 @@ AGN::IShader* AGN::DeviceDX11::createShader(const uint16_t a_aId, const char* a_
 		return nullptr;
 	}
 
-	if (errorBlob != nullptr)
-	{
-		errorBlob->Release();
-		errorBlob = nullptr;
-	}
+	safeRelease(errorBlob);
 
 	ShaderDX11* shader = new ShaderDX11(*this, a_aId, a_type, d3d11Shader, shaderBlob);
 	return dynamic_cast<IShader*>(shader);
@@ -556,6 +549,9 @@ AGN::IShaderPipeline* AGN::DeviceDX11::createShaderPipeline(const uint16_t a_aId
 	D3D11_SET_DEBUG_NAME(samplerState, "Shader sampler state(" + std::to_string(a_aId) + ")");
 
 	ShaderPipelineDX11* shaderPipeline = new ShaderPipelineDX11(shaderPipelineData, vertexInputLayout, samplerState);
+
+	// cleanup objects
+	delete shaderPipelineData;
 
 	return dynamic_cast<IShaderPipeline*>(shaderPipeline);
 }

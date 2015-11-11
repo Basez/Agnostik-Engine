@@ -98,8 +98,7 @@ bool AGN::RendererDX11::init()
 		return false;
 	}
 
-	backBuffer->Release();
-	backBuffer = nullptr;
+	safeRelease(backBuffer);
 
 	// Create the depth buffer for use with the depth/stencil view.
 	D3D11_TEXTURE2D_DESC depthStencilBufferDesc;
@@ -303,7 +302,7 @@ void AGN::RendererDX11::drawEntity(DrawCommand& a_command)
 
 			d3dDeviceContext->VSSetShader(d3d11VertexShader, nullptr, 0);
 
-			d3d11VertexShader->Release();
+			safeRelease(d3d11VertexShader);
 		}
 
 		// pixel shader stage
@@ -329,7 +328,7 @@ void AGN::RendererDX11::drawEntity(DrawCommand& a_command)
 			ID3D11SamplerState* sampler = shaderPipeline->getSamplerState();
 			d3dDeviceContext->PSSetSamplers(0, 1, &sampler);
 
-			d3d11PixelShader->Release();
+			safeRelease(d3d11PixelShader);
 		}
 
 		// inputlayout
@@ -399,7 +398,7 @@ void AGN::RendererDX11::drawEntity(DrawCommand& a_command)
 			d3dDeviceContext->VSSetConstantBuffers(0, numConstBuffers, d3d11ConstantBuffers);
 		}
 
-		d3d11VertexShader->Release();
+		safeRelease(d3d11VertexShader);
 	}
 
 	// render the mesh
@@ -490,7 +489,7 @@ void AGN::RendererDX11::onWindowUpdated(glm::ivec2 a_dimentions)
 	m_deviceReference.getD3D11DeviceContext()->OMSetRenderTargets(0, 0, 0);
 
 	// Release all outstanding references to the swap chain's buffers.
-	m_d3dRenderTargetView->Release();
+	safeRelease(m_d3dRenderTargetView);
 
 	// Preserve the existing buffer count and format.
 	// Automatically choose the width and height to match the client rect for HWNDs.
@@ -502,8 +501,8 @@ void AGN::RendererDX11::onWindowUpdated(glm::ivec2 a_dimentions)
 		return;
 	}
 
-	m_d3dDepthStencilView->Release();
-	m_d3dDepthStencilBuffer->Release();
+	safeRelease(m_d3dDepthStencilView);
+	safeRelease(m_d3dDepthStencilBuffer);
 
 	// re-create the depth buffer for use with the depth/stencil view.
 	D3D11_TEXTURE2D_DESC depthStencilBufferDesc;
@@ -553,7 +552,7 @@ void AGN::RendererDX11::onWindowUpdated(glm::ivec2 a_dimentions)
 		return;
 	}
 
-	pBuffer->Release();
+	safeRelease(pBuffer);
 
 	m_deviceReference.getD3D11DeviceContext()->OMSetRenderTargets(1, &m_d3dRenderTargetView, NULL);
 

@@ -29,15 +29,12 @@ AGN::WindowDX11::WindowDX11(glm::ivec2 a_dimentions)
 {
 	g_window = this;
 
-	std::string windowName;
-	std::string applicationName;
-
 #ifdef AGN_DEBUG
-	windowName = "Agnostik D3D11 - DEBUG";
-	applicationName = "agnostik_dx11_debug";
+	m_windowName = "Agnostik D3D11 - DEBUG";
+	m_applicationName = "agnostik_dx11_debug";
 #elif AGN_RELEASE
-	windowName = std::string("Agnostik D3D11 - RELEASE");
-	applicationName = "agnostik_dx11_release";
+	m_windowName = std::string("Agnostik D3D11 - RELEASE");
+	m_applicationName = "agnostik_dx11_release";
 #else
 	assert(false);
 #endif
@@ -50,7 +47,7 @@ AGN::WindowDX11::WindowDX11(glm::ivec2 a_dimentions)
 	wndClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wndClass.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wndClass.lpszMenuName = nullptr;
-	wndClass.lpszClassName = applicationName.c_str();
+	wndClass.lpszClassName = m_applicationName.c_str();
 
 	if (!RegisterClassEx(&wndClass))
 	{
@@ -62,7 +59,7 @@ AGN::WindowDX11::WindowDX11(glm::ivec2 a_dimentions)
 
 	auto moduleHandle = GetModuleHandle(nullptr);
 
-	m_windowHandle = CreateWindowA(applicationName.c_str(), windowName.c_str(),
+	m_windowHandle = CreateWindowA(m_applicationName.c_str(), m_windowName.c_str(),
 		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
 		windowRect.right - windowRect.left,
 		windowRect.bottom - windowRect.top,
@@ -80,7 +77,9 @@ AGN::WindowDX11::WindowDX11(glm::ivec2 a_dimentions)
 
 AGN::WindowDX11::~WindowDX11()
 {
-	g_log.warning("TODO: CLEAN WindowDX11::~WindowDX11()");
+	DestroyWindow(m_windowHandle);
+
+	UnregisterClass(m_applicationName.c_str(), GetModuleHandle(nullptr));
 }
 
 LRESULT CALLBACK AGN::WindowDX11::onWindowEvent(HWND a_hwnd, UINT a_message, WPARAM a_wParam, LPARAM a_lParam)
@@ -234,7 +233,8 @@ LRESULT CALLBACK AGN::WindowDX11::onWindowEvent(HWND a_hwnd, UINT a_message, WPA
 
 void AGN::WindowDX11::setTitle(const char* a_title)
 {
-	// TODO:
+	m_windowName = a_title;
+	SetWindowText(m_windowHandle, m_windowName.c_str());
 }
 
 void AGN::WindowDX11::showMessageBox(const char* a_title, const char* a_message)

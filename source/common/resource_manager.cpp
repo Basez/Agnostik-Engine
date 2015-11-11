@@ -204,7 +204,7 @@ class std::vector<AGN::IMesh*> AGN::ResourceManager::loadMeshCollection(std::str
 		{
 			const aiVector3D* loadedPos = &(loadedMesh.mVertices[j]);
 			const aiVector3D* loadedNormal = &(loadedMesh.mNormals[j]);
-			const aiVector3D* loadedTexCoord = loadedMesh.HasTextureCoords(0) ? &(loadedMesh.mTextureCoords[0][j]) : &zeroVector;
+			const aiVector3D* loadedTextureCoords = loadedMesh.HasTextureCoords(0) ? &(loadedMesh.mTextureCoords[0][j]) : &zeroVector;
 			const aiVector3D* loadedTangents = &(loadedMesh.mTangents[j]);
 			const aiVector3D* loadedBitangents = &(loadedMesh.mBitangents[j]);
 
@@ -212,7 +212,7 @@ class std::vector<AGN::IMesh*> AGN::ResourceManager::loadMeshCollection(std::str
 			newMeshData.normals.push_back(vec3(loadedNormal->x, loadedNormal->y, loadedNormal->z));
 			newMeshData.tangents.push_back(vec3(loadedTangents->x, loadedTangents->y, loadedTangents->z));
 			newMeshData.bitangents.push_back(vec3(loadedBitangents->x, loadedBitangents->y, loadedBitangents->z));
-			newMeshData.textureCoords.push_back(vec2(loadedTexCoord->x, loadedTexCoord->y));
+			newMeshData.textureCoords.push_back(vec2(loadedTextureCoords->x, loadedTextureCoords->y));
 
 			// calculate max and minimum (for outer most vertices)
 			if (loadedPos->x < min.x) min.x = loadedPos->x;

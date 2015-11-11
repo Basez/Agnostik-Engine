@@ -30,7 +30,6 @@ namespace AGN
 		static friend void renderDrawLists(ImDrawData* draw_data);
 #endif
 
-
 		void invalidateDeviceObjects();
 		void createDeviceObjects();
 		void createImGUIFont();
@@ -42,7 +41,7 @@ namespace AGN
 		int32_t m_attribLocationTex;
 		int32_t m_attribLocationProjMtx;
 		int32_t m_attribLocationPosition;
-		int32_t m_attribLocationUV;
+		int32_t m_attribLocationTextureCoords;
 		int32_t m_attribLocationColor;
 		uint32_t m_vboHandle;
 		uint32_t m_vaoHandle;

@@ -326,7 +326,7 @@ void AGN::ImGuiDX11::createImGUIFont()
 		srvDesc.Texture2D.MipLevels = texDesc.MipLevels;
 		srvDesc.Texture2D.MostDetailedMip = 0;
 		hr = d3dDevice->CreateShaderResourceView(pTexture, &srvDesc, &m_fontTextureView);
-		pTexture->Release();
+		safeRelease(pTexture);
 	}
 
 	// Store our identifier
@@ -361,7 +361,7 @@ void AGN::ImGuiDX11::render(ImDrawData* draw_data)
 	// Create and grow vertex/index buffers if needed
 	if (!m_vertexBuffer || m_vertexBufferSize < draw_data->TotalVtxCount)
 	{
-		if (m_vertexBuffer) { m_vertexBuffer->Release(); m_vertexBuffer = nullptr; }
+		if (m_vertexBuffer) safeRelease(m_vertexBuffer);
 		m_vertexBufferSize = draw_data->TotalVtxCount + 5000;
 		D3D11_BUFFER_DESC bufferDesc;
 		memset(&bufferDesc, 0, sizeof(D3D11_BUFFER_DESC));
@@ -378,7 +378,7 @@ void AGN::ImGuiDX11::render(ImDrawData* draw_data)
 	}
 	if (!m_indexBuffer || m_indexBufferSize < draw_data->TotalIdxCount)
 	{
-		if (m_indexBuffer) { m_indexBuffer->Release(); m_indexBuffer = nullptr; }
+		if (m_indexBuffer) safeRelease(m_indexBuffer);
 		m_indexBufferSize = draw_data->TotalIdxCount + 10000;
 		D3D11_BUFFER_DESC bufferDesc;
 		memset(&bufferDesc, 0, sizeof(D3D11_BUFFER_DESC));
@@ -524,19 +524,24 @@ void AGN::ImGuiDX11::update(float a_deltaTime)
 
 void AGN::ImGuiDX11::invalidateDeviceObjects()
 {
-	if (m_fontSampler) { m_fontSampler->Release(); m_fontSampler = nullptr; }
-	if (m_fontTextureView) { m_fontTextureView->Release(); m_fontTextureView = nullptr; ImGui::GetIO().Fonts->TexID = 0; }
-	if (m_indexBuffer) { m_indexBuffer->Release(); m_indexBuffer = nullptr; }
-	if (m_vertexBuffer) { m_vertexBuffer->Release(); m_vertexBuffer = nullptr; }
+	safeRelease(m_fontSampler);
 
-	if (m_blendState) { m_blendState->Release(); m_blendState = nullptr; }
-	if (m_rasterizerState) { m_rasterizerState->Release(); m_rasterizerState = nullptr; }
-	if (m_pixelShader) { m_pixelShader->Release(); m_pixelShader = nullptr; }
-	if (m_pixelShaderBlob) { m_pixelShaderBlob->Release(); m_pixelShaderBlob = nullptr; }
-	if (m_vertexConstantBuffer) { m_vertexConstantBuffer->Release(); m_vertexConstantBuffer = nullptr; }
-	if (m_inputLayout) { m_inputLayout->Release(); m_inputLayout = nullptr; }
-	if (m_vertexShader) { m_vertexShader->Release(); m_vertexShader = nullptr; }
-	if (m_vertexShaderBlob) { m_vertexShaderBlob->Release(); m_vertexShaderBlob = nullptr; }
+	if (m_fontTextureView)
+	{
+		safeRelease(m_fontTextureView);
+		ImGui::GetIO().Fonts->TexID = 0;
+	}
+
+	safeRelease(m_indexBuffer);
+	safeRelease(m_vertexBuffer);
+	safeRelease(m_blendState);
+	safeRelease(m_rasterizerState);
+	safeRelease(m_pixelShader);
+	safeRelease(m_pixelShaderBlob);
+	safeRelease(m_vertexConstantBuffer);
+	safeRelease(m_inputLayout);
+	safeRelease(m_vertexShader);
+	safeRelease(m_vertexShaderBlob);
 }
 
 void AGN::ImGuiDX11::shutdown()

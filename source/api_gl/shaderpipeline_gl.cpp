@@ -61,7 +61,7 @@ AGN::ShaderPipelineGL::ShaderPipelineGL(const uint32_t a_glprogramId, ShaderPipe
 		constantBuffer->size = blockSize;
 
 		// create the data & null it
-		constantBuffer->buffer = (GLubyte *)malloc(blockSize);
+		constantBuffer->buffer = new uint8_t[blockSize];
 		memset(constantBuffer->buffer, 0, blockSize);
 
 		// get uniform indices
@@ -92,7 +92,16 @@ AGN::ShaderPipelineGL::ShaderPipelineGL(const uint32_t a_glprogramId, ShaderPipe
 
 AGN::ShaderPipelineGL::~ShaderPipelineGL()
 {
-	g_log.warning("TODO: CLEAN ShaderPipelineGL::~ShaderPipelineGL()");
+	while (m_constantBuffers.size() > 0)
+	{
+		// TODO: create destructor of sorts for the UniformConstantBufferGL?
+		delete[] m_constantBuffers[0]->uniformIds;
+		delete[] m_constantBuffers[0]->uniformOffsets;
+		delete[] m_constantBuffers[0]->buffer;
+
+		delete m_constantBuffers[0];
+		m_constantBuffers.erase(m_constantBuffers.begin());
+	}
 }
 
 AGN::IShader* AGN::ShaderPipelineGL::getShader(const EShaderType a_type)

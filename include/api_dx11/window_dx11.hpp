@@ -34,6 +34,8 @@ namespace AGN
 		glm::ivec2 m_dimentions;
 		HWND m_windowHandle = 0;
 		bool m_isDirty;
+		std::string m_windowName;
+		std::string m_applicationName;
 
 		// TODO: check if friend function is necessary
 		LRESULT CALLBACK onWindowEvent(HWND a_hwnd, UINT a_message, WPARAM a_wParam, LPARAM a_lParam);

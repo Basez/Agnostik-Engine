@@ -29,8 +29,6 @@ AGN::RenderAPIDX11::RenderAPIDX11()
 
 AGN::RenderAPIDX11::~RenderAPIDX11()
 {
-	g_log.warning("TODO: CLEAN RenderAPIDX11::~RenderAPIDX11()");
-
 	if (m_imgui != nullptr)
 	{
 		m_imgui->shutdown();
@@ -38,8 +36,8 @@ AGN::RenderAPIDX11::~RenderAPIDX11()
 	}
 
 	delete m_renderer;
-	delete m_device;	// TODO: Finish the cleanup & deletion of this class
-	delete m_window;	// TODO:  Finish the deletion & deletion of this class
+	delete m_device;
+	delete m_window;
 }
 
 bool AGN::RenderAPIDX11::init()

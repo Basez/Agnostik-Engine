@@ -23,6 +23,8 @@ AGN::ShaderDX11::ShaderDX11(DeviceDX11& a_deviceReference, const uint16_t a_aId,
 	, m_shaderReflectionDesc(nullptr)
 	, m_constantBufferHandles(nullptr)
 	, m_constantBufferBindPoints(nullptr)
+	, m_constantBufferDescriptions(nullptr)
+	, m_numConstantBuffers(0)
 {
 	HRESULT hr = D3DReflect(m_shaderBlob->GetBufferPointer(), m_shaderBlob->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&m_shaderReflection);
 
@@ -100,8 +102,19 @@ AGN::ShaderDX11::ShaderDX11(DeviceDX11& a_deviceReference, const uint16_t a_aId,
 
 AGN::ShaderDX11::~ShaderDX11()
 {
-	// TODO: also check if this destructor is called at all
-	g_log.warning("TODO: CLEAN ~ShaderDX11()");
+	for (int i = 0; i < m_numConstantBuffers; i++)
+	{
+		// release individual buffer handles
+		safeRelease(m_constantBufferHandles[i]);
+	}
+	delete[] m_constantBufferHandles; // delete buffer handle array itself
+
+	safeRelease(m_shaderReflection);
+	safeRelease(m_shaderHandle);
+	safeRelease(m_shaderBlob);
+	delete[] m_constantBufferDescriptions;
+	delete[] m_constantBufferBindPoints; 
+	delete m_shaderReflectionDesc;
 }
 
 std::string AGN::ShaderDX11::getLatestProfile(const AGN::EShaderType a_type, ID3D11Device* a_device)
@@ -168,9 +181,6 @@ void AGN::ShaderDX11::getInputLayoutDesc(D3D11_INPUT_ELEMENT_DESC*& out_inputLay
 		g_log.debug("SemanticName: %s", paramDesc.SemanticName);
 		g_log.debug("Register: %u", paramDesc.Register);
 		g_log.debug("ComponentType: %u", (uint32_t)paramDesc.ComponentType);
-
-		//{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		//{ "TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 
 		out_inputLayouts[i].SemanticName = paramDesc.SemanticName;
 		out_inputLayouts[i].SemanticIndex = paramDesc.SemanticIndex;

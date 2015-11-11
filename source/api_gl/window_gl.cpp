@@ -20,17 +20,15 @@ AGN::WindowGL::WindowGL(glm::ivec2 a_dimentions)
 {
 	Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 
-	std::string windowName;
-
 #ifdef AGN_DEBUG
-	windowName = std::string("Agnostik OpenGL - DEBUG");
+	m_windowName = std::string("Agnostik OpenGL - DEBUG");
 #elif AGN_RELEASE
-	windowName = std::string("Agnostik OpenGL - RELEASE");
+	m_windowName = std::string("Agnostik OpenGL - RELEASE");
 #else
-	windowName = AGN::OSUtils::getExecutableName();
+	m_windowName = AGN::OSUtils::getExecutableName();
 #endif
 
-	m_sdlWindow = SDL_CreateWindow(windowName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, a_dimentions.x, a_dimentions.y, flags);
+	m_sdlWindow = SDL_CreateWindow(m_windowName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, a_dimentions.x, a_dimentions.y, flags);
 
 	if (!m_sdlWindow)
 	{
@@ -42,12 +40,13 @@ AGN::WindowGL::WindowGL(glm::ivec2 a_dimentions)
 
 AGN::WindowGL::~WindowGL()
 {
-	g_log.warning("TODO: CLEAN WindowGL::~WindowGL()");
+	SDL_DestroyWindow(m_sdlWindow);
 }
 
 void AGN::WindowGL::setTitle(const char* a_title)
 {
-	SDL_SetWindowTitle(m_sdlWindow, a_title);	
+	m_windowName = a_title;
+	SDL_SetWindowTitle(m_sdlWindow, m_windowName.c_str());
 }
 
 void AGN::WindowGL::showMessageBox(const char* a_title, const char* a_message)

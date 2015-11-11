@@ -25,7 +25,7 @@ namespace AGN
 		void onWindowEvent(SDL_Event& a_event);
 	
 	private:
-		
+		std::string m_windowName;
 		glm::ivec2 m_dimentions;
 		SDL_Window* m_sdlWindow;
 		bool m_mouseOnScreen;

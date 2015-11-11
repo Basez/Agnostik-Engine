@@ -88,11 +88,7 @@ void AGN::Application::run(IRenderAPI* a_renderAPI)
 
 		g_input.registerFrameCompletion();
 
-		// log currently alive objects in gpu memory (currently only working for DX11)
-		//m_renderAPI->logLiveObjects();
-
-
-		// if any window changes occured
+		// if any window changes occurred
 		// TODO: rethink this?
 		if (m_renderAPI->getWindow().isDirty())
 		{

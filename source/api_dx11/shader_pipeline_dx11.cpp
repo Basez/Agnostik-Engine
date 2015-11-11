@@ -36,8 +36,7 @@ AGN::ShaderPipelineDX11::ShaderPipelineDX11(ShaderPipelineData* a_shaderPipeline
 
 AGN::ShaderPipelineDX11::~ShaderPipelineDX11()
 {
-	// TODO: also check if destructor is called at all
-	g_log.warning("TODO: CLEAN ShaderPipelineDX11::~ShaderPipelineDX11()");
+	// individual shaders or resources contained in this class are destroyed by the resource manager
 }
 
 class AGN::IShader* AGN::ShaderPipelineDX11::getShader(const AGN::EShaderType a_type)
@@ -56,7 +55,7 @@ class AGN::IShader* AGN::ShaderPipelineDX11::getShader(const AGN::EShaderType a_
 
 void AGN::ShaderPipelineDX11::bind()
 {
-	// TODO:? remove this ?
+	// TODO: remove this along with its OGL counterpart
 }
 
 void AGN::ShaderPipelineDX11::setConstantBufferData(const EShaderType a_shaderType, const char* a_name, void* a_data, size_t a_dataSize)

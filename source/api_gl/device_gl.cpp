@@ -27,7 +27,7 @@ AGN::DeviceGL::DeviceGL()
 
 AGN::DeviceGL::~DeviceGL()
 {
-	g_log.warning("TODO: CLEAN DeviceGL::~DeviceGL()");
+	
 }
 
 bool AGN::DeviceGL::init()
@@ -96,7 +96,6 @@ AGN::ITexture* AGN::DeviceGL::createTexture(const uint16_t a_aId, AGN::TextureDa
 	{
 		g_log.error("Unsupported TextureType: %X please add support", glType);
 	}
-	
 
 	AGN::RenderAPIGL::getOpenGLErrors();
 

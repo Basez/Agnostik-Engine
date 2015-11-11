@@ -16,7 +16,6 @@
 
 static AGN::ImGuiGL* g_instance = nullptr; // TODO: refactor
 
-
 #if defined(__GNUC__) || defined(__GNUG__)
 										   // static friend functions are not supported in GCC
 void renderDrawLists(ImDrawData* draw_data)
@@ -47,7 +46,7 @@ AGN::ImGuiGL::ImGuiGL()
 	, m_attribLocationTex(0)
 	, m_attribLocationProjMtx(0)
 	, m_attribLocationPosition(0)
-	, m_attribLocationUV(0)
+	, m_attribLocationTextureCoords(0)
 	, m_attribLocationColor(0)
 	, m_vboHandle(0)
 	, m_vaoHandle(0)
@@ -61,7 +60,7 @@ AGN::ImGuiGL::ImGuiGL()
 
 AGN::ImGuiGL::~ImGuiGL()
 {
-	g_log.warning("TODO: CLEAN ImGuiGL::~ImGuiGL()");
+	shutdown();
 }
 
 bool AGN::ImGuiGL::init(SDL_Window *a_window)
@@ -233,13 +232,13 @@ void AGN::ImGuiGL::createDeviceObjects()
 		"#version 330\n"
 		"uniform mat4 ProjMtx;\n"
 		"in vec2 Position;\n"
-		"in vec2 UV;\n"
+		"in vec2 TextureCoords;\n"
 		"in vec4 Color;\n"
-		"out vec2 Frag_UV;\n"
+		"out vec2 Frag_TextureCoords;\n"
 		"out vec4 Frag_Color;\n"
 		"void main()\n"
 		"{\n"
-		"	Frag_UV = UV;\n"
+		"	Frag_TextureCoords = TextureCoords;\n"
 		"	Frag_Color = Color;\n"
 		"	gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
 		"}\n";
@@ -247,12 +246,12 @@ void AGN::ImGuiGL::createDeviceObjects()
 	const GLchar* fragment_shader =
 		"#version 330\n"
 		"uniform sampler2D Texture;\n"
-		"in vec2 Frag_UV;\n"
+		"in vec2 Frag_TextureCoords;\n"
 		"in vec4 Frag_Color;\n"
 		"out vec4 Out_Color;\n"
 		"void main()\n"
 		"{\n"
-		"	Out_Color = Frag_Color * texture( Texture, Frag_UV.st);\n"
+		"	Out_Color = Frag_Color * texture( Texture, Frag_TextureCoords.st);\n"
 		"}\n";
 
 	m_shaderHandle = glCreateProgram();
@@ -269,7 +268,7 @@ void AGN::ImGuiGL::createDeviceObjects()
 	m_attribLocationTex = glGetUniformLocation(m_shaderHandle, "Texture");
 	m_attribLocationProjMtx = glGetUniformLocation(m_shaderHandle, "ProjMtx");
 	m_attribLocationPosition = glGetAttribLocation(m_shaderHandle, "Position");
-	m_attribLocationUV = glGetAttribLocation(m_shaderHandle, "UV");
+	m_attribLocationTextureCoords = glGetAttribLocation(m_shaderHandle, "TextureCoords");
 	m_attribLocationColor = glGetAttribLocation(m_shaderHandle, "Color");
 
 	glGenBuffers(1, &m_vboHandle);
@@ -279,12 +278,12 @@ void AGN::ImGuiGL::createDeviceObjects()
 	glBindVertexArray(m_vaoHandle);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vboHandle);
 	glEnableVertexAttribArray(m_attribLocationPosition);
-	glEnableVertexAttribArray(m_attribLocationUV);
+	glEnableVertexAttribArray(m_attribLocationTextureCoords);
 	glEnableVertexAttribArray(m_attribLocationColor);
 
 #define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
 	glVertexAttribPointer(m_attribLocationPosition, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, pos));
-	glVertexAttribPointer(m_attribLocationUV, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, uv));
+	glVertexAttribPointer(m_attribLocationTextureCoords, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, uv));
 	glVertexAttribPointer(m_attribLocationColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, col));
 #undef OFFSETOF
 

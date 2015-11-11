@@ -46,7 +46,7 @@ namespace AGN
 		ID3DBlob* m_shaderBlob;
 		ID3D11ShaderReflection* m_shaderReflection;
 		D3D11_SHADER_DESC* m_shaderReflectionDesc;
-
+		
 		// SoA stored constant buffers
 		int m_numConstantBuffers;
 		ID3D11Buffer** m_constantBufferHandles;
