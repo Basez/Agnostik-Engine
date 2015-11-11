@@ -38,7 +38,7 @@ namespace AGN
 			
 		~TextureData()
 		{
-			if (buffer != nullptr) delete buffer;
+			if (buffer != nullptr) delete[] buffer;
 		}
 
 		std::string relativePath;

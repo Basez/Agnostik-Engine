@@ -1,4 +1,13 @@
 #include "shared.hpp"
+
+#include <chrono>
+#include <imgui/imgui.h>
+
+// memory leak detection on windows debug builds
+#if defined(_WIN32) && defined(AGN_DEBUG) && defined(AGN_ENABLE_MEMORYLEAK_DETECTION)
+#include "mmgr.h"
+#endif
+
 #include "i_input.hpp"
 #include "i_render_api.hpp"
 #include "i_window.hpp"
@@ -17,8 +26,6 @@
 #include "draw_command.hpp"
 #include "camera.hpp"
 
-#include <chrono>
-#include <imgui/imgui.h>
 
 // shaders
 // TODO: make these shaders more cross-platform friendly.

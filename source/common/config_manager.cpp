@@ -1,9 +1,13 @@
 #include "shared.hpp"
+#include <fstream>
+
+// memory leak detection on windows debug builds
+#if defined(_WIN32) && defined(AGN_DEBUG) && defined(AGN_ENABLE_MEMORYLEAK_DETECTION)
+#include "mmgr.h"
+#endif
+
 #include "config_manager.hpp"
 #include "os_utils.hpp"
-
-#include <iostream>
-#include <fstream>
 
 using namespace std;
 

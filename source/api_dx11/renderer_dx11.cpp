@@ -1,4 +1,12 @@
 #include "shared.hpp"
+#include <glm/gtc/type_ptr.hpp>
+#include <atlbase.h> // CCOMMpointers
+
+// memory leak detection on windows debug builds
+#if defined(_WIN32) && defined(AGN_DEBUG) && defined(AGN_ENABLE_MEMORYLEAK_DETECTION)
+#include "mmgr.h"
+#endif
+
 #include "renderer_dx11.hpp"
 #include "application.hpp"
 #include "window_dx11.hpp"
@@ -14,9 +22,7 @@
 #include "draw_command.hpp"
 #include "draw_commander.hpp"
 #include "pixel_utils.hpp"
-#include "atlbase.h" // CCOMMpointers
 
-#include <glm/gtc/type_ptr.hpp>
 #include <d3d11_1.h>
 #include <d3dcompiler.h>
 #include <imgui/imgui.h>

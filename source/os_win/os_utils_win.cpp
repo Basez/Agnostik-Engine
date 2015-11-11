@@ -1,11 +1,17 @@
 #include "shared.hpp" 
-#include "os_utils.hpp"
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <dirent/dirent.h>
 #include <iostream>
 #include <fstream>
+
+// memory leak detection on windows debug builds
+#if defined(_WIN32) && defined(AGN_DEBUG) && defined(AGN_ENABLE_MEMORYLEAK_DETECTION)
+#include "mmgr.h"
+#endif
+
+#include "os_utils.hpp"
 
 using namespace std;
 

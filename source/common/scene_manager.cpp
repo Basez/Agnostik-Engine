@@ -1,4 +1,12 @@
 #include "shared.hpp"
+#include <assimp/postprocess.h>
+#include "camera_controller.hpp"
+
+// memory leak detection on windows debug builds
+#if defined(_WIN32) && defined(AGN_DEBUG) && defined(AGN_ENABLE_MEMORYLEAK_DETECTION)
+#include "mmgr.h"
+#endif
+
 #include "scene_manager.hpp"
 #include "i_render_api.hpp"
 #include "resource_manager.hpp"
@@ -10,9 +18,6 @@
 #include "camera.hpp"
 #include "i_shader.hpp"
 #include "i_shader_pipeline.hpp"
-#include "camera_controller.hpp"
-
-#include <assimp/postprocess.h>
 
 using namespace glm;
 

@@ -1,6 +1,11 @@
 #include "shared.hpp"
-#include "input_dx11.hpp"
 
+// memory leak detection on windows debug builds
+#if defined(_WIN32) && defined(AGN_DEBUG) && defined(AGN_ENABLE_MEMORYLEAK_DETECTION)
+#include "mmgr.h"
+#endif
+
+#include "input_dx11.hpp"
 #define DIRECTINPUT_VERSION 0x0800 // gets rid of dinput.h waring (gives a silly warning if input version is not specified, 0x0800 is default)
 #include "dinput.h"
 

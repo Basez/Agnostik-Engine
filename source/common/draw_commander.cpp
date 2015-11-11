@@ -1,7 +1,13 @@
 #include "shared.hpp"
+#include <algorithm>
+
+// memory leak detection on windows debug builds
+#if defined(_WIN32) && defined(AGN_DEBUG) && defined(AGN_ENABLE_MEMORYLEAK_DETECTION)
+#include "mmgr.h"
+#endif
+
 #include "draw_commander.hpp"
 #include "draw_command.hpp"
-#include <algorithm>
 
 using namespace glm;
 

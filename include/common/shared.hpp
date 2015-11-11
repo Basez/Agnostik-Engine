@@ -4,6 +4,9 @@
 
 #pragma once
 
+// uncomment to enable mmgr memory leak detection
+#define AGN_ENABLE_MEMORYLEAK_DETECTION
+
 // stl
 #include <iostream>
 #include <string.h>
@@ -16,6 +19,11 @@
 // GLM
 #define GLM_FORCE_RADIANS // force use of radians everywhere
 #include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 // Agnostik shared classes
 #include "i_logger.hpp"
@@ -32,4 +40,5 @@ namespace AGN
 	{
 		return snprintf(a_destination, a_sizeBytes, "%s%s", a_destination, a_source);
 	}
-}
+};
+

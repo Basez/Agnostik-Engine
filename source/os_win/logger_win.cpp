@@ -11,6 +11,11 @@
 #include <time.h>
 #include <iomanip>
 
+// memory leak detection on windows debug builds
+#if defined(_WIN32) && defined(AGN_DEBUG) && defined(AGN_ENABLE_MEMORYLEAK_DETECTION)
+#include "mmgr.h"
+#endif
+
 HANDLE g_hConsole = nullptr;
 FILE* g_pCout = nullptr;
 FILE* g_pCin = nullptr;

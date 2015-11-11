@@ -1,4 +1,16 @@
 #include "shared.hpp"
+
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <d3d11_1.h>
+#include <d3dcompiler.h>
+#include <string.h>
+
+// memory leak detection on windows debug builds
+#if defined(_WIN32) && defined(AGN_DEBUG) && defined(AGN_ENABLE_MEMORYLEAK_DETECTION)
+#include "mmgr.h"
+#endif
+
 #include "device_dx11.hpp"
 #include "mesh_dx11.hpp"
 #include "texture_dx11.hpp"
@@ -6,12 +18,6 @@
 #include "shader_pipeline_dx11.hpp"
 #include "window_dx11.hpp"
 #include "config_manager.hpp"
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <d3d11_1.h>
-#include <d3dcompiler.h>
-#include <string.h>
 
 using namespace glm;
 
@@ -489,7 +495,7 @@ AGN::IShaderPipeline* AGN::DeviceDX11::createShaderPipeline(const uint16_t a_aId
 		vertexShaderDX11->getBlob()->GetBufferSize(),
 		&vertexInputLayout);
 
-	delete inputLayoutDesc;
+	delete[] inputLayoutDesc;
 
 	if (FAILED(hr))
 	{
@@ -521,7 +527,7 @@ AGN::IShaderPipeline* AGN::DeviceDX11::createShaderPipeline(const uint16_t a_aId
 		}
 	}
 
-	delete samplerLayoutDesc;
+	delete[] samplerLayoutDesc;
 
 	// add debug labels
 	D3D11_SET_DEBUG_NAME(vertexInputLayout, "Shader Vertex input layout(" + std::to_string(a_aId) + ")");

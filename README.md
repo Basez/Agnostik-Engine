@@ -7,7 +7,8 @@ It is currently still in development but you can follow my progress here :)
 - SDL2: https://www.libsdl.org/license.php
 - Assimp: http://assimp.sourceforge.net/main_license.html
 - Glew: http://glew.sourceforge.net/credits.html
-- stb https://github.com/nothings/stb
+- stb: https://github.com/nothings/stb
+- MMGR: http://www.paulnettle.com/
 
 # Dependencies
 TODO:

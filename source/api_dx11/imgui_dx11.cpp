@@ -1,15 +1,22 @@
 #include "shared.hpp"
+
+// memory leak detection on windows debug builds
+#if defined(_WIN32) && defined(AGN_DEBUG) && defined(AGN_ENABLE_MEMORYLEAK_DETECTION)
+#include "mmgr.h"
+#endif
+
+#include <d3d11.h>
+#include <d3dcompiler.h>
+#define DIRECTINPUT_VERSION 0x0800
+#include <dinput.h>
+#include <imgui/imgui.h>
+
 #include "imgui_dx11.hpp"
 #include "render_api_dx11.hpp"
 #include "window_dx11.hpp"
 #include "i_input.hpp"
 #include "device_dx11.hpp"
 
-#include <imgui/imgui.h>
-#include <d3d11.h>
-#include <d3dcompiler.h>
-#define DIRECTINPUT_VERSION 0x0800
-#include <dinput.h>
 
 static AGN::ImGuiDX11* g_instance = nullptr; // TODO: refactor
 

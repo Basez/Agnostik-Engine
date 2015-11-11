@@ -1,11 +1,17 @@
 #include "shared.hpp"
+
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
+// memory leak detection on windows debug builds
+#if defined(_WIN32) && defined(AGN_DEBUG) && defined(AGN_ENABLE_MEMORYLEAK_DETECTION)
+#include "mmgr.h"
+#endif
+
 #include "application.hpp"
 #include "config_manager.hpp"
 #include "os_utils.hpp"
 #include "render_api_dx11.hpp"
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 
 using namespace AGN;
 

@@ -1,4 +1,15 @@
 #include "shared.hpp"
+
+// assimp
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
+// memory leak detection on windows debug builds
+#if defined(_WIN32) && defined(AGN_DEBUG) && defined(AGN_ENABLE_MEMORYLEAK_DETECTION)
+#include "mmgr.h"
+#endif
+
 #include "resource_manager.hpp"
 #include "application.hpp"
 #include "i_render_api.hpp"
@@ -10,11 +21,6 @@
 #include "i_shader.hpp"
 #include "os_utils.hpp"
 #include "i_shader_pipeline.hpp"
-
-// assimp
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 
 // stb_image
 #define STB_IMAGE_IMPLEMENTATION
