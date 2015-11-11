@@ -195,9 +195,10 @@ void AGN::ImGuiGL::render(ImDrawData* draw_data)
 	AGN::RenderAPIGL::getOpenGLErrors();
 }
 
-void AGN::ImGuiGL::processEvent(SDL_Event* event)
+/*
+processEvent(SDL_Event* event)
 {
-	// handle custom events for GUI (implemented seperately from InputManager)
+	// TODO: restore functionality via Inputmanager when we need it
 	ImGuiIO& io = ImGui::GetIO();
 	switch (event->type)
 	{
@@ -219,6 +220,7 @@ void AGN::ImGuiGL::processEvent(SDL_Event* event)
 	}
 	}
 }
+*/
 
 void AGN::ImGuiGL::createDeviceObjects()
 {

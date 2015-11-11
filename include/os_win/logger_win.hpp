@@ -10,6 +10,7 @@ namespace AGN
 		virtual ~LoggerWin() override;
 
 		void init(ELogTimeType a_timeType, uint8_t a_outputTypes) override;
+		void cleanup() override;
 		void info(const char *a_info, ...) override;
 		void debug(const char *a_debugInfo, ...) override;
 		void warning(const char *a_warning, ...) override;

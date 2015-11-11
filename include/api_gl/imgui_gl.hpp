@@ -1,9 +1,7 @@
 #pragma once
 
 #include "i_imgui.hpp"
-#include <imgui/imgui.h>
-#include <SDL/SDL_events.h> // TODO: refactor this out, find way to remove SDL_EVENT* function
-
+struct ImDrawData;
 struct SDL_Window;
 
 namespace AGN
@@ -15,7 +13,6 @@ namespace AGN
 		~ImGuiGL() override;
 
 		bool init(SDL_Window* a_window);
-		void processEvent(SDL_Event* a_event);
 		void shutdown() override;
 		void update(float a_deltaTime) override;
 		void render(ImDrawData* draw_data);

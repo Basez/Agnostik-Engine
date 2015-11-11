@@ -21,6 +21,7 @@ namespace AGN
 		virtual ~ILogger(){};
 
 		virtual void init(ELogTimeType a_timeType, uint8_t a_outputTypes) = 0;
+		virtual void cleanup() = 0;
 
 		virtual void info(const char *a_info, ...) = 0;
 		virtual void debug(const char *a_debugInfo, ...) = 0;

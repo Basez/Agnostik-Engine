@@ -179,6 +179,10 @@ void AGN::Application::renderGUIElements()
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	}
 	ImGui::End();
+
+	// uncomment to test out ImGui
+	//bool show_test_window = true;
+	//ImGui::ShowTestWindow(&show_test_window);
 }
 
 void AGN::Application::loadShaders()

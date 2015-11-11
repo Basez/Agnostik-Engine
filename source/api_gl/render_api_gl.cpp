@@ -225,8 +225,6 @@ void AGN::RenderAPIGL::handleEvents(bool& a_doQuit)
 
 	while (SDL_PollEvent(&sdlEvent))
 	{
-		m_imgui->processEvent(&sdlEvent);
-
 		switch (sdlEvent.type)
 		{
 		case SDL_QUIT:	

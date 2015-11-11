@@ -27,9 +27,7 @@ AGN::LoggerWin::~LoggerWin()
 {
 	g_log.warning("TODO: CLEAN LoggerWin::~LoggerWin()");
 
-	if (g_hConsole != nullptr) CloseHandle(g_hConsole);
-	if (g_pCout != nullptr) fclose(g_pCout);
-	if (g_pCin != nullptr) fclose(g_pCin);
+	cleanup();
 }
 
 void AGN::LoggerWin::init(ELogTimeType a_timeType, uint8_t a_outputTypes)
@@ -40,6 +38,25 @@ void AGN::LoggerWin::init(ELogTimeType a_timeType, uint8_t a_outputTypes)
 	m_startTickCount = (float)GetTickCount();
 	
 	if (m_outputTypes & static_cast<int>(ELoggerOutputType::Window)) createConsole();
+}
+
+void AGN::LoggerWin::cleanup()
+{
+	if (g_hConsole != nullptr)
+	{
+		CloseHandle(g_hConsole);
+		g_hConsole = nullptr;
+	}
+	if (g_pCout != nullptr)
+	{
+		fclose(g_pCout);
+		g_pCout = nullptr;
+	}
+	if (g_pCin != nullptr)
+	{
+		fclose(g_pCin);
+		g_pCin = nullptr;
+	}
 }
 
 void AGN::LoggerWin::createConsole()
