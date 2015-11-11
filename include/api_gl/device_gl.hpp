@@ -8,7 +8,9 @@ namespace AGN
 	{
 	public:
 		DeviceGL();
-		bool init() override;
+		~DeviceGL() override;
+
+		bool init();
 		class IMesh* createMesh(const uint16_t a_aId, struct MeshData* a_meshData) override;
 		class ITexture* createTexture(const uint16_t a_aId, struct TextureData* a_textureData) override;
 		class IShader* createShader(const uint16_t a_aId, const char* a_shaderSource, EShaderType a_type) override;

@@ -19,6 +19,7 @@ namespace AGN
 	{
 	public:
 		WindowDX11(glm::ivec2 a_dimentions);
+		~WindowDX11() override;
 
 		void setTitle(const char* a_title) override;
 		void showMessageBox(const char* a_title, const char* a_message) override;

@@ -8,6 +8,7 @@ namespace AGN
 	{
 	public:
 		ShaderGL(const uint16_t a_aId, EShaderType a_type, uint32_t a_glId);
+		~ShaderGL() override;
 
 		uint32_t getGlId() { return m_glId; }
 		EShaderType getType() override { return m_type; }

@@ -43,7 +43,14 @@ AGN::ResourceManager::ResourceManager(class IDevice& a_device)
 
 AGN::ResourceManager::~ResourceManager()
 {
-	// TODO: Delete Meshes
+	// TODO: Refactor meshcollections and properly clean them after
+	while (m_loadedMeshCollections.size() > 0)
+	{
+		MeshCollection meshCollection = m_loadedMeshCollections[0];
+		for (IMesh* mesh : meshCollection) delete mesh;
+		m_loadedMeshCollections.erase(m_loadedMeshCollections.begin());
+	}
+
 	while (m_materials.size() > 0)
 	{
 		delete m_materials[0];
@@ -67,8 +74,6 @@ AGN::ResourceManager::~ResourceManager()
 		delete m_shaders[0];
 		m_shaders.erase(m_shaders.begin());
 	}
-
-
 }
 
 void AGN::ResourceManager::loadDefaults()
@@ -88,6 +93,10 @@ void AGN::ResourceManager::loadDefaults()
 
 class std::vector<AGN::IMesh*> AGN::ResourceManager::loadMeshCollection(std::string a_relativePath, uint32_t additional_assimp_flags)
 {
+	// TODO: Check if it exists
+
+
+
 	unsigned int flags = additional_assimp_flags;
 	flags |= aiProcess_SortByPType;
 	flags |= aiProcess_JoinIdenticalVertices;	// Joins identical vertex data sets within all meshes
@@ -229,7 +238,7 @@ class std::vector<AGN::IMesh*> AGN::ResourceManager::loadMeshCollection(std::str
 		newMeshData.material = materials[loadedMesh.mMaterialIndex];
 	}
 
-	std::vector<AGN::IMesh*> meshCollection;
+	MeshCollection meshCollection;
 	meshCollection.reserve(scene->mNumMeshes);
 
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
@@ -238,6 +247,8 @@ class std::vector<AGN::IMesh*> AGN::ResourceManager::loadMeshCollection(std::str
 		meshCollection.push_back(newMesh);
 	}
 	
+	m_loadedMeshCollections.push_back(meshCollection);
+
 	return meshCollection;
 }
 

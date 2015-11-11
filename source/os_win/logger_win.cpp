@@ -25,6 +25,8 @@ AGN::ILogger& g_log = LoggerWin;
 
 AGN::LoggerWin::~LoggerWin()
 {
+	g_log.warning("TODO: CLEAN LoggerWin::~LoggerWin()");
+
 	if (g_hConsole != nullptr) CloseHandle(g_hConsole);
 	if (g_pCout != nullptr) fclose(g_pCout);
 	if (g_pCin != nullptr) fclose(g_pCin);

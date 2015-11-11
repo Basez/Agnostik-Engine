@@ -16,6 +16,96 @@
 
 static AGN::ImGuiGL* g_instance = nullptr; // TODO: refactor
 
+
+#if defined(__GNUC__) || defined(__GNUG__)
+										   // static friend functions are not supported in GCC
+void renderDrawLists(ImDrawData* draw_data)
+{
+	g_instance->render(draw_data);
+}
+#else
+void AGN::renderDrawLists(ImDrawData* draw_data)
+{
+	g_instance->render(draw_data);
+}
+#endif
+
+static const char* ImGui_ImplSdl_GetClipboardText()
+{
+	return SDL_GetClipboardText();
+}
+
+static void ImGui_ImplSdl_SetClipboardText(const char* text)
+{
+	SDL_SetClipboardText(text);
+}
+
+AGN::ImGuiGL::ImGuiGL()
+	: m_shaderHandle(0)
+	, m_vertHandle(0)
+	, m_fragHandle(0)
+	, m_attribLocationTex(0)
+	, m_attribLocationProjMtx(0)
+	, m_attribLocationPosition(0)
+	, m_attribLocationUV(0)
+	, m_attribLocationColor(0)
+	, m_vboHandle(0)
+	, m_vaoHandle(0)
+	, m_elementsHandle(0)
+	, m_fontTexture(0)
+	, m_isEnabled(false)
+{
+	if (g_instance != nullptr) assert(false); // ensure only one gui can exist // TODO: refactor
+	g_instance = this;
+}
+
+AGN::ImGuiGL::~ImGuiGL()
+{
+	g_log.warning("TODO: CLEAN ImGuiGL::~ImGuiGL()");
+}
+
+bool AGN::ImGuiGL::init(SDL_Window *a_window)
+{
+	m_window = a_window;
+	m_isEnabled = true;
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.KeyMap[ImGuiKey_Tab] = SDLK_TAB;                     // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array.
+	io.KeyMap[ImGuiKey_LeftArrow] = SDL_SCANCODE_LEFT;
+	io.KeyMap[ImGuiKey_RightArrow] = SDL_SCANCODE_RIGHT;
+	io.KeyMap[ImGuiKey_UpArrow] = SDL_SCANCODE_UP;
+	io.KeyMap[ImGuiKey_DownArrow] = SDL_SCANCODE_DOWN;
+	io.KeyMap[ImGuiKey_PageUp] = SDL_SCANCODE_PAGEUP;
+	io.KeyMap[ImGuiKey_PageDown] = SDL_SCANCODE_PAGEDOWN;
+	io.KeyMap[ImGuiKey_Home] = SDL_SCANCODE_HOME;
+	io.KeyMap[ImGuiKey_End] = SDL_SCANCODE_END;
+	io.KeyMap[ImGuiKey_Delete] = SDLK_DELETE;
+	io.KeyMap[ImGuiKey_Backspace] = SDLK_BACKSPACE;
+	io.KeyMap[ImGuiKey_Enter] = SDLK_RETURN;
+	io.KeyMap[ImGuiKey_Escape] = SDLK_ESCAPE;
+	io.KeyMap[ImGuiKey_A] = SDLK_a;
+	io.KeyMap[ImGuiKey_C] = SDLK_c;
+	io.KeyMap[ImGuiKey_V] = SDLK_v;
+	io.KeyMap[ImGuiKey_X] = SDLK_x;
+	io.KeyMap[ImGuiKey_Y] = SDLK_y;
+	io.KeyMap[ImGuiKey_Z] = SDLK_z;
+
+	io.RenderDrawListsFn = renderDrawLists;   // Alternatively you can set this to NULL and call ImGui::GetDrawData() after ImGui::Render() to get the same ImDrawData pointer.
+	io.SetClipboardTextFn = ImGui_ImplSdl_SetClipboardText;
+	io.GetClipboardTextFn = ImGui_ImplSdl_GetClipboardText;
+
+#ifdef _WIN32
+	SDL_SysWMinfo wmInfo;
+	SDL_VERSION(&wmInfo.version);
+	SDL_GetWindowWMInfo(m_window, &wmInfo);
+	io.ImeWindowHandle = wmInfo.info.win.window;
+#endif
+
+	AGN::RenderAPIGL::getOpenGLErrors();
+
+	return true;
+}
+
 void AGN::ImGuiGL::render(ImDrawData* draw_data)
 {
 	// Backup GL state
@@ -104,29 +194,6 @@ void AGN::ImGuiGL::render(ImDrawData* draw_data)
 	glViewport(last_viewport[0], last_viewport[1], (GLsizei)last_viewport[2], (GLsizei)last_viewport[3]);
 	
 	AGN::RenderAPIGL::getOpenGLErrors();
-}
-
-#if defined(__GNUC__) || defined(__GNUG__)
-// static friend functions are not supported in GCC
-void renderDrawLists(ImDrawData* draw_data)
-{
-	g_instance->render(draw_data);
-}
-#else
-void AGN::renderDrawLists(ImDrawData* draw_data)
-{
-	g_instance->render(draw_data);
-}	
-#endif
-
-static const char* ImGui_ImplSdl_GetClipboardText()
-{
-	return SDL_GetClipboardText();
-}
-
-static void ImGui_ImplSdl_SetClipboardText(const char* text)
-{
-	SDL_SetClipboardText(text);
 }
 
 void AGN::ImGuiGL::processEvent(SDL_Event* event)
@@ -258,83 +325,6 @@ void AGN::ImGuiGL::createImGUIFont()
 	AGN::RenderAPIGL::getOpenGLErrors();
 }
 
-void AGN::ImGuiGL::invalidateDeviceObjects()
-{
-	if (m_fontTexture)
-	{
-		glDeleteTextures(1, &m_fontTexture);
-		ImGui::GetIO().Fonts->TexID = 0;
-		m_fontTexture = 0;
-	}
-}
-
-AGN::ImGuiGL::ImGuiGL()
-	: m_shaderHandle(0)
-	, m_vertHandle(0)
-	, m_fragHandle(0)
-	, m_attribLocationTex(0)
-	, m_attribLocationProjMtx(0)
-	, m_attribLocationPosition(0)
-	, m_attribLocationUV(0)
-	, m_attribLocationColor(0)
-	, m_vboHandle(0)
-	, m_vaoHandle(0)
-	, m_elementsHandle(0)
-	, m_fontTexture(0)
-	, m_isEnabled(false)
-{
-	if (g_instance != nullptr) assert(false); // ensure only one gui can exist // TODO: refactor
-	g_instance = this;
-}
-
-bool AGN::ImGuiGL::init(SDL_Window *a_window)
-{
-	m_window = a_window;
-	m_isEnabled = true;
-
-	ImGuiIO& io = ImGui::GetIO();
-	io.KeyMap[ImGuiKey_Tab] = SDLK_TAB;                     // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array.
-	io.KeyMap[ImGuiKey_LeftArrow] = SDL_SCANCODE_LEFT;
-	io.KeyMap[ImGuiKey_RightArrow] = SDL_SCANCODE_RIGHT;
-	io.KeyMap[ImGuiKey_UpArrow] = SDL_SCANCODE_UP;
-	io.KeyMap[ImGuiKey_DownArrow] = SDL_SCANCODE_DOWN;
-	io.KeyMap[ImGuiKey_PageUp] = SDL_SCANCODE_PAGEUP;
-	io.KeyMap[ImGuiKey_PageDown] = SDL_SCANCODE_PAGEDOWN;
-	io.KeyMap[ImGuiKey_Home] = SDL_SCANCODE_HOME;
-	io.KeyMap[ImGuiKey_End] = SDL_SCANCODE_END;
-	io.KeyMap[ImGuiKey_Delete] = SDLK_DELETE;
-	io.KeyMap[ImGuiKey_Backspace] = SDLK_BACKSPACE;
-	io.KeyMap[ImGuiKey_Enter] = SDLK_RETURN;
-	io.KeyMap[ImGuiKey_Escape] = SDLK_ESCAPE;
-	io.KeyMap[ImGuiKey_A] = SDLK_a;
-	io.KeyMap[ImGuiKey_C] = SDLK_c;
-	io.KeyMap[ImGuiKey_V] = SDLK_v;
-	io.KeyMap[ImGuiKey_X] = SDLK_x;
-	io.KeyMap[ImGuiKey_Y] = SDLK_y;
-	io.KeyMap[ImGuiKey_Z] = SDLK_z;
-
-	io.RenderDrawListsFn = renderDrawLists;   // Alternatively you can set this to NULL and call ImGui::GetDrawData() after ImGui::Render() to get the same ImDrawData pointer.
-	io.SetClipboardTextFn = ImGui_ImplSdl_SetClipboardText;
-	io.GetClipboardTextFn = ImGui_ImplSdl_GetClipboardText;
-
-#ifdef _WIN32
-	SDL_SysWMinfo wmInfo;
-	SDL_VERSION(&wmInfo.version);
-	SDL_GetWindowWMInfo(m_window, &wmInfo);
-	io.ImeWindowHandle = wmInfo.info.win.window;
-#endif
-
-	AGN::RenderAPIGL::getOpenGLErrors();
-
-	return true;
-}
-
-void AGN::ImGuiGL::shutdown()
-{
-	invalidateDeviceObjects();
-	ImGui::Shutdown();
-}
-
 void AGN::ImGuiGL::update(float a_deltaTime)
 {
 	if (!m_fontTexture)
@@ -376,4 +366,20 @@ void AGN::ImGuiGL::update(float a_deltaTime)
 
 	// Start the frame
 	ImGui::NewFrame();
+}
+
+void AGN::ImGuiGL::shutdown()
+{
+	invalidateDeviceObjects();
+	ImGui::Shutdown();
+}
+
+void AGN::ImGuiGL::invalidateDeviceObjects()
+{
+	if (m_fontTexture)
+	{
+		glDeleteTextures(1, &m_fontTexture);
+		ImGui::GetIO().Fonts->TexID = 0;
+		m_fontTexture = 0;
+	}
 }

@@ -21,8 +21,8 @@
 
 using namespace glm;
 
-AGN::DeviceDX11::DeviceDX11(class WindowDX11* a_window)
-	: m_window(a_window)
+AGN::DeviceDX11::DeviceDX11()
+	: m_window(nullptr)
 	, m_d3d11Device(nullptr)
 	, m_d3d11DeviceContext(nullptr)
 	, m_d3d11SwapChain(nullptr)
@@ -32,8 +32,24 @@ AGN::DeviceDX11::DeviceDX11(class WindowDX11* a_window)
 
 }
 
-bool AGN::DeviceDX11::init()
+AGN::DeviceDX11::~DeviceDX11()
 {
+	g_log.warning("TODO: CLEAN DeviceDX11::~DeviceDX11()");
+
+	safeRelease(m_d3d11Device);
+	safeRelease(m_d3d11DeviceContext);
+	safeRelease(m_d3d11SwapChain);
+
+	logLiveObjects();
+
+	safeRelease(m_d3dDebug);
+	safeRelease(m_debugUDA);
+}
+
+bool AGN::DeviceDX11::init(class WindowDX11* a_window)
+{
+	m_window = a_window;
+
 	assert(m_window->getWindowHandle());
 
 	RECT clientRect;
@@ -232,21 +248,24 @@ AGN::IMesh* AGN::DeviceDX11::createMesh(const uint16_t a_aId, AGN::MeshData* a_m
 	vertexPosBufferDesc.CPUAccessFlags = 0;
 	vertexPosBufferDesc.Usage = D3D11_USAGE_DEFAULT; // Identify how the buffer is expected to be read from and written to. Frequency of update is a key factor
 
-	D3D11_SUBRESOURCE_DATA resourceData;
-	memset(&resourceData, 0, sizeof(D3D11_SUBRESOURCE_DATA));
+	D3D11_SUBRESOURCE_DATA resourceDataVertexBuffer;
+	memset(&resourceDataVertexBuffer, 0, sizeof(D3D11_SUBRESOURCE_DATA));
 
-	MeshDX11::VertexShaderData* dataToUpload = new MeshDX11::VertexShaderData[numVertices];
+	MeshDX11::VertexShaderData* vsDataToUpload = new MeshDX11::VertexShaderData[numVertices];
 
 	for (uint32_t i = 0; i < numVertices; i++)
 	{
-		dataToUpload[i].position = a_meshData->positions[i];
-		dataToUpload[i].normal = a_meshData->normals[i];
-		dataToUpload[i].uv = a_meshData->textureCoords[i]; // TODO: refactor name
+		vsDataToUpload[i].position = a_meshData->positions[i];
+		vsDataToUpload[i].normal = a_meshData->normals[i];
+		vsDataToUpload[i].uv = a_meshData->textureCoords[i]; // TODO: refactor name
 	}
 	
-	resourceData.pSysMem = dataToUpload;
+	resourceDataVertexBuffer.pSysMem = vsDataToUpload;
 
-	HRESULT hr = m_d3d11Device->CreateBuffer(&vertexPosBufferDesc, &resourceData, &d3d11VertexBuffer);
+	HRESULT hr = m_d3d11Device->CreateBuffer(&vertexPosBufferDesc, &resourceDataVertexBuffer, &d3d11VertexBuffer);
+
+	delete[] vsDataToUpload;
+
 	if (FAILED(hr))
 	{
 		g_log.error("failure CreateBuffer vertexBufferDesc");
@@ -257,13 +276,16 @@ AGN::IMesh* AGN::DeviceDX11::createMesh(const uint16_t a_aId, AGN::MeshData* a_m
 	D3D11_BUFFER_DESC indexBufferDesc;
 	memset(&indexBufferDesc, 0, sizeof(D3D11_BUFFER_DESC));
 
+	D3D11_SUBRESOURCE_DATA resourceDataIndexBuffer;
+	memset(&resourceDataIndexBuffer, 0, sizeof(D3D11_SUBRESOURCE_DATA));
+
 	indexBufferDesc.ByteWidth = static_cast<uint32_t>(sizeof(uint32_t) * a_meshData->indicies.size());
 	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	indexBufferDesc.CPUAccessFlags = 0;
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	resourceData.pSysMem = a_meshData->indicies.data();
+	resourceDataIndexBuffer.pSysMem = a_meshData->indicies.data();
 
-	hr = m_d3d11Device->CreateBuffer(&indexBufferDesc, &resourceData, &d3d11IndexBuffer);
+	hr = m_d3d11Device->CreateBuffer(&indexBufferDesc, &resourceDataIndexBuffer, &d3d11IndexBuffer);
 	if (FAILED(hr))
 	{
 		g_log.error("failure CreateBuffer indexBufferDesc");

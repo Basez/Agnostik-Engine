@@ -11,6 +11,7 @@ namespace AGN
 	{
 	public:
 		WindowGL(glm::ivec2 a_dimentions);
+		~WindowGL() override;
 
 		void setTitle(const char* a_title) override;
 		void showMessageBox(const char* a_title, const char* a_message) override;

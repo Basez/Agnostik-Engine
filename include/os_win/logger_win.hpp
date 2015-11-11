@@ -7,7 +7,7 @@ namespace AGN
 	class LoggerWin : public ILogger
 	{
 	public:
-		virtual ~LoggerWin();
+		virtual ~LoggerWin() override;
 
 		void init(ELogTimeType a_timeType, uint8_t a_outputTypes) override;
 		void info(const char *a_info, ...) override;

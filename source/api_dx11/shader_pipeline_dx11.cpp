@@ -34,6 +34,12 @@ AGN::ShaderPipelineDX11::ShaderPipelineDX11(ShaderPipelineData* a_shaderPipeline
 	*/
 }
 
+AGN::ShaderPipelineDX11::~ShaderPipelineDX11()
+{
+	// TODO: also check if destructor is called at all
+	g_log.warning("TODO: CLEAN ShaderPipelineDX11::~ShaderPipelineDX11()");
+}
+
 class AGN::IShader* AGN::ShaderPipelineDX11::getShader(const AGN::EShaderType a_type)
 {
 	const uint32_t numShaders = sizeof(m_shaders) / sizeof(m_shaders[0]);

@@ -23,6 +23,12 @@ AGN::InputGL::InputGL()
 	memset(m_click, false, sizeof(m_click));
 }
 
+AGN::InputGL::~InputGL()
+{
+	// TODO: change to cleanup function as its a static class
+	//printf("TODO: InputGL::~InputGL()");
+}
+
 AGN::ESCANCODE AGN::InputGL::getAGNScanCode(uint32_t a_sdlkey)
 {
 	return (ESCANCODE)a_sdlkey;

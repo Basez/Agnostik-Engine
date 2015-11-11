@@ -29,6 +29,11 @@ AGN::RenderAPIGL::RenderAPIGL()
 	m_imgui = new ImGuiGL();
 }
 
+AGN::RenderAPIGL::~RenderAPIGL()
+{
+	g_log.warning("TODO: CLEAN RenderAPIGL::~RenderAPIGL()");
+}
+
 bool AGN::RenderAPIGL::init()
 {
 	if (!initOpenGL() || !initGlew())

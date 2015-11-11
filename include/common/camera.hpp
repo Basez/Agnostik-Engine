@@ -6,6 +6,7 @@ namespace AGN
 	{
 	public:
 		Camera(glm::vec3 a_initialPosition = glm::vec3(), glm::quat a_initialRotation = glm::quat());
+		~Camera();
 
 		void reset();
 		void applyViewMatrix();

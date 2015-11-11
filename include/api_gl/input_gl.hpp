@@ -8,6 +8,7 @@ namespace AGN
 	{
 	public:
 		InputGL();
+		~InputGL() override;
 
 		static AGN::ESCANCODE getAGNScanCode(uint32_t a_SDLScancode);
 		static AGN::EMOUSECODE getAGNMouse(uint8_t a_sdlMouse);

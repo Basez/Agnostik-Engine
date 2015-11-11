@@ -40,6 +40,11 @@ AGN::WindowGL::WindowGL(glm::ivec2 a_dimentions)
 	glViewport(0, 0, a_dimentions.x, a_dimentions.y);
 }
 
+AGN::WindowGL::~WindowGL()
+{
+	g_log.warning("TODO: CLEAN WindowGL::~WindowGL()");
+}
+
 void AGN::WindowGL::setTitle(const char* a_title)
 {
 	SDL_SetWindowTitle(m_sdlWindow, a_title);	
@@ -100,7 +105,6 @@ void AGN::WindowGL::updateWindowState()
 {
 	SDL_GetWindowSize(m_sdlWindow, &m_dimentions.x, &m_dimentions.y);
 
-	// TODO: move this to engine!
 	glViewport(0, 0, m_dimentions.x, m_dimentions.y);
 
 	m_isDirty = false;

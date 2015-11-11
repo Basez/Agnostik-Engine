@@ -10,6 +10,7 @@ namespace AGN
 	{
 	public:
 		RenderAPIDX11();
+		~RenderAPIDX11() override;
 
 		bool init() override;
 		void enableVSync(bool a_value) override;

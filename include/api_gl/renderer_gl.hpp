@@ -8,7 +8,9 @@ namespace AGN
 	{
 	public:
 		RendererGL();
-		bool init() override;
+		~RendererGL() override;
+
+		bool init();
 		void render(class DrawCommander& a_drawCommander) override;
 		void setCamera(class Camera* a_camera) override { m_currentCamera = a_camera; }
 

@@ -8,7 +8,8 @@ namespace AGN
 	{
 	public:
 		DrawCommander();
-		
+		~DrawCommander();
+
 		static uint64_t getSortKey(
 			uint8_t& a_renderPhase,
 			uint8_t& a_layer,
@@ -49,8 +50,8 @@ namespace AGN
 			Layer = 58,
 			RenderPhase = 61
 		};
-	private:
 
+	private:
 		std::vector<struct DrawCommand*> m_drawCommands;
 	};
 }

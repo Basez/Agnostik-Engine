@@ -9,13 +9,9 @@ namespace AGN
 	class MeshDX11 : public IMesh
 	{
 	public:
-		MeshDX11(const uint16_t a_aId, MeshData* a_meshData, ID3D11Buffer* a_d3d11VertexBuffer, ID3D11Buffer* a_d3d11IndexBuffer)
-			: m_aId(a_aId)
-			, m_meshData(a_meshData)
-			, m_d3d11VertexBuffer(a_d3d11VertexBuffer)
-			, m_d3d11IndexBuffer(a_d3d11IndexBuffer)
-		{ }
-		
+		MeshDX11(const uint16_t a_aId, MeshData* a_meshData, ID3D11Buffer* a_d3d11VertexBuffer, ID3D11Buffer* a_d3d11IndexBuffer);
+		~MeshDX11();
+
 		std::string getRelativePath() override { return m_meshData->relativePath; }
 		uint16_t getAId() override { return m_aId; }
 		class Material* getMaterial() override { return m_meshData->material; }
@@ -40,4 +36,7 @@ namespace AGN
 		ID3D11Buffer* m_d3d11IndexBuffer;
 
 	};
+
+
+
 }

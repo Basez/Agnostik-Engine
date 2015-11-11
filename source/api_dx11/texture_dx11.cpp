@@ -18,6 +18,7 @@ AGN::TextureDX11::TextureDX11(const uint16_t a_aId, TextureData* a_textureData, 
 
 AGN::TextureDX11::~TextureDX11()
 {
+	g_log.warning("TODO: CLEAN TextureDX11::~TextureDX11()");
 }
 
 std::string AGN::TextureDX11::getRelativePath()

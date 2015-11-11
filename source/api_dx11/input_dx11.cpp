@@ -177,6 +177,12 @@ AGN::InputDX11::InputDX11()
 	mapScanCode(DIK_MEDIASELECT, AGN::ESCANCODE::MEDIASELECT);
 }
 
+AGN::InputDX11::~InputDX11()
+{
+	// TODO: refactor into cleanup() function as its a static class and we never know exactly when it gets deleted
+	//g_log.warning("TODO: CLEAN InputDX11::~InputDX11()");
+}
+
 AGN::ESCANCODE AGN::InputDX11::getAGNScanCode(uint32_t a_dx11scancode)
 {
 	return (AGN::ESCANCODE)s_dx11mappedAGNScancodes[a_dx11scancode];

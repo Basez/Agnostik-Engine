@@ -90,6 +90,11 @@ AGN::ShaderPipelineGL::ShaderPipelineGL(const uint32_t a_glprogramId, ShaderPipe
 	AGN::RenderAPIGL::getOpenGLErrors();
 }
 
+AGN::ShaderPipelineGL::~ShaderPipelineGL()
+{
+	g_log.warning("TODO: CLEAN ShaderPipelineGL::~ShaderPipelineGL()");
+}
+
 AGN::IShader* AGN::ShaderPipelineGL::getShader(const EShaderType a_type)
 {
 	const uint32_t numShaders = sizeof(m_shaders) / sizeof(m_shaders[0]);

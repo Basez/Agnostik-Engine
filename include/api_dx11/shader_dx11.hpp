@@ -21,6 +21,7 @@ namespace AGN
 	{
 	public:
 		ShaderDX11(class DeviceDX11& a_deviceReference, const uint16_t a_aId, EShaderType a_type, ID3D11DeviceChild* a_shaderHandle, ID3DBlob* a_shaderBlob);
+		~ShaderDX11() override;
 
 		EShaderType getType() override { return m_type; }
 		uint16_t getAId() override { return m_aId; }

@@ -98,6 +98,12 @@ AGN::ShaderDX11::ShaderDX11(DeviceDX11& a_deviceReference, const uint16_t a_aId,
 	
 }
 
+AGN::ShaderDX11::~ShaderDX11()
+{
+	// TODO: also check if this destructor is called at all
+	g_log.warning("TODO: CLEAN ~ShaderDX11()");
+}
+
 std::string AGN::ShaderDX11::getLatestProfile(const AGN::EShaderType a_type, ID3D11Device* a_device)
 {
 	assert(a_device);

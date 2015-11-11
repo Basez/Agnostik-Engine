@@ -154,7 +154,5 @@ void AGN::CameraController::onMouseMotion(int a_mouseX, int a_mouseY)
 			m_lastMousePosition = ivec2(currentMousePos.x, min.y + 1);
 			window.warpCursor(m_lastMousePosition);
 		}
-
-
 	}
 }

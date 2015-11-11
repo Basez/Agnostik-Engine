@@ -24,6 +24,11 @@ AGN::Camera::Camera(glm::vec3 a_initialPosition, glm::quat a_initialRotation)
 	
 }
 
+AGN::Camera::~Camera()
+{
+	// nothing to delete
+}
+
 void AGN::Camera::reset()
 {
 	m_position = m_initialPosition;

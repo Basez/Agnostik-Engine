@@ -25,6 +25,8 @@ AGN::TextureGL::TextureGL(const uint16_t a_id, TextureData* a_textureData, uint3
 
 AGN::TextureGL::~TextureGL()
 {
+	g_log.warning("TODO: CLEAN TextureGL::~TextureGL()");
+
 	delete m_textureData;
 }
 

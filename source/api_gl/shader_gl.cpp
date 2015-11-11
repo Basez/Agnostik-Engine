@@ -19,6 +19,11 @@ AGN::ShaderGL::ShaderGL(const uint16_t a_aId, EShaderType a_type, uint32_t a_glI
 
 }
 
+AGN::ShaderGL::~ShaderGL()
+{
+	g_log.warning("TODO: CLEAN ShaderGL::~ShaderGL()");
+}
+
 uint32_t AGN::ShaderGL::getGlShaderType(EShaderType a_type)
 {
 	switch (a_type)

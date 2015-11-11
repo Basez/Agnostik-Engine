@@ -24,6 +24,11 @@ AGN::DrawCommander::DrawCommander()
 		(uint64_t)ESortKeyBitAmount::Depth == 64, "Sortkey bits do not add up to 64!");
 }
 
+AGN::DrawCommander::~DrawCommander()
+{
+	clearCommands();
+}
+
 AGN::DrawCommand& AGN::DrawCommander::addDrawCommand(AGN::EDrawCommandType a_type, uint64_t a_sortKey) // TODO: key as argument?
 {
 	// TODO: use pooling?

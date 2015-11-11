@@ -12,6 +12,8 @@ namespace AGN
 	{
 	public:
 		ImGuiGL();
+		~ImGuiGL() override;
+
 		bool init(SDL_Window* a_window);
 		void processEvent(SDL_Event* a_event);
 		void shutdown() override;

@@ -37,6 +37,11 @@ AGN::RendererGL::RendererGL()
 
 }
 
+AGN::RendererGL::~RendererGL()
+{
+	g_log.warning("TODO: CLEAN RendererGL::~RendererGL()");
+}
+
 bool AGN::RendererGL::init()
 {
 	return true;

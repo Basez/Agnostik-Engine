@@ -28,7 +28,10 @@ AGN::SceneManager::SceneManager()
 
 AGN::SceneManager::~SceneManager()
 {
-	
+	cleanupScene();
+
+	delete m_cameraController;
+	delete m_camera;
 }
 
 void AGN::SceneManager::init()
@@ -118,7 +121,6 @@ void AGN::SceneManager::loadSponza()
 	skyboxEntity->setPosition(vec3(0, 0, 0));
 	m_skyboxEntities.push_back(skyboxEntity);
 }
-
 
 void AGN::SceneManager::loadSibenik()
 {
@@ -243,5 +245,5 @@ void AGN::SceneManager::cleanupScene()
 	for (Entity* skyboxEntity : m_skyboxEntities) delete skyboxEntity;
 	m_skyboxEntities.clear();
 
-	// TODO: cleanup on GPU size aswell
+	// TODO: clean on GPU side as well
 }

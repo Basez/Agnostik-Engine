@@ -6,9 +6,9 @@ namespace AGN
 	{
 	public:
 		Application();
-		void run(class IRenderAPI* a_renderAPI);
 		void cleanup();
 
+		void run(class IRenderAPI* a_renderAPI);
 		class IRenderAPI& getRenderAPI();
 		class ResourceManager& getResourceManager();
 

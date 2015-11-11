@@ -78,6 +78,11 @@ AGN::WindowDX11::WindowDX11(glm::ivec2 a_dimentions)
 	UpdateWindow(m_windowHandle);
 }
 
+AGN::WindowDX11::~WindowDX11()
+{
+	g_log.warning("TODO: CLEAN WindowDX11::~WindowDX11()");
+}
+
 LRESULT CALLBACK AGN::WindowDX11::onWindowEvent(HWND a_hwnd, UINT a_message, WPARAM a_wParam, LPARAM a_lParam)
 {
 	PAINTSTRUCT paintStruct;

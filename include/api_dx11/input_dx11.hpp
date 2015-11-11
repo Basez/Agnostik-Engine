@@ -7,6 +7,7 @@ namespace AGN
 	{
 	public:
 		InputDX11();
+		~InputDX11() override;
 
 		static AGN::ESCANCODE getAGNScanCode(uint32_t a_dx11scancode);
 

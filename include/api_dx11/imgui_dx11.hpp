@@ -21,6 +21,8 @@ namespace AGN
 	{
 	public:
 		ImGuiDX11();
+		~ImGuiDX11() override;
+
 		void init(class RenderAPIDX11* a_api);
 		//void processEvent(SDL_Event* a_event);
 		void shutdown() override;

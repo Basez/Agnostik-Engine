@@ -38,9 +38,6 @@ AGN::RendererDX11::RendererDX11(RenderAPIDX11& a_renderAPIReference, DeviceDX11&
 	, m_windowReference(a_window)
 	, m_currentCamera(nullptr)
 	, m_vp(mat4())
-	//, m_boundMesh(nullptr)
-	//, m_boundMaterial(nullptr)
-	//, m_boundShaderPipeline(nullptr)
 	, m_d3dRenderTargetView(nullptr)
 	, m_d3dDepthStencilView(nullptr)
 	, m_d3dDepthStencilBuffer(nullptr)
@@ -52,7 +49,18 @@ AGN::RendererDX11::RendererDX11(RenderAPIDX11& a_renderAPIReference, DeviceDX11&
 	, m_boundMaterial(nullptr)
 	, m_boundShaderPipeline(nullptr)
 {
+}
 
+AGN::RendererDX11::~RendererDX11()
+{
+	safeRelease(m_d3dRenderTargetView);
+	safeRelease(m_d3dDepthStencilView);
+	safeRelease(m_d3dDepthStencilBuffer);
+	safeRelease(m_d3dDepthStencilState);
+	safeRelease(m_d3dRasterizerState);
+	safeRelease(m_d3dDefaultblendState);
+	
+	delete m_viewport;
 }
 
 bool AGN::RendererDX11::init()

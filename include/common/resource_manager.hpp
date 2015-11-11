@@ -6,6 +6,8 @@ namespace AGN
 	enum class ETextureType;
 	enum class EShaderType;
 
+	typedef std::vector<class IMesh*> MeshCollection;
+
 	class ResourceManager
 	{
 	public:
@@ -24,7 +26,7 @@ namespace AGN
 		class Material& createMaterial(std::string a_name);
 
 	private:
-		std::vector<class IMesh*> m_loadedMeshes;
+		std::vector<MeshCollection> m_loadedMeshCollections;
 		std::vector<class ITexture*> m_loadedTextures;
 		std::vector<class IShader*> m_shaders;
 		std::vector<class IShaderPipeline*> m_shaderpipelines;

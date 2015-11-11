@@ -42,3 +42,14 @@ namespace AGN
 	}
 };
 
+// TODO: move to its own class
+// Safely release a COM object.
+template<typename T>
+inline void safeRelease(T& ptr)
+{
+	if (ptr != nullptr)
+	{
+		ptr->Release();
+		ptr = nullptr;
+	}
+}

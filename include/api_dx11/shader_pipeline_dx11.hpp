@@ -15,6 +15,7 @@ namespace AGN
 	{
 	public:
 		ShaderPipelineDX11(struct ShaderPipelineData* a_shaderPipelineData, ID3D11InputLayout* a_vertexInputLayout, ID3D11SamplerState* a_samplerState);
+		~ShaderPipelineDX11() override;
 
 		class IShader* getShader(const EShaderType a_type) override;
 

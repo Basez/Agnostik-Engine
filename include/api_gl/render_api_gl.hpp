@@ -8,6 +8,7 @@ namespace AGN
 	{
 	public:
 		RenderAPIGL();
+		~RenderAPIGL() override;
 
 		bool init() override;
 		void enableVSync(bool a_value) override;

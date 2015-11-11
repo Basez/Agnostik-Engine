@@ -17,7 +17,9 @@ namespace AGN
 	{
 	public:
 		RendererDX11(class RenderAPIDX11& a_renderAPIReference, class DeviceDX11& a_deviceReference, class WindowDX11& a_windowReference);
-		bool init() override;
+		~RendererDX11() override;
+
+		bool init();
 		void render(class DrawCommander& a_drawCommander) override;
 		void setCamera(class Camera* a_camera) override { m_currentCamera = a_camera; }
 		void onWindowUpdated(glm::ivec2 a_dimentions) override;

@@ -47,6 +47,13 @@ AGN::Application::Application()
 
 }
 
+void AGN::Application::cleanup()
+{
+	delete m_sceneManager;
+	delete m_drawCommander;
+	delete m_resourceManager;
+}
+
 void AGN::Application::run(IRenderAPI* a_renderAPI)
 {
 	m_renderAPI = a_renderAPI;
@@ -95,13 +102,6 @@ void AGN::Application::run(IRenderAPI* a_renderAPI)
 		}
 
 	}
-}
-
-void AGN::Application::cleanup()
-{
-	delete m_sceneManager;
-	delete m_drawCommander;
-	delete m_resourceManager;
 }
 
 void AGN::Application::update()
@@ -193,12 +193,10 @@ void AGN::Application::loadShaders()
 	meshShaders.push_back(&m_resourceManager->createShader(g_shader_mesh_pix, EShaderType::PixelShader));
 	m_meshShaderPipeline = &m_resourceManager->createShaderPipeline(meshShaders);
 	
-	// TODO: RESTORE after HLSL
 	std::vector<AGN::IShader*> skyboxShaders;
 	skyboxShaders.push_back(&m_resourceManager->createShader(g_shader_skybox_vert, EShaderType::VertexShader));
 	skyboxShaders.push_back(&m_resourceManager->createShader(g_shader_skybox_pix, EShaderType::PixelShader));
 	m_skyboxShaderPipeline = &m_resourceManager->createShaderPipeline(skyboxShaders);
-	
 }
 
 void AGN::Application::render()
