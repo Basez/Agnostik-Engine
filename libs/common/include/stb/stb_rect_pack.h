@@ -33,6 +33,11 @@
 
 #pragma warning(push, 0)        
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wtype-limits"
+#endif
+
 #ifndef STB_INCLUDE_STB_RECT_PACK_H
 #define STB_INCLUDE_STB_RECT_PACK_H
 
@@ -548,3 +553,7 @@ STBRP_DEF void stbrp_pack_rects(stbrp_context *context, stbrp_rect *rects, int n
 }
 #endif
 #pragma warning(pop)
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif

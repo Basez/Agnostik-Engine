@@ -367,6 +367,11 @@ int main(int arg, char **argv)
 }
 #endif
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -3222,3 +3227,7 @@ STBTT_DEF int stbtt_FindMatchingFont(const unsigned char *font_collection, const
 //   0.1  (2009-03-09) First public release
 //
 #pragma warning(pop)
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
