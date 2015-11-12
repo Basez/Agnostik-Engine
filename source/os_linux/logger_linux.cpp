@@ -20,6 +20,16 @@ void AGN::LoggerLinux::init(ELogTimeType a_timeType, uint8_t a_outputTypes)
 	m_startTickCount = (float)getTickCount();
 }
 
+AGN::LoggerLinux::~LoggerLinux()
+{
+	cleanup();
+}
+
+void AGN::LoggerLinux::cleanup()
+{
+	// nothing to clean yet, linux loggers are smooth ;)
+}
+
 void AGN::LoggerLinux::info(const char *a_info, ...)
 {
 	// Use the formatting to get the correct log
@@ -52,8 +62,6 @@ void AGN::LoggerLinux::debug(const char *a_info, ...)
 	char timeLog[256];
 	getTimeFormatted(timeLog);
 	sprintf(messageLog, "\033[32m%s| %s\033[0m\n", timeLog, message); // green
-
-	// TODO: Change console text color
 	
 	log(messageLog);
 }
@@ -72,8 +80,6 @@ void AGN::LoggerLinux::warning(const char *a_info, ...)
 	char timeLog[256];
 	getTimeFormatted(timeLog);
 	sprintf(messageLog, "\033[1;93m%s| %s\033[0m\n", timeLog, message); // bold & yellow
-
-	// TODO: Change console text color
 	
 	log(messageLog);
 }

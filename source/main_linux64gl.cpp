@@ -9,9 +9,7 @@ using namespace AGN;
 int main(int /*argc*/, char* /*argv*/[])
 {
 	g_log.init(ELogTimeType::RunningTime, (int)ELoggerOutputType::Window);
-
-	int* testIntPointer = nullptr;
-	g_log.debug("pointer size: %i", sizeof(testIntPointer));
+	g_log.debug("pointer size: %i", sizeof(void*));
 	
 	// load configurations
 	std::string currentFolder = OSUtils::getCurrentFolder();

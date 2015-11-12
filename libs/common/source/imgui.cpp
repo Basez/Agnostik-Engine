@@ -540,7 +540,11 @@
 #ifdef __GNUC__
 #pragma GCC diagnostic ignored "-Wunused-function"          // warning: 'xxxx' defined but not used
 #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"      // warning: cast to pointer from integer of different size
+#pragma GCC diagnostic ignored "-Wformat-extra-args"
 #endif
+
+// #pragma GCC diagnostic push
+// 
 
 #include "shared.hpp"
 
