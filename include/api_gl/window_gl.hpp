@@ -10,7 +10,7 @@ namespace AGN
 	class WindowGL : public IWindow
 	{
 	public:
-		WindowGL(glm::ivec2 a_dimentions);
+		WindowGL(glm::ivec2 a_dimensions);
 		~WindowGL() override;
 
 		void setTitle(const char* a_title) override;
@@ -20,13 +20,13 @@ namespace AGN
 		virtual bool isDirty() override { return m_isDirty; }
 		void updateWindowState() override;
 
-		glm::ivec2 getDimentions() override { return m_dimentions; }
+		glm::ivec2 getDimensions() override { return m_dimensions; }
 		SDL_Window* getSDLWindow() { return m_sdlWindow; }
 		void onWindowEvent(SDL_Event& a_event);
 	
 	private:
 		std::string m_windowName;
-		glm::ivec2 m_dimentions;
+		glm::ivec2 m_dimensions;
 		SDL_Window* m_sdlWindow;
 		bool m_mouseOnScreen;
 		bool m_keyboardFocus;

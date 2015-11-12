@@ -26,7 +26,7 @@ namespace AGN
 		class IShaderPipeline* createShaderPipeline(const uint16_t a_aId, std::vector<class IShader*> a_shaders) override;
 
 		void logLiveObjects();
-		void onWindowUpdated(glm::ivec2 a_dimentions);
+		void onWindowUpdated(glm::ivec2 a_dimensions);
 		DXGI_RATIONAL queryRefreshRate(bool a_vsync);
 		ID3D11Device* getD3D11Device() { return m_d3d11Device; }
 		ID3D11DeviceContext* getD3D11DeviceContext() { return m_d3d11DeviceContext; }

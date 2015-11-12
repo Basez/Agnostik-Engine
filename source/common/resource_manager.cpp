@@ -95,7 +95,7 @@ void AGN::ResourceManager::loadDefaults()
 	m_defaultMaterial->specularTexture = nullptr;
 }
 
-AGN::MeshCollection& AGN::ResourceManager::loadMeshCollection(std::string a_relativePath, uint32_t additional_assimp_flags)
+AGN::MeshCollection& AGN::ResourceManager::loadMeshCollection(std::string a_relativePath, uint32_t additional_assimp_flags, float a_scaleModifier)
 {
 	// check if it exists
 	for (unsigned int i = 0; i < m_loadedMeshCollections.size(); i++)
@@ -105,6 +105,8 @@ AGN::MeshCollection& AGN::ResourceManager::loadMeshCollection(std::string a_rela
 			return *m_loadedMeshCollections[i];
 		}
 	}
+
+	g_log.info("Loading Mesh: %s", a_relativePath.c_str());
 
 	unsigned int flags = additional_assimp_flags;
 	flags |= aiProcess_SortByPType;
@@ -220,7 +222,7 @@ AGN::MeshCollection& AGN::ResourceManager::loadMeshCollection(std::string a_rela
 			const aiVector3D* loadedTangents = &(loadedMesh.mTangents[j]);
 			const aiVector3D* loadedBitangents = &(loadedMesh.mBitangents[j]);
 
-			meshDataList[i]->positions.push_back(vec3(loadedPos->x, loadedPos->y, loadedPos->z));
+			meshDataList[i]->positions.push_back(vec3(loadedPos->x * a_scaleModifier, loadedPos->y * a_scaleModifier, loadedPos->z * a_scaleModifier));
 			meshDataList[i]->normals.push_back(vec3(loadedNormal->x, loadedNormal->y, loadedNormal->z));
 			meshDataList[i]->tangents.push_back(vec3(loadedTangents->x, loadedTangents->y, loadedTangents->z));
 			meshDataList[i]->bitangents.push_back(vec3(loadedBitangents->x, loadedBitangents->y, loadedBitangents->z));
@@ -234,6 +236,7 @@ AGN::MeshCollection& AGN::ResourceManager::loadMeshCollection(std::string a_rela
 			if (loadedPos->x > max.x) max.x = loadedPos->x;
 			if (loadedPos->y > max.y) max.y = loadedPos->y;
 			if (loadedPos->z > max.z) max.z = loadedPos->z;
+			
 		}
 
 		meshDataList[i]->centerpoint = min + (max - min) * 0.5f;

@@ -490,7 +490,7 @@ void AGN::RendererDX11::renderGUI()
 	m_deviceReference.endDebugEvent();
 }
 
-void AGN::RendererDX11::onWindowUpdated(glm::ivec2 a_dimentions)
+void AGN::RendererDX11::onWindowUpdated(glm::ivec2 a_dimensions)
 {
 	g_log.debug("ARendererDX11::onWindowUpdated()");
 
@@ -522,8 +522,8 @@ void AGN::RendererDX11::onWindowUpdated(glm::ivec2 a_dimentions)
 	depthStencilBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;			// how to bind a resource to the pipeline // indicates that this buffer is to be used as a depth-stencil target for the output-merger stage.
 	depthStencilBufferDesc.CPUAccessFlags = 0;								// No CPU access required.
 	depthStencilBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;			// a 32-bit z-buffer format that supports 24 bits for depth and 8 bits for stencil.
-	depthStencilBufferDesc.Width = a_dimentions.x;
-	depthStencilBufferDesc.Height = a_dimentions.y;
+	depthStencilBufferDesc.Width = a_dimensions.x;
+	depthStencilBufferDesc.Height = a_dimensions.y;
 	depthStencilBufferDesc.MipLevels = 1;									// The maximum number of mipmap levels in the texture // 1 for a multisampled texture; or 0 to generate a full set of subtextures.
 	depthStencilBufferDesc.SampleDesc.Count = 1;							// multisampling parameters for the texture. 
 	depthStencilBufferDesc.SampleDesc.Quality = 0;							// multisampling parameters for the texture. 
@@ -567,8 +567,8 @@ void AGN::RendererDX11::onWindowUpdated(glm::ivec2 a_dimentions)
 	m_deviceReference.getD3D11DeviceContext()->OMSetRenderTargets(1, &m_d3dRenderTargetView, nullptr);
 
 	// Set up the viewport.
-	m_viewport->Width = static_cast<float>(a_dimentions.x);
-	m_viewport->Height = static_cast<float>(a_dimentions.y);
+	m_viewport->Width = static_cast<float>(a_dimensions.x);
+	m_viewport->Height = static_cast<float>(a_dimensions.y);
 	m_viewport->TopLeftX = 0.0f;
 	m_viewport->TopLeftY = 0.0f;
 	m_viewport->MinDepth = 0.0f;

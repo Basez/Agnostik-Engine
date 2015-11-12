@@ -502,8 +502,8 @@ void AGN::ImGuiDX11::update(float a_deltaTime)
 
 	// Setup display size (every frame to accommodate for window resizing)
 	// TODO: change when window resizes?
-	const glm::ivec2 windowDimentions = m_renderAPI->getWindow().getDimentions();
-	io.DisplaySize = ImVec2(static_cast<float>(windowDimentions.x), static_cast<float>(windowDimentions.y));
+	const glm::ivec2 windowdimensions = m_renderAPI->getWindow().getDimensions();
+	io.DisplaySize = ImVec2(static_cast<float>(windowdimensions.x), static_cast<float>(windowdimensions.y));
 
 	// set inputs
 	io.MousePos = ImVec2(static_cast<float>(g_input.getMouseX()), static_cast<float>(g_input.getMouseY()));

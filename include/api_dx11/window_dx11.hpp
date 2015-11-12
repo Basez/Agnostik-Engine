@@ -18,7 +18,7 @@ namespace AGN
 	class WindowDX11 : public IWindow
 	{
 	public:
-		WindowDX11(glm::ivec2 a_dimentions);
+		WindowDX11(glm::ivec2 a_dimensions);
 		~WindowDX11() override;
 
 		void setTitle(const char* a_title) override;
@@ -27,11 +27,11 @@ namespace AGN
 		void showCursor(bool a_shown) override;
 		void updateWindowState() override;
 		bool isDirty() override { return m_isDirty; }
-		glm::ivec2 getDimentions() override { return m_dimentions; }
+		glm::ivec2 getDimensions() override { return m_dimensions; }
 		const HWND getWindowHandle() const { return m_windowHandle; }
 
 	private:
-		glm::ivec2 m_dimentions;
+		glm::ivec2 m_dimensions;
 		HWND m_windowHandle = 0;
 		bool m_isDirty;
 		std::string m_windowName;

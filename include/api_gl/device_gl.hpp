@@ -11,7 +11,7 @@ namespace AGN
 		~DeviceGL() override;
 
 		bool init();
-		void onWindowUpdated(glm::ivec2 a_dimentions);
+		void onWindowUpdated(glm::ivec2 a_dimensions);
 
 		class IMesh* createMesh(const uint16_t a_aId, struct MeshData* a_meshData) override;
 		class ITexture* createTexture(const uint16_t a_aId, struct TextureData* a_textureData) override;

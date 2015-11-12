@@ -35,7 +35,7 @@ bool AGN::DeviceGL::init()
 	return true;
 }
 
-void AGN::DeviceGL::onWindowUpdated(glm::ivec2 a_dimentions)
+void AGN::DeviceGL::onWindowUpdated(glm::ivec2 a_dimensions)
 {
 	
 }

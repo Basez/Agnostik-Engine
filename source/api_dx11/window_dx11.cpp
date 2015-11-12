@@ -26,8 +26,8 @@ LRESULT CALLBACK AGN::windowProcedureCallback(HWND hwnd, UINT message, WPARAM wP
 	return g_window->onWindowEvent(hwnd, message, wParam, lParam);
 }
 
-AGN::WindowDX11::WindowDX11(glm::ivec2 a_dimentions)
-	: m_dimentions(a_dimentions)
+AGN::WindowDX11::WindowDX11(glm::ivec2 a_dimensions)
+	: m_dimensions(a_dimensions)
 	, m_isDirty(false)
 {
 	g_window = this;
@@ -57,7 +57,7 @@ AGN::WindowDX11::WindowDX11(glm::ivec2 a_dimentions)
 		g_log.error("Could not register window class");
 		return;
 	}
-	RECT windowRect = { 0, 0, a_dimentions.x, a_dimentions.y };
+	RECT windowRect = { 0, 0, a_dimensions.x, a_dimensions.y };
 	AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
 
 	auto moduleHandle = GetModuleHandle(nullptr);
@@ -285,10 +285,10 @@ void AGN::WindowDX11::updateWindowState()
 	int newWidth = clientRect.right - clientRect.left;
 	int newHeight = clientRect.bottom - clientRect.top;
 
-	m_dimentions.x = max(newWidth, MINIMUM_WINDOW_SIZE_X);
-	m_dimentions.y = max(newHeight, MINIMUM_WINDOW_SIZE_Y);
+	m_dimensions.x = max(newWidth, MINIMUM_WINDOW_SIZE_X);
+	m_dimensions.y = max(newHeight, MINIMUM_WINDOW_SIZE_Y);
 
 	m_isDirty = false;
 
-	g_log.info("Resized Window to: %ix%i", m_dimentions.x, m_dimentions.y);
+	g_log.info("Resized Window to: %ix%i", m_dimensions.x, m_dimensions.y);
 }

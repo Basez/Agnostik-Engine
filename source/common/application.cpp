@@ -104,7 +104,7 @@ void AGN::Application::run(IRenderAPI* a_renderAPI)
 		if (m_renderAPI->getWindow().isDirty())
 		{
 			m_renderAPI->updateWindowState();
-			m_sceneManager->onWindowUpdated(m_renderAPI->getWindow().getDimentions());
+			m_sceneManager->onWindowUpdated(m_renderAPI->getWindow().getDimensions());
 		}
 	}
 }
@@ -164,7 +164,7 @@ void AGN::Application::renderGUI()
 	{
 		// Select scene part
 		ImGui::Text("Select Scene:");
-		const char* sceneNames[] = { "Sponza", "Sibenik", "SuzannaCrate", "Empty" };
+		const char* sceneNames[] = { "Crytek Sponza", "Original Sponza", "Sibenik", "SuzannaCrate", "Empty" };
 		ImGui::Combo("", &selectedSceneIndex, sceneNames, (int)(sizeof(sceneNames) / sizeof(*sceneNames)));
 		if (ImGui::Button("Load"))
 		{

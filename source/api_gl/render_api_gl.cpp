@@ -275,6 +275,6 @@ void AGN::RenderAPIGL::handleEvents(bool& a_doQuit)
 void AGN::RenderAPIGL::updateWindowState()
 {
 	m_window->updateWindowState();
-	m_device->onWindowUpdated(m_window->getDimentions());
-	m_renderer->onWindowUpdated(m_window->getDimentions());
+	m_device->onWindowUpdated(m_window->getDimensions());
+	m_renderer->onWindowUpdated(m_window->getDimensions());
 }

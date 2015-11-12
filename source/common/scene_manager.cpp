@@ -55,18 +55,22 @@ void AGN::SceneManager::loadScene(int16_t a_index)
 	switch (a_index)
 	{
 	case 0:
-		loadSponza();
+		loadCrytekSponza();
 		break;
 
 	case 1:
-		loadSibenik();
+		loadSponza();
 		break;
 
 	case 2:
-		loadSuzannaCrate();
+		loadSibenik();
 		break;
 
 	case 3:
+		loadSuzannaCrate();
+		break;
+
+	case 4:
 		loadEmpty();
 		break;
 
@@ -78,7 +82,7 @@ void AGN::SceneManager::loadScene(int16_t a_index)
 	m_currentSceneIndex = a_index;
 }
 
-void AGN::SceneManager::onWindowUpdated(glm::ivec2 a_dimentions)
+void AGN::SceneManager::onWindowUpdated(glm::ivec2 a_dimensions)
 {
 	m_camera->setProjectionRH(60.0f, 0.1f, 10000.0f);
 }
@@ -95,6 +99,38 @@ void AGN::SceneManager::update(float a_deltaTime)
 	}
 }
 
+
+void AGN::SceneManager::loadCrytekSponza()
+{
+	ResourceManager& resourceManager = g_application.getResourceManager();
+
+	// load meshes
+	MeshCollection& sponzaMeshCollection = resourceManager.loadMeshCollection("sponza_crytek/sponza.obj", 0 , 0.012f);
+	MeshCollection& skyboxMeshCollection = resourceManager.loadMeshCollection("skybox_fixed.obj");
+
+	// create materials
+	Material& testMaterial = resourceManager.createMaterial("test_material");
+	testMaterial.diffuseTexture = &resourceManager.loadTexture("test.png", ETextureType::TEXTURE_2D);
+
+	Material& crateMaterial = resourceManager.createMaterial("crate_material");
+	crateMaterial.diffuseTexture = &resourceManager.loadTexture("market_props_crate_1_texture.png", ETextureType::TEXTURE_2D);
+
+	Material& skyboxMaterial = resourceManager.createMaterial("skybox_material");
+	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", ETextureType::TEXTURE_2D);
+	skyboxMaterial.diffuseTexture->setTextureParams((unsigned int)ETextureRenderFlags::USE_CLAMP);
+	skyboxMeshCollection.getMeshList()[0]->setMaterial(&skyboxMaterial); // TODO: change to getByName!
+
+																		 // create entities
+	Entity* sponzaEntity = new Entity();
+	sponzaEntity->setMeshCollection(&sponzaMeshCollection);
+	sponzaEntity->setPosition(vec3(0, 0, 0));
+	m_entities.push_back(sponzaEntity);
+
+	Entity* skyboxEntity = new Entity();
+	skyboxEntity->setMeshCollection(&skyboxMeshCollection);
+	skyboxEntity->setPosition(vec3(0, 0, 0));
+	m_skyboxEntities.push_back(skyboxEntity);
+}
 
 void AGN::SceneManager::loadSponza()
 {

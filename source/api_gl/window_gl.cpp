@@ -11,8 +11,8 @@
 #include <SDL/SDL.h>
 #include <GL/glew.h>
 
-AGN::WindowGL::WindowGL(glm::ivec2 a_dimentions)
-	: m_dimentions(a_dimentions)
+AGN::WindowGL::WindowGL(glm::ivec2 a_dimensions)
+	: m_dimensions(a_dimensions)
 	, m_mouseOnScreen(false)
 	, m_keyboardFocus(false)
 	, m_minimized(false)
@@ -28,14 +28,14 @@ AGN::WindowGL::WindowGL(glm::ivec2 a_dimentions)
 	m_windowName = AGN::OSUtils::getExecutableName();
 #endif
 
-	m_sdlWindow = SDL_CreateWindow(m_windowName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, a_dimentions.x, a_dimentions.y, flags);
+	m_sdlWindow = SDL_CreateWindow(m_windowName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, a_dimensions.x, a_dimensions.y, flags);
 
 	if (!m_sdlWindow)
 	{
 		SDL_ShowSimpleMessageBox(0, "Window init error", SDL_GetError(), m_sdlWindow);
 	}
 
-	glViewport(0, 0, a_dimentions.x, a_dimentions.y);
+	glViewport(0, 0, a_dimensions.x, a_dimensions.y);
 }
 
 AGN::WindowGL::~WindowGL()
@@ -102,11 +102,11 @@ void AGN::WindowGL::onWindowEvent(SDL_Event& a_event)
 
 void AGN::WindowGL::updateWindowState()
 {
-	SDL_GetWindowSize(m_sdlWindow, &m_dimentions.x, &m_dimentions.y);
+	SDL_GetWindowSize(m_sdlWindow, &m_dimensions.x, &m_dimensions.y);
 
-	glViewport(0, 0, m_dimentions.x, m_dimentions.y);
+	glViewport(0, 0, m_dimensions.x, m_dimensions.y);
 
 	m_isDirty = false;
 
-	g_log.info("Resized Window to: %ix%i", m_dimentions.x, m_dimentions.y);
+	g_log.info("Resized Window to: %ix%i", m_dimensions.x, m_dimensions.y);
 }

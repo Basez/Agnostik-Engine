@@ -15,7 +15,7 @@ namespace AGN
 		void unloadAll();
 		void loadDefaults();
 		
-		class MeshCollection& loadMeshCollection(std::string a_relativePath, uint32_t additional_assimp_flags = 0);
+		class MeshCollection& loadMeshCollection(std::string a_relativePath, uint32_t additional_assimp_flags = 0, float a_scaleModifier = 1.0f);
 		class ITexture& loadTexture(std::string a_relativePath, ETextureType a_textureType);
 		class IShader& createShader(const char* a_shaderSource, EShaderType a_shaderType);
 		class IShaderPipeline& createShaderPipeline(std::vector<class IShader*> a_shaders);

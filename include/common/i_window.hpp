@@ -14,6 +14,6 @@ namespace AGN
 		virtual void showCursor(bool a_shown) = 0;
 		virtual void updateWindowState() = 0;
 		virtual bool isDirty() = 0;
-		virtual glm::ivec2 getDimentions() = 0;
+		virtual glm::ivec2 getDimensions() = 0;
 	};
 }

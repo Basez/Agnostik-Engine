@@ -42,10 +42,10 @@ AGN::RenderAPIDX11::~RenderAPIDX11()
 
 bool AGN::RenderAPIDX11::init()
 {
-	glm::ivec2 windowDimentions;
-	windowDimentions.x = g_configManager.getConfigPropertyAsInt32("start_resolution_x");
-	windowDimentions.y = g_configManager.getConfigPropertyAsInt32("start_resolution_y");
-	m_window = new WindowDX11(windowDimentions);
+	glm::ivec2 windowdimensions;
+	windowdimensions.x = g_configManager.getConfigPropertyAsInt32("start_resolution_x");
+	windowdimensions.y = g_configManager.getConfigPropertyAsInt32("start_resolution_y");
+	m_window = new WindowDX11(windowdimensions);
 	
 	m_device = new DeviceDX11();
 	if (!m_device->init(m_window)) return false;
@@ -109,8 +109,8 @@ void AGN::RenderAPIDX11::handleEvents(bool& a_doQuit)
 void AGN::RenderAPIDX11::updateWindowState()
 {
 	m_window->updateWindowState();
-	m_device->onWindowUpdated(m_window->getDimentions());
-	m_renderer->onWindowUpdated(m_window->getDimentions());
+	m_device->onWindowUpdated(m_window->getDimensions());
+	m_renderer->onWindowUpdated(m_window->getDimensions());
 }
 
 void AGN::RenderAPIDX11::logLiveObjects()
