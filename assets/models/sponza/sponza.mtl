@@ -12,10 +12,10 @@ newmtl sp_00_luk_mali
 	Kd 0.745098 0.709804 0.674510
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sponza_textures/sp_luk.jpg
-	map_Kd sponza_textures/sp_luk.jpg
-	map_bump sponza_textures/sp_luk-bump.jpg
-	bump sponza_textures/sp_luk-bump.jpg
+	map_Ka sponza/sp_luk.jpg
+	map_Kd sponza/sp_luk.jpg
+	map_bump sponza/sp_luk-bump.jpg
+	bump sponza/sp_luk-bump.jpg
 
 newmtl sp_svod_kapitel
 	Ns 50.000000
@@ -28,10 +28,10 @@ newmtl sp_svod_kapitel
 	Kd 0.713726 0.705882 0.658824
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sponza_textures/00_skap.jpg
-	map_Kd sponza_textures/00_skap.jpg
-	map_bump sponza_textures/00_skap.jpg
-	bump sponza_textures/00_skap.jpg
+	map_Ka sponza/00_skap.jpg
+	map_Kd sponza/00_skap.jpg
+	map_bump sponza/00_skap.jpg
+	bump sponza/00_skap.jpg
 
 newmtl sp_01_stub_baza_
 	Ns 19.999998
@@ -56,10 +56,10 @@ newmtl sp_01_stub_kut
 	Kd 0.737255 0.709804 0.670588
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sponza_textures/01_stub.jpg
-	map_Kd sponza_textures/01_stub.jpg
-	map_bump sponza_textures/01_stub-bump.jpg
-	bump sponza_textures/01_stub-bump.jpg
+	map_Ka sponza/01_stub.jpg
+	map_Kd sponza/01_stub.jpg
+	map_bump sponza/01_stub-bump.jpg
+	bump sponza/01_stub-bump.jpg
 
 newmtl sp_00_stup
 	Ns 50.000000
@@ -72,10 +72,10 @@ newmtl sp_00_stup
 	Kd 0.737255 0.709804 0.670588
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sponza_textures/01_stub.jpg
-	map_Kd sponza_textures/01_stub.jpg
-	map_bump sponza_textures/01_stub-bump.jpg
-	bump sponza_textures/01_stub-bump.jpg
+	map_Ka sponza/01_stub.jpg
+	map_Kd sponza/01_stub.jpg
+	map_bump sponza/01_stub-bump.jpg
+	bump sponza/01_stub-bump.jpg
 
 newmtl sp_01_stub_baza
 	Ns 50.000000
@@ -88,10 +88,10 @@ newmtl sp_01_stub_baza
 	Kd 0.800000 0.784314 0.749020
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sponza_textures/01_s_ba.jpg
-	map_Kd sponza_textures/01_s_ba.jpg
-	map_bump sponza_textures/01_s_ba.jpg
-	bump sponza_textures/01_s_ba.jpg
+	map_Ka sponza/01_s_ba.jpg
+	map_Kd sponza/01_s_ba.jpg
+	map_bump sponza/01_s_ba.jpg
+	bump sponza/01_s_ba.jpg
 
 newmtl sp_00_luk_mal1
 	Ns 50.000000
@@ -104,10 +104,10 @@ newmtl sp_00_luk_mal1
 	Kd 0.745098 0.709804 0.674510
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sponza_textures/01_st_kp.jpg
-	map_Kd sponza_textures/01_st_kp.jpg
-	map_bump sponza_textures/01_st_kp-bump.jpg
-	bump sponza_textures/01_st_kp-bump.jpg
+	map_Ka sponza/01_st_kp.jpg
+	map_Kd sponza/01_st_kp.jpg
+	map_bump sponza/01_st_kp-bump.jpg
+	bump sponza/01_st_kp-bump.jpg
 
 newmtl sp_01_stub
 	Ns 50.000000
@@ -120,10 +120,10 @@ newmtl sp_01_stub
 	Kd 0.737255 0.709804 0.670588
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sponza_textures/01_stub.jpg
-	map_Kd sponza_textures/01_stub.jpg
-	map_bump sponza_textures/01_stub-bump.jpg
-	bump sponza_textures/01_stub-bump.jpg
+	map_Ka sponza/01_stub.jpg
+	map_Kd sponza/01_stub.jpg
+	map_bump sponza/01_stub-bump.jpg
+	bump sponza/01_stub-bump.jpg
 
 newmtl sp_01_stup
 	Ns 50.000000
@@ -136,8 +136,8 @@ newmtl sp_01_stup
 	Kd 0.827451 0.800000 0.768628
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sponza_textures/x01_st.jpg
-	map_Kd sponza_textures/x01_st.jpg
+	map_Ka sponza/x01_st.jpg
+	map_Kd sponza/x01_st.jpg
 
 newmtl sp_vijenac
 	Ns 50.000000
@@ -150,10 +150,10 @@ newmtl sp_vijenac
 	Kd 0.713726 0.705882 0.658824
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sponza_textures/00_skap.jpg
-	map_Kd sponza_textures/00_skap.jpg
-	map_bump sponza_textures/00_skap.jpg
-	bump sponza_textures/00_skap.jpg
+	map_Ka sponza/00_skap.jpg
+	map_Kd sponza/00_skap.jpg
+	map_bump sponza/00_skap.jpg
+	bump sponza/00_skap.jpg
 
 newmtl sp_00_svod
 	Ns 1.000000
@@ -166,10 +166,10 @@ newmtl sp_00_svod
 	Kd 0.941177 0.866667 0.737255
 	Ks 0.034039 0.032314 0.029333
 	Ke 0.000000 0.000000 0.000000
-        map_Kd sponza_textures/kamen-stup.jpg
-        map_Ka sponza_textures/kamen-stup.jpg
-        map_bump sponza_textures/kamen-stup.jpg
-        bump sponza_textures/kamen-stup.jpg
+        map_Kd sponza/kamen-stup.jpg
+        map_Ka sponza/kamen-stup.jpg
+        map_bump sponza/kamen-stup.jpg
+        bump sponza/kamen-stup.jpg
 
 newmtl sp_02_reljef
 	Ns 50.000000
@@ -182,10 +182,10 @@ newmtl sp_02_reljef
 	Kd 0.529412 0.498039 0.490196
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sponza_textures/reljef.jpg
-	map_Kd sponza_textures/reljef.jpg
-	map_bump sponza_textures/reljef-bump.jpg
-	bump sponza_textures/reljef-bump.jpg
+	map_Ka sponza/reljef.jpg
+	map_Kd sponza/reljef.jpg
+	map_bump sponza/reljef-bump.jpg
+	bump sponza/reljef-bump.jpg
 
 newmtl sp_01_luk_a
 	Ns 50.000000
@@ -198,10 +198,10 @@ newmtl sp_01_luk_a
 	Kd 0.745098 0.709804 0.674510
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sponza_textures/sp_luk.jpg
-	map_Kd sponza_textures/sp_luk.jpg
-	map_bump sponza_textures/sp_luk-bump.jpg
-	bump sponza_textures/sp_luk-bump.jpg
+	map_Ka sponza/sp_luk.jpg
+	map_Kd sponza/sp_luk.jpg
+	map_bump sponza/sp_luk-bump.jpg
+	bump sponza/sp_luk-bump.jpg
 
 newmtl sp_zid_vani
 	Ns 50.000000
@@ -214,10 +214,10 @@ newmtl sp_zid_vani
 	Kd 0.627451 0.572549 0.560784
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sponza_textures/kamen.jpg
-	map_Kd sponza_textures/kamen.jpg
-	map_bump sponza_textures/kamen-bump.jpg
-	bump sponza_textures/kamen-bump.jpg
+	map_Ka sponza/kamen.jpg
+	map_Kd sponza/kamen.jpg
+	map_bump sponza/kamen-bump.jpg
+	bump sponza/kamen-bump.jpg
 
 newmtl sp_01_stup_baza
 	Ns 50.000000
@@ -230,10 +230,10 @@ newmtl sp_01_stup_baza
 	Kd 0.800000 0.784314 0.749020
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sponza_textures/01_s_ba.jpg
-	map_Kd sponza_textures/01_s_ba.jpg
-	map_bump sponza_textures/01_s_ba.jpg
-	bump sponza_textures/01_s_ba.jpg
+	map_Ka sponza/01_s_ba.jpg
+	map_Kd sponza/01_s_ba.jpg
+	map_bump sponza/01_s_ba.jpg
+	bump sponza/01_s_ba.jpg
 
 newmtl sp_00_zid
 	Ns 50.000000
@@ -246,10 +246,10 @@ newmtl sp_00_zid
 	Kd 0.627451 0.572549 0.560784
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sponza_textures/kamen.jpg
-	map_Kd sponza_textures/kamen.jpg
-	map_bump sponza_textures/kamen-bump.jpg
-	bump sponza_textures/kamen-bump.jpg
+	map_Ka sponza/kamen.jpg
+	map_Kd sponza/kamen.jpg
+	map_bump sponza/kamen-bump.jpg
+	bump sponza/kamen-bump.jpg
 
 newmtl sp_00_prozor
 	Ns 50.000000
@@ -262,10 +262,10 @@ newmtl sp_00_prozor
 	Kd 1.000000 1.000000 1.000000
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sponza_textures/prozor1.jpg
-	map_Kd sponza_textures/prozor1.jpg
-	map_bump sponza_textures/prozor1.jpg
-	bump sponza_textures/prozor1.jpg
+	map_Ka sponza/prozor1.jpg
+	map_Kd sponza/prozor1.jpg
+	map_bump sponza/prozor1.jpg
+	bump sponza/prozor1.jpg
 
 newmtl sp_00_vrata_krug
 	Ns 19.999998
@@ -278,10 +278,10 @@ newmtl sp_00_vrata_krug
 	Kd 0.784314 0.784314 0.784314
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sponza_textures/vrata_kr.jpg
-	map_Kd sponza_textures/vrata_kr.jpg
-	map_bump sponza_textures/vrata_kr.jpg
-	bump sponza_textures/vrata_kr.jpg
+	map_Ka sponza/vrata_kr.jpg
+	map_Kd sponza/vrata_kr.jpg
+	map_bump sponza/vrata_kr.jpg
+	bump sponza/vrata_kr.jpg
 
 newmtl sp_00_pod
 	Ns 50.000000
@@ -294,10 +294,10 @@ newmtl sp_00_pod
 	Kd 0.627451 0.572549 0.560784
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sponza_textures/kamen.jpg
-	map_Kd sponza_textures/kamen.jpg
-	map_bump sponza_textures/kamen-bump.jpg
-	bump sponza_textures/kamen-bump.jpg
+	map_Ka sponza/kamen.jpg
+	map_Kd sponza/kamen.jpg
+	map_bump sponza/kamen-bump.jpg
+	bump sponza/kamen-bump.jpg
 
 newmtl sp_00_vrata_kock
 	Ns 19.999998
@@ -310,7 +310,7 @@ newmtl sp_00_vrata_kock
 	Kd 0.784314 0.784314 0.784314
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sponza_textures/vrata_ko.jpg
-	map_Kd sponza_textures/vrata_ko.jpg
-	map_bump sponza_textures/vrata_ko.jpg
-	bump sponza_textures/vrata_ko.jpg
+	map_Ka sponza/vrata_ko.jpg
+	map_Kd sponza/vrata_ko.jpg
+	map_bump sponza/vrata_ko.jpg
+	bump sponza/vrata_ko.jpg

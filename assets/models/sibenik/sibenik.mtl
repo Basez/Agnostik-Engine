@@ -36,10 +36,10 @@ newmtl kamen_zid
 	Kd 0.734118 0.730588 0.674118
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sibenik_textures/kamen.png
-	map_Kd sibenik_textures/kamen.png
-    map_bump sibenik_textures/kamen-bump.png
-    bump sibenik_textures/kamen-bump.png
+	map_Ka sibenik/kamen.png
+	map_Kd sibenik/kamen.png
+    map_bump sibenik/kamen-bump.png
+    bump sibenik/kamen-bump.png
 
 newmtl stupovi
 	Ns 8.000000
@@ -52,8 +52,8 @@ newmtl stupovi
 	Kd 0.734118 0.730588 0.674118
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sibenik_textures/kamen-stup.png
-	map_Kd sibenik_textures/kamen-stup.png
+	map_Ka sibenik/kamen-stup.png
+	map_Kd sibenik/kamen-stup.png
 
 newmtl pod
 	Ns 8.000000
@@ -66,10 +66,10 @@ newmtl pod
 	Kd 0.734118 0.709412 0.674118
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sibenik_textures/mramor6x6.png
-	map_Kd sibenik_textures/mramor6x6.png
-	map_bump sibenik_textures/mramor6x6-bump.png
-	bump sibenik_textures/mramor6x6-bump.png
+	map_Ka sibenik/mramor6x6.png
+	map_Kd sibenik/mramor6x6.png
+	map_bump sibenik/mramor6x6-bump.png
+	bump sibenik/mramor6x6-bump.png
 
 newmtl pod_tepih
 	Ns 8.000000
@@ -94,10 +94,10 @@ newmtl pod_rub
 	Kd 0.734118 0.730588 0.674118
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sibenik_textures/kamen.png
-	map_Kd sibenik_textures/kamen.png
-	map_bump sibenik_textures/kamen-bump.png
-	bump sibenik_textures/kamen-bump.png
+	map_Ka sibenik/kamen.png
+	map_Kd sibenik/kamen.png
+	map_bump sibenik/kamen-bump.png
+	bump sibenik/kamen-bump.png
 
 newmtl kamen_zid_prozor
 	Ns 8.000000
@@ -110,10 +110,10 @@ newmtl kamen_zid_prozor
 	Kd 0.734118 0.730588 0.674118
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sibenik_textures/kamen.png
-	map_Kd sibenik_textures/kamen.png
-	map_bump sibenik_textures/kamen-bump.png
-	bump sibenik_textures/kamen-bump.png
+	map_Ka sibenik/kamen.png
+	map_Kd sibenik/kamen.png
+	map_bump sibenik/kamen-bump.png
+	bump sibenik/kamen-bump.png
 
 newmtl zid_vani
 	Ns 8.000000
@@ -126,10 +126,10 @@ newmtl zid_vani
 	Kd 0.734118 0.730588 0.674118
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sibenik_textures/kamen.png
-	map_Kd sibenik_textures/kamen.png
-	map_bump sibenik_textures/kamen-bump.png
-	bump sibenik_textures/kamen-bump.png
+	map_Ka sibenik/kamen.png
+	map_Kd sibenik/kamen.png
+	map_bump sibenik/kamen-bump.png
+	bump sibenik/kamen-bump.png
 
 newmtl kamen_zid_parapet
 	Ns 8.000000
@@ -142,8 +142,8 @@ newmtl kamen_zid_parapet
 	Kd 0.734118 0.730588 0.674118
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sibenik_textures/KAMEN-stup.png
-	map_Kd sibenik_textures/KAMEN-stup.png
+	map_Ka sibenik/kamen-stup.png
+	map_Kd sibenik/kamen-stup.png
 
 newmtl staklo_crveno
 	Ns 256.000000
@@ -168,8 +168,8 @@ newmtl rozeta
 	Kd 0.734118 0.730588 0.674118
 	Ks 0.000000 0.000000 0.000000
 	Ke 0.000000 0.000000 0.000000
-	map_Ka sibenik_textures/kamen-stup.png
-	map_Kd sibenik_textures/kamen-stup.png
+	map_Ka sibenik/kamen-stup.png
+	map_Kd sibenik/kamen-stup.png
 
 # Green window
 newmtl staklo_zeleno
