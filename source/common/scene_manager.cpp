@@ -194,11 +194,11 @@ void AGN::SceneManager::loadSuzannaCrate()
 	
 	// create crate entities
 	int index = 0;
-	for (int x = 0; x < 1; x++)
+	for (int x = 0; x < 5; x++)
 	{
 		for (int y = 0; y < 1; y++)
 		{
-			for (int z = 0; z < 10; z++)
+			for (int z = 0; z < 200; z++)
 			{
 				// interchange crates & suzannes (worst case scenario in terms of sorting/nosorting)
 				if ((++index % 2) == 1)

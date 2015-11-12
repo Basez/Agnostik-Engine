@@ -239,21 +239,32 @@ void AGN::RendererDX11::render(AGN::DrawCommander& a_drawCommander)
 		switch (command->type)
 		{
 		case EDrawCommandType::ClearBuffer:
+		{
 			clearBuffer(*command);
 			break;
-
+		}
 		case EDrawCommandType::DrawEntity:
+		{
 			drawEntity(*command);
 			break;
-
+		}
 		case EDrawCommandType::DrawGUI:
+		{
 			renderGUI();
 			break;
-
+		}
 		case EDrawCommandType::SwapBackBuffer:
-			if (m_renderAPIReference.getVSync()) m_deviceReference.getD3D11SwapChain()->Present(1, 0);
-			else m_deviceReference.getD3D11SwapChain()->Present(0, 0);
+		{
+			if (m_renderAPIReference.getVSync())
+			{
+				m_deviceReference.getD3D11SwapChain()->Present(1, 0);
+			}
+			else
+			{
+				m_deviceReference.getD3D11SwapChain()->Present(0, 0);
+			}
 			break;
+		}
 		}
 	}
 }

@@ -43,6 +43,7 @@ AGN::Application::Application()
 	: m_meshShaderPipeline(nullptr)
 	, m_skyboxShaderPipeline(nullptr)
 	, m_sceneIndex(0)
+	, m_sortEntityDrawCalls(true)
 {
 
 }
@@ -69,6 +70,7 @@ void AGN::Application::run(IRenderAPI* a_renderAPI)
 	
 	m_drawCommander = new DrawCommander();
 
+	m_sceneIndex = g_configManager.getConfigPropertyAsInt32("start_scene_index");
 	m_sceneManager = new SceneManager();
 	m_sceneManager->init();
 
@@ -153,13 +155,12 @@ void AGN::Application::updateMeshShaderProperties(float a_deltaTime)
 	m_meshShaderPipeline->setConstantBufferData(EShaderType::PixelShader,"LightSettings", &buffer, 48);
 }
 
-void AGN::Application::renderGUIElements()
+void AGN::Application::renderGUI()
 {
-	static bool configIsOpen = true;
 	static int32_t selectedSceneIndex = 0;
 	static bool enableVsync = g_configManager.getConfigPropertyAsBool("vsync");
-
-	ImGui::Begin("Config Menu", &configIsOpen);
+	
+	ImGui::Begin("Config Menu", nullptr, ImGuiWindowFlags_NoSavedSettings);
 	{
 		// Select scene part
 		ImGui::Text("Select Scene:");
@@ -179,6 +180,9 @@ void AGN::Application::renderGUIElements()
 		bool prevEnableVsync = enableVsync;
 		ImGui::Checkbox("Enable VSync", &enableVsync);
 		if (prevEnableVsync != enableVsync) m_renderAPI->enableVSync(enableVsync);
+
+		// sort draw commands
+		ImGui::Checkbox("Sort mesh draw calls", &m_sortEntityDrawCalls);
 
 		// FPS and other stats
 		ImGui::Separator();
@@ -210,12 +214,10 @@ void AGN::Application::render()
 {
 	// high level rendering
 	createDrawQueue();
+
 	m_drawCommander->sortCommandList();
 
-	if (m_renderAPI->getImGui().isEnabled())
-	{
-		renderGUIElements();
-	}
+	if (m_renderAPI->getImGui().isEnabled()) renderGUI();
 	
 	// api specific rendering, parses command list
 	m_renderAPI->getRenderer().render(*m_drawCommander);
@@ -301,9 +303,9 @@ void AGN::Application::createDrawQueue()
 			uint8_t layer = (uint8_t)ERenderLayer::Skybox;
 			uint8_t translucencyType = 0;				// TODO:
 			uint8_t cmd = 0;							// TODO: ?
-			uint16_t shaderPipelineId = m_skyboxShaderPipeline->getAId();
-			uint32_t meshId = mesh->getAId();
-			uint16_t materialId = material->getAId();
+			uint16_t shaderPipelineId = m_sortEntityDrawCalls ? m_skyboxShaderPipeline->getAId() : 0;
+			uint32_t meshId = m_sortEntityDrawCalls ? mesh->getAId() : 0;
+			uint16_t materialId = m_sortEntityDrawCalls ? material->getAId() : 0;
 			uint32_t depth = 0;							// TODO:
 			uint64_t sortkey = DrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, shaderPipelineId, meshId, materialId, depth);
 
@@ -385,9 +387,9 @@ void AGN::Application::createDrawQueue()
 			uint8_t layer = (uint8_t)ERenderLayer::Entities;
 			uint8_t translucencyType = 0;				// TODO:
 			uint8_t cmd = 0;							// TODO: ?
-			uint16_t shaderPipelineId = m_meshShaderPipeline->getAId();
-			uint32_t meshId = mesh->getAId();
-			uint16_t materialId = material->getAId();
+			uint16_t shaderPipelineId = m_sortEntityDrawCalls ? m_meshShaderPipeline->getAId() : 0;
+			uint32_t meshId = m_sortEntityDrawCalls ? mesh->getAId() : 0;
+			uint16_t materialId = m_sortEntityDrawCalls ? material->getAId() : 0;
 			uint32_t depth = 0;//(depthVector[depthVectorIndex] / (maxDepth+1)) * maxDepthEntries; // add sorted depth
 			uint64_t sortkey = DrawCommander::getSortKey(renderPhase, layer, translucencyType, cmd, shaderPipelineId, meshId, materialId, depth);
 			

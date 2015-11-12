@@ -81,7 +81,7 @@ AGN::IImGui& AGN::RenderAPIDX11::getImGui()
 
 void AGN::RenderAPIDX11::enableVSync(bool a_value)
 {
-	// TODO: Restore
+	m_vSync = a_value;
 }
 
 void AGN::RenderAPIDX11::handleEvents(bool& a_doQuit)

@@ -15,7 +15,7 @@ namespace AGN
 	private:
 		void update();
 		void render();
-		void renderGUIElements();
+		void renderGUI();
 		void createDrawQueue();
 		void loadShaders();
 		void updateMeshShaderProperties(float a_deltaTime);
@@ -26,8 +26,10 @@ namespace AGN
 		class DrawCommander* m_drawCommander;
 		class IShaderPipeline* m_meshShaderPipeline;
 		class IShaderPipeline* m_skyboxShaderPipeline;
-		int32_t m_sceneIndex;
 
+		// gui properties
+		int32_t m_sceneIndex;
+		bool m_sortEntityDrawCalls;
 	};
 }
 extern AGN::Application& g_application;

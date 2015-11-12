@@ -5,7 +5,7 @@
 #pragma once
 
 // uncomment to enable mmgr memory leak detection
-#define AGN_ENABLE_MEMORYLEAK_DETECTION
+//#define AGN_ENABLE_MEMORYLEAK_DETECTION
 
 // stl
 #include <iostream>
