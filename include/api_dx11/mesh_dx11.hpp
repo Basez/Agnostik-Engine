@@ -19,6 +19,7 @@ namespace AGN
 		uint32_t getIndexCount() const override { return (uint32_t)m_meshData->indicies.size(); }
 		ID3D11Buffer* getD3D11VertexBuffer() const { return m_d3d11VertexBuffer;  }
 		ID3D11Buffer* getD3D11IndexBuffer() const { return m_d3d11IndexBuffer; }
+		std::string getName() override { return m_meshData->name; }
 
 		void setMaterial(class Material* a_material) override { m_meshData->material = a_material; }
 

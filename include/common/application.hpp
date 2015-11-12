@@ -24,9 +24,10 @@ namespace AGN
 		class SceneManager* m_sceneManager;
 		class ResourceManager* m_resourceManager;
 		class DrawCommander* m_drawCommander;
-
 		class IShaderPipeline* m_meshShaderPipeline;
 		class IShaderPipeline* m_skyboxShaderPipeline;
+		int32_t m_sceneIndex;
+
 	};
 }
 extern AGN::Application& g_application;

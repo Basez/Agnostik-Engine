@@ -26,7 +26,6 @@
 #include "draw_command.hpp"
 #include "camera.hpp"
 
-
 // shaders
 // TODO: make these shaders more cross-platform friendly.
 // TODO: Perhaps let the pre-build step figure it out or generate both types in the same file, with a special getter
@@ -43,6 +42,7 @@ using namespace glm;
 AGN::Application::Application()
 	: m_meshShaderPipeline(nullptr)
 	, m_skyboxShaderPipeline(nullptr)
+	, m_sceneIndex(0)
 {
 
 }
@@ -66,19 +66,29 @@ void AGN::Application::run(IRenderAPI* a_renderAPI)
 	
 	m_resourceManager = new ResourceManager(m_renderAPI->getDevice());
 	m_resourceManager->loadDefaults();
-	loadShaders();
-
+	
 	m_drawCommander = new DrawCommander();
 
 	m_sceneManager = new SceneManager();
 	m_sceneManager->init();
-	m_sceneManager->loadScene(0);
 
 	m_renderAPI->getRenderer().setCamera(m_sceneManager->getCurrentCamera());
 
 	bool doQuit = false;
 	while (!doQuit)
 	{
+		if (m_sceneIndex != m_sceneManager->getCurrentSceneIndex())
+		{
+			// unload everything
+			m_sceneManager->unloadScene();
+			m_resourceManager->unloadAll();
+
+			// load new stuff
+			m_resourceManager->loadDefaults();
+			loadShaders();
+			m_sceneManager->loadScene(m_sceneIndex);
+		}
+
 		// api specific event handling, input etc
 		m_renderAPI->handleEvents(doQuit);
 
@@ -92,11 +102,11 @@ void AGN::Application::run(IRenderAPI* a_renderAPI)
 		// TODO: rethink this?
 		if (m_renderAPI->getWindow().isDirty())
 		{
+			// TODO: Refactor, make a single function inside RenderAPI handling all functionality (also do resize in device!)
 			m_renderAPI->getWindow().updateWindowState();
 			m_renderAPI->getRenderer().onWindowUpdated(m_renderAPI->getWindow().getDimentions());
 			m_sceneManager->onWindowUpdated(m_renderAPI->getWindow().getDimentions());
 		}
-
 	}
 }
 
@@ -160,9 +170,9 @@ void AGN::Application::renderGUIElements()
 		ImGui::Combo("", &selectedSceneIndex, sceneNames, (int)(sizeof(sceneNames) / sizeof(*sceneNames)));
 		if (ImGui::Button("Load"))
 		{
-			// TODO:
-			g_log.debug("TODO: load %s scene", sceneNames[selectedSceneIndex]);
-			m_sceneManager->loadScene(selectedSceneIndex);
+			// set index to the selected scene index. Will load the scene next frame
+			m_sceneIndex = selectedSceneIndex;
+			g_log.debug("Load %s scene", sceneNames[selectedSceneIndex]);
 		}
 
 		ImGui::Separator();
@@ -210,7 +220,7 @@ void AGN::Application::render()
 		renderGUIElements();
 	}
 	
-	// api specific rendering
+	// api specific rendering, parses command list
 	m_renderAPI->getRenderer().render(*m_drawCommander);
 
 	// clear render buckets at the end of the frame (after data is uploaded to the GPU)
@@ -283,9 +293,10 @@ void AGN::Application::createDrawQueue()
 		mat4 scaling = scale(entity.getScale());
 		mat4 modelMatrix = translation * rotation * scaling;
 
-		for (unsigned int j = 0; j < entity.getMeshCollection().size(); j++)
+		MeshCollection* entityMeshCollection = entity.getMeshCollection();
+		for (unsigned int j = 0; j < entityMeshCollection->getNumMeshes(); j++)
 		{
-			IMesh* mesh = entity.getMeshCollection()[j];
+			IMesh* mesh = entityMeshCollection->getMeshList()[j];
 			Material* material = mesh->getMaterial();
 
 			// create sortkey
@@ -366,9 +377,10 @@ void AGN::Application::createDrawQueue()
 		mat4 scaling = scale(entity.getScale());
 		mat4 modelMatrix = translation * rotation * scaling;
 
-		for (unsigned int j = 0; j < entity.getMeshCollection().size(); j++, depthVectorIndex++)
+		MeshCollection* entityMeshCollection = entity.getMeshCollection();
+		for (unsigned int j = 0; j < entityMeshCollection->getNumMeshes(); j++, depthVectorIndex++)
 		{
-			IMesh* mesh = entity.getMeshCollection()[j];
+			IMesh* mesh = entityMeshCollection->getMeshList()[j];
 			Material* material = mesh->getMaterial();
 			 
 			// create sortkey

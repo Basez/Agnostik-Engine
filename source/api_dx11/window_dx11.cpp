@@ -223,6 +223,7 @@ LRESULT CALLBACK AGN::WindowDX11::onWindowEvent(HWND a_hwnd, UINT a_message, WPA
 		g_input.registerMouseScroll(int(((int)(short)HIWORD(a_wParam)) / (float)WHEEL_DELTA));
 		break;
 	}
+	
 	default:
 	{
 		return DefWindowProc(a_hwnd, a_message, a_wParam, a_lParam);

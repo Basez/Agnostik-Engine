@@ -25,8 +25,6 @@ AGN::ILogger& g_log = LoggerWin;
 
 AGN::LoggerWin::~LoggerWin()
 {
-	g_log.warning("TODO: CLEAN LoggerWin::~LoggerWin()");
-
 	cleanup();
 }
 

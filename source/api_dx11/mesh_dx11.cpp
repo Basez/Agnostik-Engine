@@ -20,9 +20,8 @@ AGN::MeshDX11::MeshDX11(const uint16_t a_aId, MeshData* a_meshData, ID3D11Buffer
 
 AGN::MeshDX11::~MeshDX11()
 {
-	g_log.warning("TODO: CLEAN MeshDX11::~MeshDX11()");
-
-	//delete m_meshData; // TODO: refactor, we cannot delete the data as its allocated in one big heap --> refactor IMesh and IMeshCollection into 2 seperated classes!
 	safeRelease(m_d3d11VertexBuffer);
 	safeRelease(m_d3d11IndexBuffer);
+
+	delete m_meshData;
 }

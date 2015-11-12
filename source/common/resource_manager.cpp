@@ -32,6 +32,7 @@ using namespace glm;
 AGN::ResourceManager::ResourceManager(class IDevice& a_device)
 	: m_device(a_device)
 	, m_meshIdCount(0)
+	, m_meshCollectionIdCount(0)
 	, m_shaderIdCount(0)
 	, m_textureIdCount(0)
 	, m_materialIdCount(0)
@@ -43,11 +44,14 @@ AGN::ResourceManager::ResourceManager(class IDevice& a_device)
 
 AGN::ResourceManager::~ResourceManager()
 {
-	// TODO: Refactor meshcollections and properly clean them after
+	unloadAll();
+}
+
+void AGN::ResourceManager::unloadAll()
+{
 	while (m_loadedMeshCollections.size() > 0)
 	{
-		MeshCollection meshCollection = m_loadedMeshCollections[0];
-		for (IMesh* mesh : meshCollection) delete mesh;
+		delete m_loadedMeshCollections[0];
 		m_loadedMeshCollections.erase(m_loadedMeshCollections.begin());
 	}
 
@@ -56,13 +60,13 @@ AGN::ResourceManager::~ResourceManager()
 		delete m_materials[0];
 		m_materials.erase(m_materials.begin());
 	}
-	
+
 	while (m_loadedTextures.size() > 0)
 	{
 		delete m_loadedTextures[0];
 		m_loadedTextures.erase(m_loadedTextures.begin());
 	}
-	
+
 	while (m_shaderpipelines.size() > 0)
 	{
 		delete m_shaderpipelines[0];
@@ -91,11 +95,16 @@ void AGN::ResourceManager::loadDefaults()
 	m_defaultMaterial->specularTexture = nullptr;
 }
 
-class std::vector<AGN::IMesh*> AGN::ResourceManager::loadMeshCollection(std::string a_relativePath, uint32_t additional_assimp_flags)
+AGN::MeshCollection& AGN::ResourceManager::loadMeshCollection(std::string a_relativePath, uint32_t additional_assimp_flags)
 {
-	// TODO: Check if it exists
-
-
+	// check if it exists
+	for (unsigned int i = 0; i < m_loadedMeshCollections.size(); i++)
+	{
+		if (m_loadedMeshCollections[i]->getRelativePath().compare(a_relativePath) == 0)
+		{
+			return *m_loadedMeshCollections[i];
+		}
+	}
 
 	unsigned int flags = additional_assimp_flags;
 	flags |= aiProcess_SortByPType;
@@ -190,14 +199,17 @@ class std::vector<AGN::IMesh*> AGN::ResourceManager::loadMeshCollection(std::str
 	}
 
 	// create objects that defines everything the models consists of
-	MeshData* meshData = new MeshData[scene->mNumMeshes];
+	std::vector<MeshData*> meshDataList;
+	meshDataList.reserve(scene->mNumMeshes);
 
 	const aiVector3D zeroVector(0.0f, 0.0f, 0.0f);
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 	{
+		meshDataList.push_back(new MeshData());
+
 		const aiMesh& loadedMesh = *scene->mMeshes[i];
-		MeshData& newMeshData = meshData[i];
-		newMeshData.relativePath = a_relativePath;
+
+		meshDataList[i]->relativePath = a_relativePath;
 
 		vec3 max(-99999.0f), min(99999.0f);
 		for (unsigned int j = 0; j < loadedMesh.mNumVertices; j++)
@@ -208,11 +220,11 @@ class std::vector<AGN::IMesh*> AGN::ResourceManager::loadMeshCollection(std::str
 			const aiVector3D* loadedTangents = &(loadedMesh.mTangents[j]);
 			const aiVector3D* loadedBitangents = &(loadedMesh.mBitangents[j]);
 
-			newMeshData.positions.push_back(vec3(loadedPos->x, loadedPos->y, loadedPos->z));
-			newMeshData.normals.push_back(vec3(loadedNormal->x, loadedNormal->y, loadedNormal->z));
-			newMeshData.tangents.push_back(vec3(loadedTangents->x, loadedTangents->y, loadedTangents->z));
-			newMeshData.bitangents.push_back(vec3(loadedBitangents->x, loadedBitangents->y, loadedBitangents->z));
-			newMeshData.textureCoords.push_back(vec2(loadedTextureCoords->x, loadedTextureCoords->y));
+			meshDataList[i]->positions.push_back(vec3(loadedPos->x, loadedPos->y, loadedPos->z));
+			meshDataList[i]->normals.push_back(vec3(loadedNormal->x, loadedNormal->y, loadedNormal->z));
+			meshDataList[i]->tangents.push_back(vec3(loadedTangents->x, loadedTangents->y, loadedTangents->z));
+			meshDataList[i]->bitangents.push_back(vec3(loadedBitangents->x, loadedBitangents->y, loadedBitangents->z));
+			meshDataList[i]->textureCoords.push_back(vec2(loadedTextureCoords->x, loadedTextureCoords->y));
 
 			// calculate max and minimum (for outer most vertices)
 			if (loadedPos->x < min.x) min.x = loadedPos->x;
@@ -224,32 +236,33 @@ class std::vector<AGN::IMesh*> AGN::ResourceManager::loadMeshCollection(std::str
 			if (loadedPos->z > max.z) max.z = loadedPos->z;
 		}
 
-		newMeshData.centerpoint = min + (max - min) * 0.5f;
+		meshDataList[i]->centerpoint = min + (max - min) * 0.5f;
 
 		for (unsigned int j = 0; j < loadedMesh.mNumFaces; j++)
 		{
 			const aiFace& face = loadedMesh.mFaces[j];
-			newMeshData.indicies.push_back(face.mIndices[0]);
-			newMeshData.indicies.push_back(face.mIndices[1]);
-			newMeshData.indicies.push_back(face.mIndices[2]);
+			meshDataList[i]->indicies.push_back(face.mIndices[0]);
+			meshDataList[i]->indicies.push_back(face.mIndices[1]);
+			meshDataList[i]->indicies.push_back(face.mIndices[2]);
 		}
 
 		// add loaded materials to meshdata
-		newMeshData.material = materials[loadedMesh.mMaterialIndex];
+		meshDataList[i]->material = materials[loadedMesh.mMaterialIndex];
 	}
 
-	MeshCollection meshCollection;
-	meshCollection.reserve(scene->mNumMeshes);
+	std::vector<IMesh*> meshList;
+	meshList.reserve(scene->mNumMeshes);
 
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 	{
-		IMesh* newMesh = m_device.createMesh(m_meshIdCount++, &meshData[i]);
-		meshCollection.push_back(newMesh);
+		IMesh* newMesh = m_device.createMesh(m_meshIdCount++, meshDataList[i]);
+		meshList.push_back(newMesh);
 	}
 	
+	MeshCollection* meshCollection = new MeshCollection(m_meshCollectionIdCount++, a_relativePath, meshList);
 	m_loadedMeshCollections.push_back(meshCollection);
 
-	return meshCollection;
+	return *meshCollection;
 }
 
 AGN::ITexture& AGN::ResourceManager::loadTexture(std::string a_relativePath, ETextureType a_textureType)

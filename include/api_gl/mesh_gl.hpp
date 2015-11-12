@@ -7,13 +7,8 @@ namespace AGN
 	class MeshGL : public IMesh
 	{
 	public:
-		MeshGL(const uint16_t a_aId, const uint32_t a_vao, const uint32_t *a_vbos, const uint8_t a_vboCount, MeshData* a_meshData)
-			: m_aId(a_aId)
-			, m_vao(a_vao)
-			, m_vbos(a_vbos)
-			, m_vboCount(a_vboCount)
-			, m_meshData(a_meshData)
-		{ };
+		MeshGL(const uint16_t a_aId, const uint32_t a_vao, const uint32_t *a_vbos, const uint8_t a_vboCount, MeshData* a_meshData);
+		~MeshGL();
 		
 		std::string getRelativePath() override { return m_meshData->relativePath; }
 		uint16_t getAId() override { return m_aId; }
@@ -21,7 +16,7 @@ namespace AGN
 		uint32_t getIndexCount() const override { return (uint32_t)m_meshData->indicies.size();  }
 		class Material* getMaterial() override { return m_meshData->material; }
 		glm::vec3 getCenterPoint() override { return m_meshData->centerpoint; }
-
+		std::string getName() override { return m_meshData->name; }
 
 		void setMaterial(class Material* a_material) override { m_meshData->material = a_material; }
 
@@ -42,4 +37,7 @@ namespace AGN
 
 		MeshData* m_meshData;
 	};
+
+
+
 }
