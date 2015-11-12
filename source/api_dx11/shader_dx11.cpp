@@ -112,6 +112,7 @@ AGN::ShaderDX11::~ShaderDX11()
 	safeRelease(m_shaderReflection);
 	safeRelease(m_shaderHandle);
 	safeRelease(m_shaderBlob);
+
 	delete[] m_constantBufferDescriptions;
 	delete[] m_constantBufferBindPoints; 
 	delete m_shaderReflectionDesc;

@@ -16,6 +16,7 @@ namespace AGN
 		void enableVSync(bool a_value) override;
 		virtual bool getVSync() { return m_vSync; }
 		void handleEvents(bool& a_doQuit) override;
+		void updateWindowState() override;
 		void logLiveObjects() override;
 
 		virtual class IWindow& getWindow() override;

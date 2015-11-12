@@ -14,6 +14,7 @@ namespace AGN
 		void enableVSync(bool a_value) override;
 		bool getVSync() override { return m_vSync; }
 		void handleEvents(bool& a_doQuit) override;
+		void updateWindowState() override;
 
 		virtual class IWindow& getWindow() override;
 		virtual class IDevice& getDevice() override;

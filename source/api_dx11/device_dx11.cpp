@@ -45,18 +45,11 @@ AGN::DeviceDX11::~DeviceDX11()
 }
 
 bool AGN::DeviceDX11::init(class WindowDX11* a_window)
-{
+{	
 	m_window = a_window;
 
+	assert(m_window);
 	assert(m_window->getWindowHandle());
-
-	RECT clientRect;
-	GetClientRect(m_window->getWindowHandle(), &clientRect);
-
-	// Compute the exact client dimensions. This will be used
-	// to initialize the render targets for our swap chain.
-	unsigned int clientWidth = clientRect.right - clientRect.left;
-	unsigned int clientHeight = clientRect.bottom - clientRect.top;
 
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
 	memset(&swapChainDesc, 0, sizeof(DXGI_SWAP_CHAIN_DESC));
@@ -64,8 +57,8 @@ bool AGN::DeviceDX11::init(class WindowDX11* a_window)
 	bool vsync = g_configManager.getConfigPropertyAsBool("vsync");
 
 	swapChainDesc.BufferCount = 1;												// the number of buffers in the swap chain
-	swapChainDesc.BufferDesc.Width = clientWidth;
-	swapChainDesc.BufferDesc.Height = clientHeight;
+	swapChainDesc.BufferDesc.Width = static_cast<unsigned int>(m_window->getDimentions().x);
+	swapChainDesc.BufferDesc.Height = static_cast<unsigned int>(m_window->getDimentions().y);
 	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;				// pixel format of the display in this case: a 4-component 32-bit unsigned normalized integer format that supports 8 bits per channel including alpha
 	swapChainDesc.BufferDesc.RefreshRate = queryRefreshRate(vsync);				// refresh rate in hertz, 0/1 to specify an unbounded refresh rate.
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;				// describes the surface usage and CPU access options for the back buffer in this case: Use the surface or resource as an output render target.
@@ -156,6 +149,11 @@ bool AGN::DeviceDX11::init(class WindowDX11* a_window)
 	}
 
 	return true;
+}
+
+void AGN::DeviceDX11::onWindowUpdated(glm::ivec2 a_dimentions)
+{
+	// TODO: investigate if we have to rebuild the whole device including everything!
 }
 
 // reference: http://www.rastertek.com/dx11tut03.html

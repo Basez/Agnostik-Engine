@@ -36,7 +36,8 @@ AGN::ShaderPipelineDX11::ShaderPipelineDX11(ShaderPipelineData* a_shaderPipeline
 
 AGN::ShaderPipelineDX11::~ShaderPipelineDX11()
 {
-	// individual shaders or resources contained in this class are destroyed by the resource manager
+	safeRelease(m_vertexInputLayout);
+	safeRelease(m_samplerState);
 }
 
 class AGN::IShader* AGN::ShaderPipelineDX11::getShader(const AGN::EShaderType a_type)

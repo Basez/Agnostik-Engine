@@ -99,12 +99,9 @@ void AGN::Application::run(IRenderAPI* a_renderAPI)
 		g_input.registerFrameCompletion();
 
 		// if any window changes occurred
-		// TODO: rethink this?
 		if (m_renderAPI->getWindow().isDirty())
 		{
-			// TODO: Refactor, make a single function inside RenderAPI handling all functionality (also do resize in device!)
-			m_renderAPI->getWindow().updateWindowState();
-			m_renderAPI->getRenderer().onWindowUpdated(m_renderAPI->getWindow().getDimentions());
+			m_renderAPI->updateWindowState();
 			m_sceneManager->onWindowUpdated(m_renderAPI->getWindow().getDimentions());
 		}
 	}

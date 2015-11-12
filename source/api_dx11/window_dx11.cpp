@@ -13,6 +13,9 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+static const int MINIMUM_WINDOW_SIZE_X = 36;
+static const int MINIMUM_WINDOW_SIZE_Y = 36;
+
 // accessor for global window procedure callback function
 static AGN::WindowDX11* g_window = nullptr;
 
@@ -110,8 +113,24 @@ LRESULT CALLBACK AGN::WindowDX11::onWindowEvent(HWND a_hwnd, UINT a_message, WPA
 			firstResize = false;
 			break;
 		}
-		m_isDirty = true; 
-		break;
+
+		RECT clientRect;
+		GetClientRect(m_windowHandle, &clientRect);
+		int newWidth = clientRect.right - clientRect.left;
+		int newHeight = clientRect.bottom - clientRect.top;
+
+		if (newWidth < MINIMUM_WINDOW_SIZE_X || newHeight < MINIMUM_WINDOW_SIZE_Y)
+		{
+			g_log.warning("too small window size: %ix%i", newWidth, newHeight);
+			m_isDirty = false;
+			break;
+		}
+		else
+		{
+			m_isDirty = true;
+			break;
+		}
+		
 	}
 
 	case WM_KEYDOWN:
@@ -261,17 +280,13 @@ void AGN::WindowDX11::showCursor(bool a_shown)
 
 void AGN::WindowDX11::updateWindowState()
 {
-	// Setup the projection matrix.
 	RECT clientRect;
 	GetClientRect(m_windowHandle, &clientRect);
-
-	// Compute the exact client dimensions.
-	// This is required for a correct projection matrix.
 	int newWidth = clientRect.right - clientRect.left;
 	int newHeight = clientRect.bottom - clientRect.top;
 
-	m_dimentions.x = newWidth;
-	m_dimentions.y = newHeight;
+	m_dimentions.x = max(newWidth, MINIMUM_WINDOW_SIZE_X);
+	m_dimentions.y = max(newHeight, MINIMUM_WINDOW_SIZE_Y);
 
 	m_isDirty = false;
 

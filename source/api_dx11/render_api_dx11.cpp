@@ -106,6 +106,13 @@ void AGN::RenderAPIDX11::handleEvents(bool& a_doQuit)
 	}
 }
 
+void AGN::RenderAPIDX11::updateWindowState()
+{
+	m_window->updateWindowState();
+	m_device->onWindowUpdated(m_window->getDimentions());
+	m_renderer->onWindowUpdated(m_window->getDimentions());
+}
+
 void AGN::RenderAPIDX11::logLiveObjects()
 {
 	m_device->logLiveObjects();

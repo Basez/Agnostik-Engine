@@ -35,6 +35,11 @@ bool AGN::DeviceGL::init()
 	return true;
 }
 
+void AGN::DeviceGL::onWindowUpdated(glm::ivec2 a_dimentions)
+{
+	
+}
+
 AGN::IMesh* AGN::DeviceGL::createMesh(const uint16_t a_aId, AGN::MeshData* a_meshData)
 {
 	// upload the data to the GL Driver and GFX card

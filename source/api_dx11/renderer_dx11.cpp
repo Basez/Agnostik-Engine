@@ -485,7 +485,6 @@ void AGN::RendererDX11::onWindowUpdated(glm::ivec2 a_dimentions)
 
 	HRESULT hr;
 
-	
 	m_deviceReference.getD3D11DeviceContext()->OMSetRenderTargets(0, 0, 0);
 
 	// Release all outstanding references to the swap chain's buffers.
@@ -544,7 +543,7 @@ void AGN::RendererDX11::onWindowUpdated(glm::ivec2 a_dimentions)
 		return;
 	}
 
-	hr = m_deviceReference.getD3D11Device()->CreateRenderTargetView(pBuffer, NULL, &m_d3dRenderTargetView);
+	hr = m_deviceReference.getD3D11Device()->CreateRenderTargetView(pBuffer, nullptr, &m_d3dRenderTargetView);
 
 	if (FAILED(hr))
 	{
@@ -554,7 +553,7 @@ void AGN::RendererDX11::onWindowUpdated(glm::ivec2 a_dimentions)
 
 	safeRelease(pBuffer);
 
-	m_deviceReference.getD3D11DeviceContext()->OMSetRenderTargets(1, &m_d3dRenderTargetView, NULL);
+	m_deviceReference.getD3D11DeviceContext()->OMSetRenderTargets(1, &m_d3dRenderTargetView, nullptr);
 
 	// Set up the viewport.
 	m_viewport->Width = static_cast<float>(a_dimentions.x);
