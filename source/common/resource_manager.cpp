@@ -93,6 +93,7 @@ void AGN::ResourceManager::loadDefaults()
 	m_defaultMaterial->diffuseTexture = &loadTexture(defaultMaterialTexturePath.c_str(), ETextureType::TEXTURE_2D);;
 	m_defaultMaterial->normalTexture = nullptr;
 	m_defaultMaterial->specularTexture = nullptr;
+	m_defaultMaterial->specularPower = 100.0f;
 }
 
 AGN::MeshCollection& AGN::ResourceManager::loadMeshCollection(std::string a_relativePath, uint32_t additional_assimp_flags, float a_scaleModifier)
@@ -189,12 +190,17 @@ AGN::MeshCollection& AGN::ResourceManager::loadMeshCollection(std::string a_rela
 		aiColor3D diffuseColor(0.f, 0.f, 0.f);
 		aiColor3D specularColor(0.f, 0.f, 0.f);
 		aiColor3D ambientColor(0.f, 0.f, 0.f);
+		float specularPower = 0;
+
 		assimpMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor);
 		assimpMaterial->Get(AI_MATKEY_COLOR_SPECULAR, specularColor);
 		assimpMaterial->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor);
+		assimpMaterial->Get(AI_MATKEY_SHININESS, specularPower);
+
 		newMaterial.diffuseColor = vec3(diffuseColor.r, diffuseColor.g, diffuseColor.b);
 		newMaterial.specularColor = vec3(specularColor.r, specularColor.g, specularColor.b);
 		newMaterial.ambientColor = vec3(ambientColor.r, ambientColor.g, ambientColor.b);
+		newMaterial.specularPower = specularPower;
 
 		// misc properties
 		assimpMaterial->Get(AI_MATKEY_OPACITY, newMaterial.transparency);

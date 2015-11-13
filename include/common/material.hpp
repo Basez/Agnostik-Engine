@@ -17,6 +17,7 @@ namespace AGN
 			, specularColor(glm::vec3(0.0f))
 			, ambientColor(glm::vec3(0.0f))
 			, transparency(0.0f)
+			, specularPower(0.0f)
 		{
 		}
 
@@ -34,6 +35,7 @@ namespace AGN
 		glm::vec3 diffuseColor;
 		glm::vec3 specularColor;
 		glm::vec3 ambientColor;
+		float specularPower;
 		float transparency;
 
 

@@ -58,10 +58,6 @@ AGN::ShaderPipelineGL::ShaderPipelineGL(const uint32_t a_glprogramId, ShaderPipe
 		constantBuffer->index = index;
 		constantBuffer->size = blockSize;
 
-		// create the data & null it
-		constantBuffer->buffer = new uint8_t[blockSize];
-		memset(constantBuffer->buffer, 0, blockSize);
-
 		// get uniform indices
 		constantBuffer->uniformProperty = uniformCount;
 
@@ -102,7 +98,7 @@ AGN::ShaderPipelineGL::ShaderPipelineGL(const uint32_t a_glprogramId, ShaderPipe
 		glBindBufferBase(GL_UNIFORM_BUFFER, index, constantBuffer->uboHandle);
 
 		// upload (null at the moment) data
-		glBufferData(GL_UNIFORM_BUFFER, constantBuffer->size, constantBuffer->buffer, GL_DYNAMIC_DRAW);
+		glBufferData(GL_UNIFORM_BUFFER, constantBuffer->size, 0, GL_DYNAMIC_DRAW);
 		
 		// unbind & clean
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -126,9 +122,6 @@ AGN::ShaderPipelineGL::~ShaderPipelineGL()
 			delete constantBuffer->propertyList[0];
 			constantBuffer->propertyList.erase(constantBuffer->propertyList.begin());
 		}
-
-		// cleanup buffer inside
-		delete[] constantBuffer->buffer;
 
 		// delete struct itself
 		delete constantBuffer;
@@ -159,7 +152,6 @@ void AGN::ShaderPipelineGL::bind()
 	{
 		// bind & upload buffer
 		glBindBuffer(GL_UNIFORM_BUFFER, m_constantBuffers[i]->uboHandle);
-		glBufferData(GL_UNIFORM_BUFFER, m_constantBuffers[i]->size, m_constantBuffers[i]->buffer, GL_DYNAMIC_DRAW);
 	}
 
 	AGN::RenderAPIGL::getOpenGLErrors();
@@ -186,10 +178,8 @@ void AGN::ShaderPipelineGL::setConstantBufferData(const EShaderType a_shader, co
 {
 	ConstantBufferGL* uniformConstantBuffer = getUniformConstantBufferByName(a_name);
 
-	memcpy(uniformConstantBuffer->buffer, a_data, a_dataSize);
-
-	// bind & upload buffer
-	glNamedBufferData(uniformConstantBuffer->uboHandle, uniformConstantBuffer->size, uniformConstantBuffer->buffer, GL_DYNAMIC_DRAW);
+	// upload buffer
+	glNamedBufferData(uniformConstantBuffer->uboHandle, uniformConstantBuffer->size, a_data, GL_DYNAMIC_DRAW);
 }
 
 bool AGN::ShaderPipelineGL::hasConstantBuffer(const EShaderType a_shader, const char* a_name)

@@ -8,7 +8,6 @@
 //	float4x4 viewMatrix;
 //}
 
-// TODO: fix registers when restoring Cbuffers
 cbuffer PerObject : register(b0)
 {
 	float4x4 modelViewProjectionMatrix;
@@ -26,6 +25,7 @@ struct OutputData
 {
 	float2 uv : TEXCOORD0;
 	float4 normalWS : TEXCOORD1;
+	float4 positionWS : TEXCOORD2;
 	float4 position : SV_POSITION;	// must be last as its consumed
 };
 
@@ -35,6 +35,7 @@ OutputData Main(InputData IN)
 
 	OUT.position = mul(modelViewProjectionMatrix, float4(IN.position, 1.0f));
 	OUT.normalWS = mul(modelMatrix, float4(IN.normal, 0.0f)); 
+	OUT.positionWS = mul(modelMatrix, float4(IN.position, 1.0f));
 	OUT.uv = IN.uv;
 	return OUT;
 }

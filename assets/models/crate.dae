@@ -232,7 +232,7 @@ dereferenceXRefs=0;cameraXFov=0;cameraYFov=1</comments>
               </texture>
             </specular>
             <shininess>
-              <float>0.300000011920929</float>
+              <float>60</float>
             </shininess>
             <reflective>
               <color>0 0 0 1</color>

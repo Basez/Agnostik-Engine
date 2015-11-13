@@ -39,7 +39,7 @@ AGN::SceneManager::~SceneManager()
 
 void AGN::SceneManager::init()
 {
-	m_camera = new Camera(vec3(0, 2, 7.5f), quat(vec3(glm::radians(-10.0f),0,0)));
+	m_camera = new Camera(vec3(0, 0.5f, 1.5f), quat(vec3(glm::radians(-10.0f),0,0)));
 	m_camera->setProjectionRH(60.0f, 0.1f, 10000.0f);
 
 	// create camera controller
@@ -201,13 +201,14 @@ void AGN::SceneManager::loadSuzannaCrate()
 	ResourceManager& resourceManager = g_application.getResourceManager();
 
 	MeshCollection& crateMeshCollection = resourceManager.loadMeshCollection("crate.dae");
-	MeshCollection& suzanneMeshCollection = resourceManager.loadMeshCollection("suzanne.obj");
+	MeshCollection& suzanneMeshCollection = resourceManager.loadMeshCollection("suzanne_hi_res.obj");
 	MeshCollection& skyboxMeshCollection = resourceManager.loadMeshCollection("skybox_fixed.obj");
 	MeshCollection& triangleCollection = resourceManager.loadMeshCollection("triangle.obj");
 
 	// create materials
 	Material& testMaterial = resourceManager.createMaterial("test_material");
 	testMaterial.diffuseTexture = &resourceManager.loadTexture("test.png", ETextureType::TEXTURE_2D);
+	testMaterial.specularPower = 200.0f;
 
 	Material& skyboxMaterial = resourceManager.createMaterial("skybox_material");
 	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", ETextureType::TEXTURE_2D);
@@ -228,13 +229,28 @@ void AGN::SceneManager::loadSuzannaCrate()
 	triangleEntity->setPosition(vec3(0, 0, 5));
 	m_entities.push_back(triangleEntity);
 	
+	// crate
+	//Entity* crateEntity = new Entity();
+	//crateEntity->setMeshCollection(&crateMeshCollection);
+	//crateEntity->setPosition(vec3(0));
+	//crateEntity->setRotation(quat(glm::rotate(45.0f, 1.0f, 0.0f, 0.0f)));
+	//m_entities.push_back(crateEntity);
+
+
+	// suzanne
+	Entity* suzanneEntity = new Entity();
+	suzanneEntity->setMeshCollection(&suzanneMeshCollection);
+	suzanneEntity->setPosition(vec3(0, 0, 0));
+	m_entities.push_back(suzanneEntity);
+
+	/*
 	// create crate entities
 	int index = 0;
-	for (int x = 0; x < 5; x++)
+	for (int x = 0; x < 2; x++)
 	{
 		for (int y = 0; y < 1; y++)
 		{
-			for (int z = 0; z < 200; z++)
+			for (int z = 0; z < 4; z++)
 			{
 				// interchange crates & suzannes (worst case scenario in terms of sorting/nosorting)
 				if ((++index % 2) == 1)
@@ -253,10 +269,9 @@ void AGN::SceneManager::loadSuzannaCrate()
 					suzanneEntity->setPosition(vec3(x * 2, y * 2, z * -2));
 					m_entities.push_back(suzanneEntity);
 				}
-				
 			}
 		}
-	}
+	}*/
 }
 
 void AGN::SceneManager::loadEmpty()

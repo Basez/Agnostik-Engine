@@ -367,10 +367,13 @@ void AGN::RendererDX11::drawEntity(DrawCommand& a_command)
 			ConstantBufferPropertyDX11* transparency = materialBuffer->getPropertyByName("materialTransparency");
 			ConstantBufferPropertyDX11* diffuse = materialBuffer->getPropertyByName("materialDiffuseColor");
 			ConstantBufferPropertyDX11* ambient = materialBuffer->getPropertyByName("materialAmbientColor");
-			
+			ConstantBufferPropertyDX11* specularPower = materialBuffer->getPropertyByName("materialSpecularPower");
+
 			memcpy(buffer + transparency->offset, &material->transparency, sizeof(material->transparency));
 			memcpy(buffer + diffuse->offset, glm::value_ptr(material->diffuseColor), sizeof(material->diffuseColor));
 			memcpy(buffer + ambient->offset, glm::value_ptr(material->ambientColor), sizeof(material->ambientColor));
+			memcpy(buffer + specularPower->offset, &material->specularPower, sizeof(material->specularPower));
+			
 			//memcpy(buffer + 32, glm::value_ptr(material->specularColor), sizeof(glm::vec3)); // material specular
 			
 			shaderPipeline->setConstantBufferData(EShaderType::PixelShader, "MaterialProperties", buffer, sizeof(buffer));

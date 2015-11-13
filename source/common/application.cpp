@@ -134,7 +134,7 @@ void AGN::Application::updateMeshShaderProperties(float a_deltaTime)
 	// change mesh light properties
 	// test code to update shader buffer
 	// TODO: Abstract this, currently very much hardcoded
-	unsigned char buffer[48] = {0};
+	unsigned char buffer[64] = {0};
 
 	static float rotationY = 0.0f;
 	rotationY += a_deltaTime * 45.0f;
@@ -143,16 +143,18 @@ void AGN::Application::updateMeshShaderProperties(float a_deltaTime)
 
 	//g_log.debug("lightDirectionNorm: x:%f - y:%f - z:%f", lightDirectionNorm.x, lightDirectionNorm.y, lightDirectionNorm.z);
 
-	float lightDirection[4] = { lightDirectionNorm.x, lightDirectionNorm.y, lightDirectionNorm.z, 0.0f };
-	float lightColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	float lightAmbient[4] = { 0.2f, 0.2f, 0.2f, 0.2f };
+	glm::vec4 lightDirection = glm::vec4(lightDirectionNorm, 0.0f);
+	glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f );
+	glm::vec4 lightAmbient = glm::vec4(0.2f, 0.2f, 0.2f, 0.2f );
+	glm::vec4 eyePosition = glm::vec4(m_sceneManager->getCurrentCamera()->getPosition(), 0.0f);
 
-	// TODO: get buffer offset?
-	memcpy(buffer + 0, lightDirection, 4 * sizeof(float));
-	memcpy(buffer + 16, lightColor, 4 * sizeof(float));
-	memcpy(buffer + 32, lightAmbient, 4 * sizeof(float));
+	// TODO: get buffer offset? --> we can do this as soon as we abstract constant buffer properties properly under a common interface
+	memcpy(buffer + 0, glm::value_ptr(lightDirection), sizeof(lightDirection));
+	memcpy(buffer + 16, glm::value_ptr(lightColor), sizeof(lightColor));
+	memcpy(buffer + 32, glm::value_ptr(lightAmbient), sizeof(lightAmbient));
+	memcpy(buffer + 48, glm::value_ptr(eyePosition), sizeof(eyePosition));
 
-	m_meshShaderPipeline->setConstantBufferData(EShaderType::PixelShader,"LightSettings", &buffer, 48);
+	m_meshShaderPipeline->setConstantBufferData(EShaderType::PixelShader,"LightSettings", buffer, sizeof(buffer));
 }
 
 void AGN::Application::renderGUI()
@@ -403,7 +405,6 @@ void AGN::Application::createDrawQueue()
 			memcpy(&data.modelMatrixArray[0], glm::value_ptr(modelMatrix), sizeof(data.modelMatrixArray));
 		}
 	}
-	
 }
 
 AGN::IRenderAPI& AGN::Application::getRenderAPI()

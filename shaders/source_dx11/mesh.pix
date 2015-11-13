@@ -3,44 +3,70 @@ SamplerState SampleType : register(s0);
 
 struct InputData
 {
-	float2 uv : TEXCOORD0;
-	float4 normalWS : TEXCOORD1;
+    float2 uv : TEXCOORD0;
+    float4 normalWS : TEXCOORD1;
+    float4 positionWS : TEXCOORD2;
 };
 
 cbuffer LightSettings : register(b0)
 {
-	float4 lightDirection; // Light's direction in world space.
-	float4 lightColor; // Light's diffuse and specular contribution.
-	float4 lightAmbient; // Global ambient contribution.
+    float4 lightDirection; // Light's direction in world space.
+    float4 lightColor; // Light's diffuse and specular contribution.
+    float4 lightAmbient; // Global ambient contribution.
+    float4 eyePosition;
 }
 
 cbuffer MaterialProperties : register(b1)
 {
-	float materialTransparency;
-	float3 materialDiffuseColor;
+    float materialTransparency;
+    float3 materialDiffuseColor;
 	//-- 16bytes --//
 
-	float3 materialAmbientColor;
-	float boundary1;
+    float3 materialAmbientColor;
+    float materialSpecularPower;
 	//-- 16bytes --//
 
 	//float3 materialSpecularColor;
 	//-- 16bytes --//
 }
 
+float4 CalculateDiffuse(float3 a_normal, float4 a_lightColor, float3 a_lightDirection)
+{
+    float nDotL = max(dot(a_normal, a_lightDirection), 0);
+    return nDotL * a_lightColor * float4(materialDiffuseColor, 1.0f);
+}
+
+float4 CalculateSpecular(float3 a_normal, float4 a_lightColor, float3 a_lightDirection, float3 a_positionWS)
+{
+    float3 directionToEye = normalize(eyePosition - a_positionWS).xyz;
+    float4 materialSpecularColor = float4(1, 1, 1, 1); // TODO!!!!!!!!!
+
+	// Phong lighting.
+    float3 R = normalize(reflect(-a_lightDirection, a_normal));
+    float RdotV = max(0, dot(R, directionToEye));
+ 
+	// Blinn-Phong lighting
+    //float3 H = normalize(-a_lightDirection + directionToEye);
+    //float NdotH = max(0, dot(a_normal, H));
+ 
+    return pow(RdotV, materialSpecularPower) * a_lightColor * materialSpecularColor;
+}
+
 float4 Main(InputData IN) : SV_TARGET
 {
 	// get texture color
-	float4 textureColor = shaderTexture.Sample(SampleType, IN.uv);
+    float4 textureColor = shaderTexture.Sample(SampleType, IN.uv);
 
-	// calculate diffuse
-	float4 normal = normalize( IN.normalWS );
-	float nDotL = max( dot( normal, lightDirection ), 0 );
-	float4 diffuse =  float4(materialDiffuseColor, 1.0f) * nDotL * lightColor;
+    float3 normalWorldSpace = normalize(IN.normalWS).xyz;
+
+	// calculate diffuse and spec
+    float4 diffuse = CalculateDiffuse(normalWorldSpace, lightColor, lightDirection);
+    float4 specular = CalculateSpecular(normalWorldSpace, lightColor, lightDirection, IN.positionWS);
 
 	// apply ambients and calculate final color
-	float4 lighting = diffuse + float4(materialAmbientColor, 0.0f) + lightAmbient;
-	float4 finalColor = lighting * textureColor;
+    float4 lighting = diffuse + specular + float4(materialAmbientColor, 0.0f) + lightAmbient;
+    float4 finalColor = lighting * textureColor;
 
-	return finalColor;
+    return finalColor;
 }
+

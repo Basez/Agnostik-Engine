@@ -48,7 +48,6 @@ namespace AGN
 		char name[ShaderPipelineGL::MAX_UNIFORM_NAME];
 		int32_t size;
 		uint32_t uboHandle;
-		uint8_t* buffer;
 		int32_t uniformProperty;
 		std::vector<ConstantBufferPropertyGL*> propertyList;
 	};
