@@ -180,7 +180,7 @@ AGN::MeshCollection& AGN::ResourceManager::loadMeshCollection(std::string a_rela
 		{
 			newMaterial.normalTexture = &loadTexture(relativePath.C_Str(), ETextureType::TEXTURE_2D);
 		}
-
+		
 		if (assimpMaterial->GetTexture(aiTextureType_SPECULAR, 0, &relativePath) == AI_SUCCESS)
 		{
 			newMaterial.specularTexture = &loadTexture(relativePath.C_Str(), ETextureType::TEXTURE_2D);

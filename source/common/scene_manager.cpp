@@ -112,9 +112,6 @@ void AGN::SceneManager::loadCrytekSponza()
 	Material& testMaterial = resourceManager.createMaterial("test_material");
 	testMaterial.diffuseTexture = &resourceManager.loadTexture("test.png", ETextureType::TEXTURE_2D);
 
-	Material& crateMaterial = resourceManager.createMaterial("crate_material");
-	crateMaterial.diffuseTexture = &resourceManager.loadTexture("market_props_crate_1_texture.png", ETextureType::TEXTURE_2D);
-
 	Material& skyboxMaterial = resourceManager.createMaterial("skybox_material");
 	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", ETextureType::TEXTURE_2D);
 	skyboxMaterial.diffuseTexture->setTextureParams((unsigned int)ETextureRenderFlags::USE_CLAMP);
@@ -144,9 +141,6 @@ void AGN::SceneManager::loadSponza()
 	Material& testMaterial = resourceManager.createMaterial("test_material");
 	testMaterial.diffuseTexture = &resourceManager.loadTexture("test.png", ETextureType::TEXTURE_2D);
 
-	Material& crateMaterial = resourceManager.createMaterial("crate_material");
-	crateMaterial.diffuseTexture = &resourceManager.loadTexture("market_props_crate_1_texture.png", ETextureType::TEXTURE_2D);
-
 	Material& skyboxMaterial = resourceManager.createMaterial("skybox_material");
 	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", ETextureType::TEXTURE_2D);
 	skyboxMaterial.diffuseTexture->setTextureParams((unsigned int)ETextureRenderFlags::USE_CLAMP);
@@ -175,9 +169,6 @@ void AGN::SceneManager::loadSibenik()
 	// create materials
 	Material& testMaterial = resourceManager.createMaterial("test_material");
 	testMaterial.diffuseTexture = &resourceManager.loadTexture("test.png", ETextureType::TEXTURE_2D);
-
-	Material& crateMaterial = resourceManager.createMaterial("crate_material");
-	crateMaterial.diffuseTexture = &resourceManager.loadTexture("market_props_crate_1_texture.png", ETextureType::TEXTURE_2D);
 
 	Material& skyboxMaterial = resourceManager.createMaterial("skybox_material");
 	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", ETextureType::TEXTURE_2D);
@@ -230,18 +221,17 @@ void AGN::SceneManager::loadSuzannaCrate()
 	m_entities.push_back(triangleEntity);
 	
 	// crate
-	//Entity* crateEntity = new Entity();
-	//crateEntity->setMeshCollection(&crateMeshCollection);
-	//crateEntity->setPosition(vec3(0));
-	//crateEntity->setRotation(quat(glm::rotate(45.0f, 1.0f, 0.0f, 0.0f)));
-	//m_entities.push_back(crateEntity);
-
+	Entity* crateEntity = new Entity();
+	crateEntity->setMeshCollection(&crateMeshCollection);
+	crateEntity->setPosition(vec3(0));
+	crateEntity->setRotation(quat(glm::rotate(45.0f, 1.0f, 0.0f, 0.0f)));
+	m_entities.push_back(crateEntity);
 
 	// suzanne
-	Entity* suzanneEntity = new Entity();
-	suzanneEntity->setMeshCollection(&suzanneMeshCollection);
-	suzanneEntity->setPosition(vec3(0, 0, 0));
-	m_entities.push_back(suzanneEntity);
+	//Entity* suzanneEntity = new Entity();
+	//suzanneEntity->setMeshCollection(&suzanneMeshCollection);
+	//suzanneEntity->setPosition(vec3(0, 0, 0));
+	//m_entities.push_back(suzanneEntity);
 
 	/*
 	// create crate entities

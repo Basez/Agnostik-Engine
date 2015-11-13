@@ -14,8 +14,9 @@ newmtl leaf
 	Ke 0.0000 0.0000 0.0000
 	map_Ka sponza_crytek/sponza_thorn_diff.png
 	map_Kd sponza_crytek/sponza_thorn_diff.png
+	map_Ks sponza_crytek/sponza_thorn_spec.png
 	map_d sponza_crytek/sponza_thorn_mask.png
-	map_bump sponza_crytek/sponza_thorn_bump.png
+	map_Kn sponza_crytek/sponza_thorn_bump.png
 	bump sponza_crytek/sponza_thorn_bump.png
 
 newmtl vase_round
@@ -31,7 +32,8 @@ newmtl vase_round
 	Ke 0.0000 0.0000 0.0000
 	map_Ka sponza_crytek/vase_round.png
 	map_Kd sponza_crytek/vase_round.png
-	map_bump sponza_crytek/vase_round_bump.png
+	map_Ks sponza_crytek/vase_round_spec.png
+	map_Kn sponza_crytek/vase_round_bump.png
 	bump sponza_crytek/vase_round_bump.png
 
 newmtl Material__57
@@ -47,6 +49,7 @@ newmtl Material__57
 	Ke 0.0000 0.0000 0.0000
 	map_Ka sponza_crytek/vase_plant.png
 	map_Kd sponza_crytek/vase_plant.png
+	map_Ks sponza_crytek/vase_plant_spec.png
 	map_d sponza_crytek/vase_plant_mask.png
 
 newmtl Material__298
@@ -62,7 +65,7 @@ newmtl Material__298
 	Ke 0.0000 0.0000 0.0000
 	map_Ka sponza_crytek/background.png
 	map_Kd sponza_crytek/background.png
-	map_bump sponza_crytek/background_bump.png
+	map_Kn sponza_crytek/background_bump.png
 	bump sponza_crytek/background_bump.png
 
 newmtl 16___Default
@@ -92,7 +95,8 @@ newmtl bricks
 	Ke 0.0000 0.0000 0.0000
 	map_Ka sponza_crytek/spnza_bricks_a_diff.png
 	map_Kd sponza_crytek/spnza_bricks_a_diff.png
-	map_bump sponza_crytek/spnza_bricks_a_diff.png
+	map_Ks sponza_crytek/spnza_bricks_a_spec.png
+	map_Kn sponza_crytek/spnza_bricks_a_diff.png
 	bump sponza_crytek/spnza_bricks_a_bump.png
 
 newmtl arch
@@ -108,7 +112,8 @@ newmtl arch
 	Ke 0.0000 0.0000 0.0000
 	map_Ka sponza_crytek/sponza_arch_diff.png
 	map_Kd sponza_crytek/sponza_arch_diff.png
-
+	map_Ks sponza_crytek/sponza_arch_spec.png
+	
 newmtl ceiling
 	Ns 10.0000
 	Ni 1.5000
@@ -122,6 +127,7 @@ newmtl ceiling
 	Ke 0.0000 0.0000 0.0000
 	map_Ka sponza_crytek/sponza_ceiling_a_diff.png
 	map_Kd sponza_crytek/sponza_ceiling_a_diff.png
+	map_Ks sponza_crytek/sponza_ceiling_a_spec.png
 
 newmtl column_a
 	Ns 10.0000
@@ -136,7 +142,8 @@ newmtl column_a
 	Ke 0.0000 0.0000 0.0000
 	map_Ka sponza_crytek/sponza_column_a_diff.png
 	map_Kd sponza_crytek/sponza_column_a_diff.png
-	map_bump sponza_crytek/sponza_column_a_bump.png
+	map_Ks sponza_crytek/sponza_column_a_spec.png
+	map_Kn sponza_crytek/sponza_column_a_bump.png
 	bump sponza_crytek/sponza_column_a_bump.png
 
 newmtl floor
@@ -152,6 +159,7 @@ newmtl floor
 	Ke 0.0000 0.0000 0.0000
 	map_Ka sponza_crytek/sponza_floor_a_diff.png
 	map_Kd sponza_crytek/sponza_floor_a_diff.png
+	map_Ks sponza_crytek/sponza_floor_a_spec.png
 
 newmtl column_c
 	Ns 10.0000
@@ -166,7 +174,8 @@ newmtl column_c
 	Ke 0.0000 0.0000 0.0000
 	map_Ka sponza_crytek/sponza_column_c_diff.png
 	map_Kd sponza_crytek/sponza_column_c_diff.png
-	map_bump sponza_crytek/sponza_column_c_bump.png
+	map_Ks sponza_crytek/sponza_column_c_spec.png
+	map_Kn sponza_crytek/sponza_column_c_bump.png
 	bump sponza_crytek/sponza_column_c_bump.png
 
 newmtl details
@@ -182,6 +191,7 @@ newmtl details
 	Ke 0.0000 0.0000 0.0000
 	map_Ka sponza_crytek/sponza_details_diff.png
 	map_Kd sponza_crytek/sponza_details_diff.png
+	map_Ks sponza_crytek/sponza_details_spec.png
 
 newmtl column_b
 	Ns 10.0000
@@ -196,7 +206,8 @@ newmtl column_b
 	Ke 0.0000 0.0000 0.0000
 	map_Ka sponza_crytek/sponza_column_b_diff.png
 	map_Kd sponza_crytek/sponza_column_b_diff.png
-	map_bump sponza_crytek/sponza_column_b_bump.png
+	map_Ks sponza_crytek/sponza_column_b_spec.png
+	map_Kn sponza_crytek/sponza_column_b_bump.png
 	bump sponza_crytek/sponza_column_b_bump.png
 
 newmtl Material__47
@@ -224,6 +235,7 @@ newmtl flagpole
 	Ke 0.0000 0.0000 0.0000
 	map_Ka sponza_crytek/sponza_flagpole_diff.png
 	map_Kd sponza_crytek/sponza_flagpole_diff.png
+	map_Ks sponza_crytek/sponza_flagpole_spec.png
 
 newmtl fabric_e
 	Ns 10.0000
@@ -238,6 +250,7 @@ newmtl fabric_e
 	Ke 0.0000 0.0000 0.0000
 	map_Ka sponza_crytek/sponza_fabric_green_diff.png
 	map_Kd sponza_crytek/sponza_fabric_green_diff.png
+	map_Ks sponza_crytek/sponza_fabric_spec.png
 
 newmtl fabric_d
 	Ns 10.0000
@@ -252,7 +265,8 @@ newmtl fabric_d
 	Ke 0.0000 0.0000 0.0000
 	map_Ka sponza_crytek/sponza_fabric_blue_diff.png
 	map_Kd sponza_crytek/sponza_fabric_blue_diff.png
-
+	map_Ks sponza_crytek/sponza_fabric_spec.png
+	
 newmtl fabric_a
 	Ns 10.0000
 	Ni 1.5000
@@ -266,7 +280,8 @@ newmtl fabric_a
 	Ke 0.0000 0.0000 0.0000
 	map_Ka sponza_crytek/sponza_fabric_diff.png
 	map_Kd sponza_crytek/sponza_fabric_diff.png
-
+	map_Ks sponza_crytek/sponza_fabric_spec.png
+	
 newmtl fabric_g
 	Ns 10.0000
 	Ni 1.5000
@@ -323,7 +338,7 @@ newmtl chain
 	map_Ka sponza_crytek/chain_texture.png
 	map_Kd sponza_crytek/chain_texture.png
 	map_d sponza_crytek/chain_texture_mask.png
-	map_bump sponza_crytek/chain_texture_bump.png
+	map_Kn sponza_crytek/chain_texture_bump.png
 	bump sponza_crytek/chain_texture_bump.png
 
 newmtl vase_hanging
@@ -353,7 +368,7 @@ newmtl vase
 	Ke 0.0000 0.0000 0.0000
 	map_Ka sponza_crytek/vase_dif.png
 	map_Kd sponza_crytek/vase_dif.png
-	map_bump sponza_crytek/vase_bump.png
+	map_Kn sponza_crytek/vase_bump.png
 	bump sponza_crytek/vase_bump.png
 
 newmtl Material__25
@@ -369,7 +384,7 @@ newmtl Material__25
 	Ke 0.0000 0.0000 0.0000
 	map_Ka sponza_crytek/lion.png
 	map_Kd sponza_crytek/lion.png
-	map_bump sponza_crytek/lion_bump.png
+	map_Kn sponza_crytek/lion_bump.png
 	bump sponza_crytek/lion_bump.png
 
 newmtl roof

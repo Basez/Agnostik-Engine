@@ -253,6 +253,8 @@ AGN::IMesh* AGN::DeviceDX11::createMesh(const uint16_t a_aId, AGN::MeshData* a_m
 		vsDataToUpload[i].position = a_meshData->positions[i];
 		vsDataToUpload[i].normal = a_meshData->normals[i];
 		vsDataToUpload[i].textureCoords = a_meshData->textureCoords[i];
+		vsDataToUpload[i].tangent = a_meshData->tangents[i];
+		vsDataToUpload[i].biTangent = a_meshData->bitangents[i];
 	}
 	
 	resourceDataVertexBuffer.pSysMem = vsDataToUpload;

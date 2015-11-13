@@ -353,45 +353,54 @@ void AGN::RendererDX11::drawEntity(DrawCommand& a_command)
 	{
 		m_boundMaterial = material;
 
-		// set material constant buffer
-		// TODO: move to only when material changes!
-		if (shaderPipeline->hasConstantBuffer(EShaderType::PixelShader, "MaterialProperties"))
-		{
-			
-			ConstantBufferDX11* materialBuffer = shaderPipeline->getConstantBufferByName(EShaderType::PixelShader, "MaterialProperties");
-			
-			// TODO: get buffer offset, this is hardcoded
-			uint8_t* buffer = new uint8_t[materialBuffer->size]; // TODO: optimize
-			memset(buffer, 0, materialBuffer->size);
-			
-			ConstantBufferPropertyDX11* transparency = materialBuffer->getPropertyByName("materialTransparency");
-			ConstantBufferPropertyDX11* diffuse = materialBuffer->getPropertyByName("materialDiffuseColor");
-			ConstantBufferPropertyDX11* ambient = materialBuffer->getPropertyByName("materialAmbientColor");
-			ConstantBufferPropertyDX11* specularPower = materialBuffer->getPropertyByName("materialSpecularPower");
-
-			memcpy(buffer + transparency->offset, &material->transparency, sizeof(material->transparency));
-			memcpy(buffer + diffuse->offset, glm::value_ptr(material->diffuseColor), sizeof(material->diffuseColor));
-			memcpy(buffer + ambient->offset, glm::value_ptr(material->ambientColor), sizeof(material->ambientColor));
-			memcpy(buffer + specularPower->offset, &material->specularPower, sizeof(material->specularPower));
-			
-			//memcpy(buffer + 32, glm::value_ptr(material->specularColor), sizeof(glm::vec3)); // material specular
-			
-			shaderPipeline->setConstantBufferData(EShaderType::PixelShader, "MaterialProperties", buffer, sizeof(buffer));
-			
-			delete[] buffer; // TODO: optimize
-			
-		}
-
 		// set textures
 		TextureDX11* diffuse = dynamic_cast<TextureDX11*>(material->diffuseTexture);
 		TextureDX11* normal = dynamic_cast<TextureDX11*>(material->normalTexture);
 		TextureDX11* specular = dynamic_cast<TextureDX11*>(material->specularTexture);
 
-		// TODO: add multiple texture support
-		if (diffuse != nullptr)
+		const bool hasDiffuse = diffuse != nullptr;
+		const bool hasNormal = normal != nullptr;
+		const bool hasSpecular = specular != nullptr;
+
+		// bind textures to shader
 		{
-			ID3D11ShaderResourceView* shaderResourceView = diffuse->getShaderResourceView();
-			d3dDeviceContext->PSSetShaderResources(0, 1, &shaderResourceView);
+			ID3D11ShaderResourceView * srvs[3] = { nullptr, nullptr, nullptr };
+			if (hasDiffuse) srvs[0] = diffuse->getShaderResourceView();
+			if (hasNormal) srvs[1] = normal->getShaderResourceView();
+			if (hasSpecular) srvs[2] = specular->getShaderResourceView();
+			d3dDeviceContext->PSSetShaderResources(0, 3, srvs);
+		}
+	
+		// set material constant buffer
+		// TODO: move to only when material changes!
+		if (shaderPipeline->hasConstantBuffer(EShaderType::PixelShader, "MaterialProperties"))
+		{
+			ConstantBufferDX11* materialBuffer = shaderPipeline->getConstantBufferByName(EShaderType::PixelShader, "MaterialProperties");
+
+			// TODO: get buffer offset, this is hardcoded
+			uint8_t* buffer = new uint8_t[materialBuffer->size]; // TODO: optimize
+			memset(buffer, 0, materialBuffer->size);
+
+			ConstantBufferPropertyDX11* transparency = materialBuffer->getPropertyByName("materialTransparency");
+			ConstantBufferPropertyDX11* diffuse = materialBuffer->getPropertyByName("materialDiffuseColor");
+			ConstantBufferPropertyDX11* ambient = materialBuffer->getPropertyByName("materialAmbientColor");
+			ConstantBufferPropertyDX11* specularPower = materialBuffer->getPropertyByName("materialSpecularPower");
+			ConstantBufferPropertyDX11* hasDiffuseProp = materialBuffer->getPropertyByName("materialHasDiffuse");
+			ConstantBufferPropertyDX11* hasNormalProp = materialBuffer->getPropertyByName("materialHasNormalMap");
+			ConstantBufferPropertyDX11* hasSpecularProp = materialBuffer->getPropertyByName("materialHasSpecularMap");
+
+			memcpy(buffer + transparency->offset, &material->transparency, sizeof(material->transparency));
+			memcpy(buffer + diffuse->offset, glm::value_ptr(material->diffuseColor), sizeof(material->diffuseColor));
+			memcpy(buffer + ambient->offset, glm::value_ptr(material->ambientColor), sizeof(material->ambientColor));
+			memcpy(buffer + specularPower->offset, &material->specularPower, sizeof(material->specularPower));
+			memcpy(buffer + hasDiffuseProp->offset, &hasDiffuse, sizeof(hasDiffuse));
+			memcpy(buffer + hasNormalProp->offset, &hasNormal, sizeof(hasNormal));
+			memcpy(buffer + hasSpecularProp->offset, &hasSpecular, sizeof(hasSpecular));
+
+			shaderPipeline->setConstantBufferData(EShaderType::PixelShader, "MaterialProperties", buffer, sizeof(buffer));
+
+			delete[] buffer; // TODO: optimize
+
 		}
 
 	}

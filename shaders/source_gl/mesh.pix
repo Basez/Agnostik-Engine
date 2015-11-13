@@ -33,7 +33,8 @@ layout (location=0) out vec4 out_color;
 vec4 calculateDiffuse(vec3 a_normal, vec4 a_lightColor, vec3 a_lightDirection)
 {
     float nDotL = max(dot(a_normal, a_lightDirection), 0);
-    return nDotL * a_lightColor * vec4(uMaterialDiffuseColor, 1.0f);
+    vec4 diffuse = nDotL * a_lightColor * vec4(uMaterialDiffuseColor, 1.0f);
+	return clamp(diffuse,0.0f,1.0f);
 }
 
 vec4 calculateSpecular(vec3 a_normal, vec4 a_lightColor, vec3 a_lightDirection)
@@ -49,7 +50,8 @@ vec4 calculateSpecular(vec3 a_normal, vec4 a_lightColor, vec3 a_lightDirection)
     //vec3 H = normalize(-a_lightDirection + directionToEye);
     //vec3 NdotH = max(0, dot(a_normal, H));
  
-    return pow(RdotV, uMaterialSpecularPower) * a_lightColor * materialSpecularColor;
+	vec4 specular = pow(RdotV, uMaterialSpecularPower) * a_lightColor * materialSpecularColor;
+	return clamp(specular,0.0f,1.0f);
 }
 
 void main()

@@ -157,12 +157,7 @@ AGN::ShaderDX11::~ShaderDX11()
 		m_constantBuffers.erase(m_constantBuffers.begin());
 	}
 
-	// release buffer handles array (along side the actual bufferDX11's)
-	//for (int32_t i = 0; i < m_constantBuffers.size(); i++) safeRelease(m_bufferHandles[i]);
-	//delete[] m_bufferHandles;
-
 	delete m_shaderReflectionDesc;
-
 
 	safeRelease(m_shaderReflection);
 	safeRelease(m_shaderHandle);
@@ -311,22 +306,6 @@ void AGN::ShaderDX11::getSamplerLayoutDesc(D3D11_SAMPLER_DESC*& out_samplerLayou
 
 			return;
 		}
-
-		/*
-		typedef struct _D3D11_SHADER_INPUT_BIND_DESC
-		{
-			LPCSTR                      Name;           // Name of the resource
-			D3D_SHADER_INPUT_TYPE       Type;           // Type of resource (e.g. texture, cbuffer, etc.)
-			UINT                        BindPoint;      // Starting bind point
-			UINT                        BindCount;      // Number of contiguous bind points (for arrays)
-
-			UINT                        uFlags;         // Input binding flags
-			D3D_RESOURCE_RETURN_TYPE    ReturnType;     // Return type (if texture)
-			D3D_SRV_DIMENSION           Dimension;      // Dimension (if texture)
-			UINT                        NumSamples;     // Number of samples (0 if not MS texture)
-		} D3D11_SHADER_INPUT_BIND_DESC;
-		*/
-	
 	}
 
 	// none found?
@@ -362,35 +341,7 @@ void AGN::ShaderDX11::getConstantBufferDesc(D3D11_SHADER_BUFFER_DESC*& out_const
 		
 		if (constantBufferDesc.Type == D3D_CT_CBUFFER)
 		{
-			// add to list
 			constantBufferDescList.push_back(constantBufferDesc);
-
-			/*
-			// get member variables
-			for (unsigned j = 0; j < constantBufferDesc.Variables; ++j)
-			{
-				ID3D11ShaderReflectionVariable* var = buffer->GetVariableByIndex(j);
-
-				D3D11_SHADER_VARIABLE_DESC varDesc;
-				var->GetDesc(&varDesc);
-
-				// TODO: CONTINUE HERE, MAKE NEW STRUCTURE SIMILAR TO OPENGL BUT USING D3D11 STRUCTS PLS
-
-				//ID3D11ShaderReflectionType* type = var->GetType();
-				//D3D11_SHADER_TYPE_DESC typeDesc;
-				//type->GetDesc(&typeDesc);
-
-				
-				//for (unsigned k = 0; k < typeDesc.Members; ++k)
-				//{
-				//	ID3D11ShaderReflectionType* memberType = type->GetMemberTypeByIndex(k);
-				//	D3D11_SHADER_TYPE_DESC memberTypeDesc;
-				//	memberType->GetDesc(&memberTypeDesc);
-				//}
-				
-			}
-			*/
-
 		}
 	}
 
