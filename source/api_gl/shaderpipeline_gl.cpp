@@ -45,8 +45,8 @@ AGN::ShaderPipelineGL::ShaderPipelineGL(const uint32_t a_glprogramId, ShaderPipe
 		glGetActiveUniformBlockiv(m_glProgramId, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &uniformCount);
 
 		// get blockname
-		char blockName[MAX_UNIFORM_NAME];
-		glGetActiveUniformBlockName(m_glProgramId, i, MAX_UNIFORM_NAME, NULL, blockName);
+		char blockName[ShaderPipelineGL::MAX_UNIFORM_NAME];
+		glGetActiveUniformBlockName(m_glProgramId, i, ShaderPipelineGL::MAX_UNIFORM_NAME, NULL, blockName);
 
 		// get index
 		int32_t index = glGetUniformBlockIndex(m_glProgramId, blockName);
@@ -63,7 +63,7 @@ AGN::ShaderPipelineGL::ShaderPipelineGL(const uint32_t a_glprogramId, ShaderPipe
 		memset(constantBuffer->buffer, 0, blockSize);
 
 		// get uniform indices
-		constantBuffer->uniformPropertyCount = uniformCount;
+		constantBuffer->uniformProperty = uniformCount;
 
 		// get uniform properties
 
@@ -74,24 +74,24 @@ AGN::ShaderPipelineGL::ShaderPipelineGL(const uint32_t a_glprogramId, ShaderPipe
 		glGetActiveUniformsiv(m_glProgramId, (GLsizei)uniformCount, (uint32_t*)uniformIds, GL_UNIFORM_OFFSET, uniformOffsets);
 
 		// create and fill propertyList 
-		constantBuffer->uniformPropertyList.reserve(uniformCount);
+		constantBuffer->propertyList.reserve(uniformCount);
 
 		// get uniform names
 		for (int32_t j = 0; j < uniformCount; j++)
 		{
-			ConstantBufferUniformProperty* uniformProperty = new ConstantBufferUniformProperty();
+			ConstantBufferPropertyGL* uniformProperty = new ConstantBufferPropertyGL();
 
 			// get uniform name
-			char uniformName[MAX_UNIFORM_NAME];
+			char uniformName[ShaderPipelineGL::MAX_UNIFORM_NAME];
 			int32_t length;
-			glGetActiveUniformName(m_glProgramId, uniformIds[j], MAX_UNIFORM_NAME, &length, uniformName);
+			glGetActiveUniformName(m_glProgramId, uniformIds[j], ShaderPipelineGL::MAX_UNIFORM_NAME, &length, uniformName);
 			
 			// fill constant buffer uniform properties
-			memcpy(uniformProperty->name, uniformName, MAX_UNIFORM_NAME);
+			memcpy(uniformProperty->name, uniformName, ShaderPipelineGL::MAX_UNIFORM_NAME);
 			uniformProperty->id = uniformIds[j];
 			uniformProperty->offset = uniformOffsets[j];
 
-			constantBuffer->uniformPropertyList.push_back(uniformProperty);
+			constantBuffer->propertyList.push_back(uniformProperty);
 		}
 
 		// create & bind buffer
@@ -121,10 +121,10 @@ AGN::ShaderPipelineGL::~ShaderPipelineGL()
 	{
 		ConstantBufferGL* constantBuffer = m_constantBuffers[0];
 		// cleanup inner property list
-		while (constantBuffer->uniformPropertyList.size() > 0)
+		while (constantBuffer->propertyList.size() > 0)
 		{
-			delete constantBuffer->uniformPropertyList[0];
-			constantBuffer->uniformPropertyList.erase(constantBuffer->uniformPropertyList.begin());
+			delete constantBuffer->propertyList[0];
+			constantBuffer->propertyList.erase(constantBuffer->propertyList.begin());
 		}
 
 		// cleanup buffer inside
@@ -214,13 +214,13 @@ struct AGN::ConstantBufferGL* AGN::ShaderPipelineGL::getUniformConstantBufferByN
 	return nullptr;
 }
 
-AGN::ConstantBufferUniformProperty* AGN::ConstantBufferGL::getUniformPropertyByName(const char* a_name)
+AGN::ConstantBufferPropertyGL* AGN::ConstantBufferGL::getPropertyByName(const char* a_name)
 {
-	for (int32_t i = 0; i < uniformPropertyCount; i++)
+	for (int32_t i = 0; i < uniformProperty; i++)
 	{
-		if (strcmp(uniformPropertyList[i]->name, a_name) == 0)
+		if (strcmp(propertyList[i]->name, a_name) == 0)
 		{
-			return uniformPropertyList[i];
+			return propertyList[i];
 		}
 	}
 

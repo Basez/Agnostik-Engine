@@ -9,8 +9,6 @@ typedef struct _D3D11_SHADER_BUFFER_DESC D3D11_SHADER_BUFFER_DESC;
 
 namespace AGN
 {
-	static const int MAX_UNIFORM_NAME = 128;
-
 	class ShaderPipelineDX11 : public IShaderPipeline
 	{
 	public:
@@ -25,6 +23,7 @@ namespace AGN
 		virtual bool hasConstantBuffer(const EShaderType a_shader, const char* a_name) override;
 		ID3D11InputLayout* getVertexInputLayout() const { return m_vertexInputLayout; }
 		ID3D11SamplerState* getSamplerState() { return m_samplerState; }
+		struct ConstantBufferDX11* getConstantBufferByName(const EShaderType a_shader, const char* a_name);
 
 	private:
 		const uint16_t m_aId;

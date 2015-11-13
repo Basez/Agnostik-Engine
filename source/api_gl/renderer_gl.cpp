@@ -136,9 +136,9 @@ void AGN::RendererGL::drawEntity(DrawCommand* a_command)
 			uint8_t* buffer = new uint8_t[bufferSize]; // TODO: optimize with memory pool
 			memset(buffer, 0, bufferSize);
 			
-			ConstantBufferUniformProperty* uTransparency = uniformConstantBuffer->getUniformPropertyByName("uMaterialTransparency");
-			ConstantBufferUniformProperty* uDiffuse = uniformConstantBuffer->getUniformPropertyByName("uMaterialDiffuseColor");
-			ConstantBufferUniformProperty* uAmbient = uniformConstantBuffer->getUniformPropertyByName("uMaterialAmbientColor");
+			ConstantBufferPropertyGL* uTransparency = uniformConstantBuffer->getPropertyByName("uMaterialTransparency");
+			ConstantBufferPropertyGL* uDiffuse = uniformConstantBuffer->getPropertyByName("uMaterialDiffuseColor");
+			ConstantBufferPropertyGL* uAmbient = uniformConstantBuffer->getPropertyByName("uMaterialAmbientColor");
 
 			memcpy(buffer + uTransparency->offset, &material->transparency, sizeof(material->transparency)); // material transparency
 			memcpy(buffer + uDiffuse->offset, glm::value_ptr(material->diffuseColor), sizeof(material->diffuseColor)); // material diffuse

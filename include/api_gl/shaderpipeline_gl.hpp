@@ -4,7 +4,6 @@
 
 namespace AGN
 {
-	static const int MAX_UNIFORM_NAME = 128;
 
 	class ShaderPipelineGL : public IShaderPipeline
 	{
@@ -22,6 +21,8 @@ namespace AGN
 		int32_t getUniformIdByName(const char* a_name);
 		bool hasUniform(const char* a_name);
 		struct ConstantBufferGL* getUniformConstantBufferByName(const char* a_name);
+		
+		static const int MAX_UNIFORM_NAME = 128;
 
 	private:
 
@@ -32,24 +33,24 @@ namespace AGN
 		int32_t m_uniformPropertyCount;
 	};	
 
-	struct ConstantBufferUniformProperty
+	struct ConstantBufferPropertyGL
 	{
-		char name[MAX_UNIFORM_NAME];
+		char name[ShaderPipelineGL::MAX_UNIFORM_NAME];
 		int32_t id;
 		int32_t offset;
 	};
 
 	struct ConstantBufferGL
 	{
-		ConstantBufferUniformProperty* getUniformPropertyByName(const char* a_name);
+		ConstantBufferPropertyGL* getPropertyByName(const char* a_name);
 
 		int32_t index;
-		char name[MAX_UNIFORM_NAME];
+		char name[ShaderPipelineGL::MAX_UNIFORM_NAME];
 		int32_t size;
 		uint32_t uboHandle;
 		uint8_t* buffer;
-		int32_t uniformPropertyCount;
-		std::vector<ConstantBufferUniformProperty*> uniformPropertyList;
+		int32_t uniformProperty;
+		std::vector<ConstantBufferPropertyGL*> propertyList;
 	};
 
 }

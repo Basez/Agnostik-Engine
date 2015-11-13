@@ -21,10 +21,6 @@ AGN::ShaderDX11::ShaderDX11(DeviceDX11& a_deviceReference, const uint16_t a_aId,
 	, m_shaderBlob(a_shaderBlob)
 	, m_shaderReflection(nullptr)
 	, m_shaderReflectionDesc(nullptr)
-	, m_constantBufferHandles(nullptr)
-	, m_constantBufferBindPoints(nullptr)
-	, m_constantBufferDescriptions(nullptr)
-	, m_numConstantBuffers(0)
 {
 	HRESULT hr = D3DReflect(m_shaderBlob->GetBufferPointer(), m_shaderBlob->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&m_shaderReflection);
 
@@ -37,20 +33,34 @@ AGN::ShaderDX11::ShaderDX11(DeviceDX11& a_deviceReference, const uint16_t a_aId,
 
 	if (FAILED(hr)) g_log.error("Failed getting reflection desc on shader");
 
-	// reflect on constant buffers
-	getConstantBufferDesc(m_constantBufferDescriptions, m_numConstantBuffers);
 
-	if (m_numConstantBuffers > 0)
+	int numConstantBuffers;
+	D3D11_SHADER_BUFFER_DESC* constantBufferDescriptions;
+
+	// reflect on constant buffers
+	getConstantBufferDesc(constantBufferDescriptions, numConstantBuffers);
+
+	if (numConstantBuffers > 0)
 	{
-		m_constantBufferHandles = new ID3D11Buffer*[m_numConstantBuffers];
-		m_constantBufferBindPoints = new int32_t[m_numConstantBuffers];
+		m_constantBuffers.reserve(numConstantBuffers);
+
+		m_bufferHandles.reserve(numConstantBuffers);
 
 		// create constant buffers
-		for (uint16_t i = 0; i < m_numConstantBuffers; i++)
+		for (uint16_t i = 0; i < numConstantBuffers; i++)
 		{
-			int16_t constantBufferBindPoint = -1;
+			ConstantBufferDX11* constantBuffer = new ConstantBufferDX11();
 
-			// Find bind point! 
+			D3D11_SHADER_BUFFER_DESC bufferDescription;
+			memcpy(&bufferDescription, &constantBufferDescriptions[i], sizeof(D3D11_SHADER_BUFFER_DESC)); // TODO: refactor :/
+
+			// Get name
+			memcpy(&constantBuffer->name, bufferDescription.Name, ShaderDX11::MAX_UNIFORM_NAME);
+			
+			// Get Size
+			constantBuffer->size = bufferDescription.Size;
+
+			// Get bind point
 			for (uint16_t k = 0; k < m_shaderReflectionDesc->BoundResources; ++k)
 			{
 				D3D11_SHADER_INPUT_BIND_DESC ibdesc;
@@ -58,41 +68,68 @@ AGN::ShaderDX11::ShaderDX11(DeviceDX11& a_deviceReference, const uint16_t a_aId,
 				hr = m_shaderReflection->GetResourceBindingDesc(k, &ibdesc);
 				if (FAILED(hr)) g_log.error("Failed getting reflection D3D11_SHADER_INPUT_BIND_DESC on shader");
 
-				if (strcmp(ibdesc.Name, m_constantBufferDescriptions[i].Name) == 0)
+				if (strcmp(ibdesc.Name, constantBufferDescriptions[i].Name) == 0)
 				{
-					constantBufferBindPoint = ibdesc.BindPoint;
+					constantBuffer->bindpoint = ibdesc.BindPoint;
 					break;
 				}
 			}
 
-			if (constantBufferBindPoint == -1)
+			if (constantBuffer->bindpoint == -1)
 			{
-				g_log.error("Did not find bindpoint for Constant buffer with the name %s", m_constantBufferDescriptions[i].Name);
+				g_log.error("Did not find bindpoint for Constant buffer with the name %s", constantBufferDescriptions[i].Name);
 				assert(false);
 			}
 
-			m_constantBufferBindPoints[i] = constantBufferBindPoint;
+			// get reflection for buffer variables
+			ID3D11ShaderReflectionConstantBuffer* bufferReflection = m_shaderReflection->GetConstantBufferByName(bufferDescription.Name);
+			
+			constantBuffer->propertyList.reserve(bufferDescription.Variables);
+
+			// get all variables in buffer
+			for (unsigned j = 0; j < bufferDescription.Variables; ++j)
+			{
+				ConstantBufferPropertyDX11* constantBufferProperty = new ConstantBufferPropertyDX11();
+
+				// get variable description 
+				D3D11_SHADER_VARIABLE_DESC variableDesc;
+				memset(&variableDesc, 0, sizeof(D3D11_SHADER_VARIABLE_DESC));
+				bufferReflection->GetVariableByIndex(j)->GetDesc(&variableDesc);
+				
+				memcpy(&constantBufferProperty->name, variableDesc.Name, ShaderDX11::MAX_UNIFORM_NAME);
+				constantBufferProperty->offset = variableDesc.StartOffset;
+				constantBufferProperty->size = variableDesc.Size;
+		
+				constantBuffer->propertyList.push_back(constantBufferProperty);
+			}
 
 			// create handle to actual buffer
 			D3D11_BUFFER_DESC newConstantBufferDesc;
 			memset(&newConstantBufferDesc, 0, sizeof(D3D11_BUFFER_DESC));
 
 			newConstantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-			newConstantBufferDesc.ByteWidth = m_constantBufferDescriptions[i].Size;
+			newConstantBufferDesc.ByteWidth = constantBufferDescriptions[i].Size;
 			newConstantBufferDesc.CPUAccessFlags = 0;
 			newConstantBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 			newConstantBufferDesc.MiscFlags = 0;
 			newConstantBufferDesc.StructureByteStride = 0;
+
 			// TODO: think if this is the correct location for this function, in essence, we are doing the devices job in this constructor?
-			HRESULT hr = a_deviceReference.getD3D11Device()->CreateBuffer(&newConstantBufferDesc, nullptr, &m_constantBufferHandles[i]);
+			HRESULT hr = a_deviceReference.getD3D11Device()->CreateBuffer(&newConstantBufferDesc, nullptr, &constantBuffer->d3dhandle);
+
+			m_bufferHandles.push_back(constantBuffer->d3dhandle);
 
 			if (FAILED(hr))
 			{
 				g_log.error("failure creating constant buffer");
 				return;
 			}
+
+			m_constantBuffers.push_back(constantBuffer);
 		}
 	}
+
+	delete[] constantBufferDescriptions;
 
 #ifdef AGN_DEBUG
 	//AGN::logHResultData(hr);
@@ -102,20 +139,34 @@ AGN::ShaderDX11::ShaderDX11(DeviceDX11& a_deviceReference, const uint16_t a_aId,
 
 AGN::ShaderDX11::~ShaderDX11()
 {
-	for (int i = 0; i < m_numConstantBuffers; i++)
+	// release buffers
+	while (m_constantBuffers.size() > 0)
 	{
-		// release individual buffer handles
-		safeRelease(m_constantBufferHandles[i]);
+		ConstantBufferDX11* constantBuffer = m_constantBuffers[0];
+		// cleanup inner property list
+		while (constantBuffer->propertyList.size() > 0)
+		{
+			delete constantBuffer->propertyList[0];
+			constantBuffer->propertyList.erase(constantBuffer->propertyList.begin());
+		}
+
+		safeRelease(constantBuffer->d3dhandle);
+
+		// delete struct itself
+		delete constantBuffer;
+		m_constantBuffers.erase(m_constantBuffers.begin());
 	}
-	delete[] m_constantBufferHandles; // delete buffer handle array itself
+
+	// release buffer handles array (along side the actual bufferDX11's)
+	//for (int32_t i = 0; i < m_constantBuffers.size(); i++) safeRelease(m_bufferHandles[i]);
+	//delete[] m_bufferHandles;
+
+	delete m_shaderReflectionDesc;
+
 
 	safeRelease(m_shaderReflection);
 	safeRelease(m_shaderHandle);
 	safeRelease(m_shaderBlob);
-
-	delete[] m_constantBufferDescriptions;
-	delete[] m_constantBufferBindPoints; 
-	delete m_shaderReflectionDesc;
 }
 
 std::string AGN::ShaderDX11::getLatestProfile(const AGN::EShaderType a_type, ID3D11Device* a_device)
@@ -283,6 +334,19 @@ void AGN::ShaderDX11::getSamplerLayoutDesc(D3D11_SAMPLER_DESC*& out_samplerLayou
 	out_samplerLayoutDecs = nullptr;
 }
 
+AGN::ConstantBufferDX11* AGN::ShaderDX11::getConstantBufferByName(const char* a_name)
+{
+	for (uint32_t i = 0; i < m_constantBuffers.size(); i++)
+	{
+		if (strcmp(m_constantBuffers[i]->name, a_name) == 0)
+		{
+			return m_constantBuffers[i];
+		}
+	}
+
+	return nullptr;
+}
+
 void AGN::ShaderDX11::getConstantBufferDesc(D3D11_SHADER_BUFFER_DESC*& out_constantBufferDecs, int& out_count)
 {	
 	std::vector<D3D11_SHADER_BUFFER_DESC> constantBufferDescList;
@@ -293,13 +357,40 @@ void AGN::ShaderDX11::getConstantBufferDesc(D3D11_SHADER_BUFFER_DESC*& out_const
 		D3D11_SHADER_BUFFER_DESC constantBufferDesc;
 
 		ID3D11ShaderReflectionConstantBuffer* buffer = m_shaderReflection->GetConstantBufferByIndex(i);
-
+		
 		HRESULT hr = buffer->GetDesc(&constantBufferDesc);
 		
 		if (constantBufferDesc.Type == D3D_CT_CBUFFER)
 		{
 			// add to list
 			constantBufferDescList.push_back(constantBufferDesc);
+
+			/*
+			// get member variables
+			for (unsigned j = 0; j < constantBufferDesc.Variables; ++j)
+			{
+				ID3D11ShaderReflectionVariable* var = buffer->GetVariableByIndex(j);
+
+				D3D11_SHADER_VARIABLE_DESC varDesc;
+				var->GetDesc(&varDesc);
+
+				// TODO: CONTINUE HERE, MAKE NEW STRUCTURE SIMILAR TO OPENGL BUT USING D3D11 STRUCTS PLS
+
+				//ID3D11ShaderReflectionType* type = var->GetType();
+				//D3D11_SHADER_TYPE_DESC typeDesc;
+				//type->GetDesc(&typeDesc);
+
+				
+				//for (unsigned k = 0; k < typeDesc.Members; ++k)
+				//{
+				//	ID3D11ShaderReflectionType* memberType = type->GetMemberTypeByIndex(k);
+				//	D3D11_SHADER_TYPE_DESC memberTypeDesc;
+				//	memberType->GetDesc(&memberTypeDesc);
+				//}
+				
+			}
+			*/
+
 		}
 	}
 
@@ -311,41 +402,32 @@ void AGN::ShaderDX11::getConstantBufferDesc(D3D11_SHADER_BUFFER_DESC*& out_const
 
 void AGN::ShaderDX11::setConstantBufferData(const char* a_name, void* a_data, size_t a_dataSize)
 {
-	for (uint16_t i = 0; i < m_numConstantBuffers; i++)
+	ConstantBufferDX11* constantBuffer = getConstantBufferByName(a_name);
+	
+	if (constantBuffer == nullptr)
 	{
-		if (strcmp(m_constantBufferDescriptions[i].Name, a_name) == 0)
-		{
-			m_deviceReference.getD3D11DeviceContext()->UpdateSubresource(m_constantBufferHandles[i], 0, nullptr, a_data, 0, 0);
-			return;
-		}
+		g_log.error("Constant buffer with name %s not found, cannot set its data!", a_name);
+		return;
+
 	}
+	m_deviceReference.getD3D11DeviceContext()->UpdateSubresource(constantBuffer->d3dhandle, 0, nullptr, a_data, 0, 0);
 }
 
 bool AGN::ShaderDX11::hasConstantBuffer(const char* a_name)
 {
-	for (uint16_t i = 0; i < m_numConstantBuffers; i++)
-	{
-		if (strcmp(m_constantBufferDescriptions[i].Name, a_name) == 0)
-		{
-			return true;
-		}
-	}
-
-	return false;
+	return getConstantBufferByName(a_name) != nullptr;
 }
 
-int AGN::ShaderDX11::getConstantBufferBindpoint(const char* a_name)
+AGN::ConstantBufferPropertyDX11* AGN::ConstantBufferDX11::getPropertyByName(const char* a_name)
 {
-	for (uint16_t i = 0; i < m_numConstantBuffers; i++)
+	for (uint32_t i = 0; i < propertyList.size(); i++)
 	{
-		if (strcmp(m_constantBufferDescriptions[i].Name, a_name) == 0)
+		if (strcmp(propertyList[i]->name, a_name) == 0)
 		{
-			return m_constantBufferBindPoints[i];
+			return propertyList[i];
 		}
 	}
 
-	g_log.error("Did not find constant buffer with name %s in this shader", a_name);
-
-	return -1;
+	g_log.error("ConstantBufferPropertyDX11 with name %s not found!", a_name);
+	return nullptr;
 }
-

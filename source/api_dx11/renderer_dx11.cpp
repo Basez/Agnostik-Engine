@@ -327,11 +327,11 @@ void AGN::RendererDX11::drawEntity(DrawCommand& a_command)
 			}
 
 			// set constant buffer
-			ID3D11Buffer** d3d11ConstantBuffers = dx11PixelShader->getConstantBufferHandles();
 			const int numConstBuffers = dx11PixelShader->getNumConstantBuffers();
 
 			if (numConstBuffers > 0)
 			{
+				ID3D11Buffer** d3d11ConstantBuffers = dx11PixelShader->getConstantBufferHandles();			
 				d3dDeviceContext->PSSetConstantBuffers(0, numConstBuffers, d3d11ConstantBuffers);
 			}
 
@@ -357,17 +357,26 @@ void AGN::RendererDX11::drawEntity(DrawCommand& a_command)
 		// TODO: move to only when material changes!
 		if (shaderPipeline->hasConstantBuffer(EShaderType::PixelShader, "MaterialProperties"))
 		{
+			
+			ConstantBufferDX11* materialBuffer = shaderPipeline->getConstantBufferByName(EShaderType::PixelShader, "MaterialProperties");
+			
 			// TODO: get buffer offset, this is hardcoded
-			const size_t bufferSize = 32; // 32 because of the 16 byte boundary
-			unsigned char buffer[bufferSize];
-			memset(buffer, 0, bufferSize);
-
-			memcpy(buffer + 0, &material->transparency, sizeof(float)); // material transparency // TODO: check if this is correct
-			memcpy(buffer + 4, glm::value_ptr(material->diffuseColor), sizeof(glm::vec3)); // material diffuse
-			memcpy(buffer + 16, glm::value_ptr(material->ambientColor), sizeof(glm::vec3)); // material ambient
+			uint8_t* buffer = new uint8_t[materialBuffer->size]; // TODO: optimize
+			memset(buffer, 0, materialBuffer->size);
+			
+			ConstantBufferPropertyDX11* transparency = materialBuffer->getPropertyByName("materialTransparency");
+			ConstantBufferPropertyDX11* diffuse = materialBuffer->getPropertyByName("materialDiffuseColor");
+			ConstantBufferPropertyDX11* ambient = materialBuffer->getPropertyByName("materialAmbientColor");
+			
+			memcpy(buffer + transparency->offset, &material->transparency, sizeof(material->transparency));
+			memcpy(buffer + diffuse->offset, glm::value_ptr(material->diffuseColor), sizeof(material->diffuseColor));
+			memcpy(buffer + ambient->offset, glm::value_ptr(material->ambientColor), sizeof(material->ambientColor));
 			//memcpy(buffer + 32, glm::value_ptr(material->specularColor), sizeof(glm::vec3)); // material specular
-
-			shaderPipeline->setConstantBufferData(EShaderType::PixelShader, "MaterialProperties", buffer, bufferSize);
+			
+			shaderPipeline->setConstantBufferData(EShaderType::PixelShader, "MaterialProperties", buffer, sizeof(buffer));
+			
+			delete[] buffer; // TODO: optimize
+			
 		}
 
 		// set textures
@@ -403,10 +412,10 @@ void AGN::RendererDX11::drawEntity(DrawCommand& a_command)
 
 		aDx11VertexShader->setConstantBufferData("PerObject", &buffer, sizeof(buffer));
 
-		ID3D11Buffer** d3d11ConstantBuffers = aDx11VertexShader->getConstantBufferHandles();
 		const int numConstBuffers = aDx11VertexShader->getNumConstantBuffers();
 		if (numConstBuffers > 0)
 		{
+			ID3D11Buffer** d3d11ConstantBuffers = aDx11VertexShader->getConstantBufferHandles();
 			d3dDeviceContext->VSSetConstantBuffers(0, numConstBuffers, d3d11ConstantBuffers);
 		}
 

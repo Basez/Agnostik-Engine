@@ -70,3 +70,9 @@ bool AGN::ShaderPipelineDX11::hasConstantBuffer(const EShaderType a_shader, cons
 	ShaderDX11* shaderDX11 = dynamic_cast<ShaderDX11*>(getShader(a_shader));
 	return shaderDX11->hasConstantBuffer(a_name);
 }
+
+AGN::ConstantBufferDX11* AGN::ShaderPipelineDX11::getConstantBufferByName(const EShaderType a_shader, const char* a_name)
+{
+	ShaderDX11* shaderDX11 = dynamic_cast<ShaderDX11*>(getShader(a_shader));
+	return shaderDX11->getConstantBufferByName(a_name);
+}
