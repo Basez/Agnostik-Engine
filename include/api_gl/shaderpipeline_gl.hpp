@@ -21,30 +21,35 @@ namespace AGN
 		uint32_t getGlProgramId() { return m_glProgramId; }
 		int32_t getUniformIdByName(const char* a_name);
 		bool hasUniform(const char* a_name);
-		struct UniformConstantBufferGL* getUniformConstantBufferByName(const char* a_name);
+		struct ConstantBufferGL* getUniformConstantBufferByName(const char* a_name);
 
 	private:
 
 		const uint16_t m_aId;				
 		const uint32_t m_glProgramId;
 		class IShader* m_shaders[6];
-
-		std::vector<struct UniformConstantBufferGL*> m_constantBuffers;
-
+		std::vector<struct ConstantBufferGL*> m_constantBuffers;
 		int32_t m_uniformPropertyCount;
 	};	
 
-	struct UniformConstantBufferGL
+	struct ConstantBufferUniformProperty
 	{
+		char name[MAX_UNIFORM_NAME];
+		int32_t id;
+		int32_t offset;
+	};
+
+	struct ConstantBufferGL
+	{
+		ConstantBufferUniformProperty* getUniformPropertyByName(const char* a_name);
+
 		int32_t index;
 		char name[MAX_UNIFORM_NAME];
 		int32_t size;
 		uint32_t uboHandle;
 		uint8_t* buffer;
-		int32_t uniformCount;
-		
-		// inner uniform members (arrays of their data)
-		int32_t* uniformIds;
-		int32_t* uniformOffsets;
+		int32_t uniformPropertyCount;
+		std::vector<ConstantBufferUniformProperty*> uniformPropertyList;
 	};
+
 }

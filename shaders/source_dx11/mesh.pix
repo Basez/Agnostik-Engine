@@ -14,16 +14,17 @@ cbuffer LightSettings : register(b0)
 	float4 lightAmbient; // Global ambient contribution.
 }
 
-// TODO: fix registers when restoring Cbuffers
 cbuffer MaterialProperties : register(b1)
 {
 	float materialTransparency;
 	float3 materialDiffuseColor;
 	//-- 16bytes --//
-	float3 materialSpecularColor;
-	float filler1;
-	//-- 16bytes --//
+
 	float3 materialAmbientColor;
+	float boundary1;
+	//-- 16bytes --//
+
+	//float3 materialSpecularColor;
 	//-- 16bytes --//
 }
 
@@ -35,7 +36,7 @@ float4 Main(InputData IN) : SV_TARGET
 	// calculate diffuse
 	float4 normal = normalize( IN.normalWS );
 	float nDotL = max( dot( normal, lightDirection ), 0 );
-	float4 diffuse =  nDotL * lightColor * float4(materialDiffuseColor, 1.0f);
+	float4 diffuse =  float4(materialDiffuseColor, 1.0f) * nDotL * lightColor;
 
 	// apply ambients and calculate final color
 	float4 lighting = diffuse + float4(materialAmbientColor, 0.0f) + lightAmbient;

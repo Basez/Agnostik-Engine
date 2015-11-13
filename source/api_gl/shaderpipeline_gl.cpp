@@ -51,11 +51,9 @@ AGN::ShaderPipelineGL::ShaderPipelineGL(const uint32_t a_glprogramId, ShaderPipe
 		// get index
 		int32_t index = glGetUniformBlockIndex(m_glProgramId, blockName);
 
-		// TODO: get uniform names
-		//glGetActiveUniformName()
 
 		// create object
-		UniformConstantBufferGL* constantBuffer = new UniformConstantBufferGL();
+		ConstantBufferGL* constantBuffer = new ConstantBufferGL();
 		AGN::cStringCopy(constantBuffer->name, blockName, sizeof(blockName));
 		constantBuffer->index = index;
 		constantBuffer->size = blockSize;
@@ -65,11 +63,36 @@ AGN::ShaderPipelineGL::ShaderPipelineGL(const uint32_t a_glprogramId, ShaderPipe
 		memset(constantBuffer->buffer, 0, blockSize);
 
 		// get uniform indices
-		constantBuffer->uniformCount = uniformCount;
-		constantBuffer->uniformIds = new int32_t[uniformCount];
-		constantBuffer->uniformOffsets = new int32_t[uniformCount];
-		glGetActiveUniformBlockiv(m_glProgramId, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, constantBuffer->uniformIds);
-		glGetActiveUniformsiv(m_glProgramId, (GLsizei)uniformCount, (uint32_t*)constantBuffer->uniformIds, GL_UNIFORM_OFFSET, constantBuffer->uniformOffsets);
+		constantBuffer->uniformPropertyCount = uniformCount;
+
+		// get uniform properties
+
+
+		int32_t* uniformIds = new int32_t[uniformCount];
+		int32_t* uniformOffsets = new int32_t[uniformCount];
+		glGetActiveUniformBlockiv(m_glProgramId, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, uniformIds);
+		glGetActiveUniformsiv(m_glProgramId, (GLsizei)uniformCount, (uint32_t*)uniformIds, GL_UNIFORM_OFFSET, uniformOffsets);
+
+		// create and fill propertyList 
+		constantBuffer->uniformPropertyList.reserve(uniformCount);
+
+		// get uniform names
+		for (int32_t j = 0; j < uniformCount; j++)
+		{
+			ConstantBufferUniformProperty* uniformProperty = new ConstantBufferUniformProperty();
+
+			// get uniform name
+			char uniformName[MAX_UNIFORM_NAME];
+			int32_t length;
+			glGetActiveUniformName(m_glProgramId, uniformIds[j], MAX_UNIFORM_NAME, &length, uniformName);
+			
+			// fill constant buffer uniform properties
+			memcpy(uniformProperty->name, uniformName, MAX_UNIFORM_NAME);
+			uniformProperty->id = uniformIds[j];
+			uniformProperty->offset = uniformOffsets[j];
+
+			constantBuffer->uniformPropertyList.push_back(uniformProperty);
+		}
 
 		// create & bind buffer
 		glGenBuffers(1, &constantBuffer->uboHandle);
@@ -81,8 +104,10 @@ AGN::ShaderPipelineGL::ShaderPipelineGL(const uint32_t a_glprogramId, ShaderPipe
 		// upload (null at the moment) data
 		glBufferData(GL_UNIFORM_BUFFER, constantBuffer->size, constantBuffer->buffer, GL_DYNAMIC_DRAW);
 		
-		// unbind
+		// unbind & clean
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		delete[] uniformIds;
+		delete[] uniformOffsets;
 
 		m_constantBuffers.push_back(constantBuffer);
 	}
@@ -91,15 +116,22 @@ AGN::ShaderPipelineGL::ShaderPipelineGL(const uint32_t a_glprogramId, ShaderPipe
 }
 
 AGN::ShaderPipelineGL::~ShaderPipelineGL()
-{
+{	
 	while (m_constantBuffers.size() > 0)
 	{
-		// TODO: create destructor of sorts for the UniformConstantBufferGL?
-		delete[] m_constantBuffers[0]->uniformIds;
-		delete[] m_constantBuffers[0]->uniformOffsets;
-		delete[] m_constantBuffers[0]->buffer;
+		ConstantBufferGL* constantBuffer = m_constantBuffers[0];
+		// cleanup inner property list
+		while (constantBuffer->uniformPropertyList.size() > 0)
+		{
+			delete constantBuffer->uniformPropertyList[0];
+			constantBuffer->uniformPropertyList.erase(constantBuffer->uniformPropertyList.begin());
+		}
 
-		delete m_constantBuffers[0];
+		// cleanup buffer inside
+		delete[] constantBuffer->buffer;
+
+		// delete struct itself
+		delete constantBuffer;
 		m_constantBuffers.erase(m_constantBuffers.begin());
 	}
 }
@@ -152,13 +184,12 @@ bool AGN::ShaderPipelineGL::hasUniform(const char* a_name)
 
 void AGN::ShaderPipelineGL::setConstantBufferData(const EShaderType a_shader, const char* a_name, void* a_data, size_t a_dataSize)
 {
-	UniformConstantBufferGL* uniformConstantBuffer = getUniformConstantBufferByName(a_name);
+	ConstantBufferGL* uniformConstantBuffer = getUniformConstantBufferByName(a_name);
 
 	memcpy(uniformConstantBuffer->buffer, a_data, a_dataSize);
 
 	// bind & upload buffer
-	glBindBuffer(GL_UNIFORM_BUFFER, uniformConstantBuffer->uboHandle);
-	glBufferData(GL_UNIFORM_BUFFER, uniformConstantBuffer->size, uniformConstantBuffer->buffer, GL_DYNAMIC_DRAW);
+	glNamedBufferData(uniformConstantBuffer->uboHandle, uniformConstantBuffer->size, uniformConstantBuffer->buffer, GL_DYNAMIC_DRAW);
 }
 
 bool AGN::ShaderPipelineGL::hasConstantBuffer(const EShaderType a_shader, const char* a_name)
@@ -171,7 +202,7 @@ bool AGN::ShaderPipelineGL::hasConstantBuffer(const EShaderType a_shader, const 
 	return false;
 }
 
-struct AGN::UniformConstantBufferGL* AGN::ShaderPipelineGL::getUniformConstantBufferByName(const char* a_name)
+struct AGN::ConstantBufferGL* AGN::ShaderPipelineGL::getUniformConstantBufferByName(const char* a_name)
 {
 	for (unsigned int i = 0; i < m_constantBuffers.size(); i++)
 	{
@@ -180,5 +211,19 @@ struct AGN::UniformConstantBufferGL* AGN::ShaderPipelineGL::getUniformConstantBu
 	}
 
 	assert(false);
+	return nullptr;
+}
+
+AGN::ConstantBufferUniformProperty* AGN::ConstantBufferGL::getUniformPropertyByName(const char* a_name)
+{
+	for (int32_t i = 0; i < uniformPropertyCount; i++)
+	{
+		if (strcmp(uniformPropertyList[i]->name, a_name) == 0)
+		{
+			return uniformPropertyList[i];
+		}
+	}
+
+	g_log.error("Constant buffer uniform property with name %s was not found in buffer %s", a_name, name);
 	return nullptr;
 }

@@ -130,14 +130,23 @@ void AGN::RendererGL::drawEntity(DrawCommand* a_command)
 	
 		if (shaderPipeline->hasConstantBuffer(EShaderType::PixelShader,"MaterialProperties"))
 		{
-			// TODO: get buffer offset, this is hardcoded
-			unsigned char buffer[40];
-			memcpy(buffer + 0, glm::value_ptr(material->diffuseColor), sizeof(material->diffuseColor)); // material diffuse
-			memcpy(buffer + 12, glm::value_ptr(material->specularColor), sizeof(material->specularColor)); // material specular
-			memcpy(buffer + 24, glm::value_ptr(material->ambientColor), sizeof(material->ambientColor)); // material ambient
-			memcpy(buffer + 36, &material->transparency, sizeof(material->transparency)); // material transparency // TODO: check if this is correct
+			ConstantBufferGL* uniformConstantBuffer = shaderPipeline->getUniformConstantBufferByName("MaterialProperties");
 
-			shaderPipeline->setConstantBufferData(EShaderType::PixelShader, "MaterialProperties", &buffer, 32);
+			const size_t bufferSize = uniformConstantBuffer->size;
+			uint8_t* buffer = new uint8_t[bufferSize]; // TODO: optimize with memory pool
+			memset(buffer, 0, bufferSize);
+			
+			ConstantBufferUniformProperty* uTransparency = uniformConstantBuffer->getUniformPropertyByName("uMaterialTransparency");
+			ConstantBufferUniformProperty* uDiffuse = uniformConstantBuffer->getUniformPropertyByName("uMaterialDiffuseColor");
+			ConstantBufferUniformProperty* uAmbient = uniformConstantBuffer->getUniformPropertyByName("uMaterialAmbientColor");
+
+			memcpy(buffer + uTransparency->offset, &material->transparency, sizeof(material->transparency)); // material transparency
+			memcpy(buffer + uDiffuse->offset, glm::value_ptr(material->diffuseColor), sizeof(material->diffuseColor)); // material diffuse
+			memcpy(buffer + uAmbient->offset, glm::value_ptr(material->ambientColor), sizeof(material->ambientColor)); // material ambient
+			
+			shaderPipeline->setConstantBufferData(EShaderType::PixelShader, "MaterialProperties", buffer, uniformConstantBuffer->size);
+
+			delete[] buffer; // TODO: optimize with memory pool
 		}
 
 		m_boundMaterial = material;

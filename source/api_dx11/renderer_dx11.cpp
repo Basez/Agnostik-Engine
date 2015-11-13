@@ -358,15 +358,16 @@ void AGN::RendererDX11::drawEntity(DrawCommand& a_command)
 		if (shaderPipeline->hasConstantBuffer(EShaderType::PixelShader, "MaterialProperties"))
 		{
 			// TODO: get buffer offset, this is hardcoded
-			const unsigned int bufferSize = 48; // 48 because of the 16 byte boundary
+			const size_t bufferSize = 32; // 32 because of the 16 byte boundary
 			unsigned char buffer[bufferSize];
 			memset(buffer, 0, bufferSize);
+
 			memcpy(buffer + 0, &material->transparency, sizeof(float)); // material transparency // TODO: check if this is correct
 			memcpy(buffer + 4, glm::value_ptr(material->diffuseColor), sizeof(glm::vec3)); // material diffuse
-			memcpy(buffer + 16, glm::value_ptr(material->specularColor), sizeof(glm::vec3)); // material specular
-			memcpy(buffer + 28, glm::value_ptr(material->ambientColor), sizeof(glm::vec3)); // material ambient
+			memcpy(buffer + 16, glm::value_ptr(material->ambientColor), sizeof(glm::vec3)); // material ambient
+			//memcpy(buffer + 32, glm::value_ptr(material->specularColor), sizeof(glm::vec3)); // material specular
 
-			shaderPipeline->setConstantBufferData(EShaderType::PixelShader, "MaterialProperties", &buffer, bufferSize);
+			shaderPipeline->setConstantBufferData(EShaderType::PixelShader, "MaterialProperties", buffer, bufferSize);
 		}
 
 		// set textures
