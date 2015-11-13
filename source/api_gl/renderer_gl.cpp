@@ -139,11 +139,14 @@ void AGN::RendererGL::drawEntity(DrawCommand* a_command)
 			ConstantBufferPropertyGL* uTransparency = uniformConstantBuffer->getPropertyByName("uMaterialTransparency");
 			ConstantBufferPropertyGL* uDiffuse = uniformConstantBuffer->getPropertyByName("uMaterialDiffuseColor");
 			ConstantBufferPropertyGL* uAmbient = uniformConstantBuffer->getPropertyByName("uMaterialAmbientColor");
+			ConstantBufferPropertyGL* uSpecularPower = uniformConstantBuffer->getPropertyByName("uMaterialSpecularPower");
 
-			memcpy(buffer + uTransparency->offset, &material->transparency, sizeof(material->transparency)); // material transparency
-			memcpy(buffer + uDiffuse->offset, glm::value_ptr(material->diffuseColor), sizeof(material->diffuseColor)); // material diffuse
-			memcpy(buffer + uAmbient->offset, glm::value_ptr(material->ambientColor), sizeof(material->ambientColor)); // material ambient
-			
+			memcpy(buffer + uTransparency->offset, &material->transparency, sizeof(material->transparency));
+			memcpy(buffer + uDiffuse->offset, glm::value_ptr(material->diffuseColor), sizeof(material->diffuseColor));
+			memcpy(buffer + uAmbient->offset, glm::value_ptr(material->ambientColor), sizeof(material->ambientColor));
+			memcpy(buffer + uSpecularPower->offset, &material->specularPower, sizeof(material->specularPower));
+
+
 			shaderPipeline->setConstantBufferData(EShaderType::PixelShader, "MaterialProperties", buffer, uniformConstantBuffer->size);
 
 			delete[] buffer; // TODO: optimize with memory pool

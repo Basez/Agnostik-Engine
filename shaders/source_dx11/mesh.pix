@@ -38,7 +38,7 @@ float4 CalculateDiffuse(float3 a_normal, float4 a_lightColor, float3 a_lightDire
 
 float4 CalculateSpecular(float3 a_normal, float4 a_lightColor, float3 a_lightDirection, float3 a_positionWS)
 {
-    float3 directionToEye = normalize(eyePosition - a_positionWS).xyz;
+    float3 directionToEye = normalize(eyePosition.xyz - a_positionWS.xyz);
     float4 materialSpecularColor = float4(1, 1, 1, 1); // TODO!!!!!!!!!
 
 	// Phong lighting.
@@ -58,10 +58,11 @@ float4 Main(InputData IN) : SV_TARGET
     float4 textureColor = shaderTexture.Sample(SampleType, IN.uv);
 
     float3 normalWorldSpace = normalize(IN.normalWS).xyz;
+	float3 lightDirectionNorm = normalize(lightDirection).xyz;
 
 	// calculate diffuse and spec
-    float4 diffuse = CalculateDiffuse(normalWorldSpace, lightColor, lightDirection);
-    float4 specular = CalculateSpecular(normalWorldSpace, lightColor, lightDirection, IN.positionWS);
+    float4 diffuse = CalculateDiffuse(normalWorldSpace, lightColor, lightDirectionNorm);
+    float4 specular = CalculateSpecular(normalWorldSpace, lightColor, lightDirectionNorm, IN.positionWS);
 
 	// apply ambients and calculate final color
     float4 lighting = diffuse + specular + float4(materialAmbientColor, 0.0f) + lightAmbient;

@@ -1,6 +1,7 @@
 // mesh.pix
 #version 420 core
- 
+
+in vec4 v2f_positionWS;
 in vec4 v2f_normalWS; 	// Surface normal in world space.
 in vec4 v2f_tangentWS;
 in vec4 v2f_bitangentWS;
@@ -11,29 +12,66 @@ layout(binding = 0) uniform LightSettings
 	uniform vec4 uLightDirection; // Light's direction in world space.
 	uniform vec4 uLightColor; // Light's diffuse and specular contribution.
 	uniform vec4 uLightAmbient; // Global ambient contribution.
+	uniform vec4 uEyePosition;
 };
 
 layout(binding = 1) uniform MaterialProperties
 {
-	uniform float uMaterialTransparency;
 	uniform vec3 uMaterialDiffuseColor;
+	uniform float uMaterialTransparency;
+
 	uniform vec3 uMaterialAmbientColor;
-	//uniform vec3 uMaterialSpecularColor;	
+	float uMaterialSpecularPower;
+
+	//uniform vec3 uMaterialSpecularColor; // TODO:	
 };
 
 uniform sampler2D textureSampler0;	// Diffuse
 
 layout (location=0) out vec4 out_color;
 
+vec4 calculateDiffuse(vec3 a_normal, vec4 a_lightColor, vec3 a_lightDirection)
+{
+    float nDotL = max(dot(a_normal, a_lightDirection), 0);
+    return nDotL * a_lightColor * vec4(uMaterialDiffuseColor, 1.0f);
+}
+
+vec4 calculateSpecular(vec3 a_normal, vec4 a_lightColor, vec3 a_lightDirection)
+{
+    vec3 directionToEye = normalize(uEyePosition.xyz - v2f_positionWS.xyz);
+    vec4 materialSpecularColor = vec4(1, 1, 1, 1); // TODO!!!!!!!!!
+
+	// Phong lighting.
+    vec3 R = normalize(reflect(-a_lightDirection, a_normal));
+    float RdotV = max(0, dot(R, directionToEye));
+ 
+	// Blinn-Phong lighting
+    //vec3 H = normalize(-a_lightDirection + directionToEye);
+    //vec3 NdotH = max(0, dot(a_normal, H));
+ 
+    return pow(RdotV, uMaterialSpecularPower) * a_lightColor * materialSpecularColor;
+}
+
 void main()
-{	
-	// Compute the diffuse term.
-	vec4 n = normalize( v2f_normalWS );
-	float nDotL = max( dot( n, uLightDirection ), 0 );
-	vec4 diffuse =  nDotL * uLightColor * vec4(uMaterialDiffuseColor, 1.0f);
-	
-	vec4 lighting = diffuse + vec4(uMaterialAmbientColor, 0.0f) + uLightAmbient;
-	vec4 finalColor = lighting * texture( textureSampler0, v2f_texcoord );
-	
-	out_color = finalColor * (1 + (uMaterialTransparency * 0.0001));
+{
+	// get texture color
+    vec3 normalWorldSpace = normalize(v2f_normalWS).xyz;
+	vec3 lightDirection = normalize(uLightDirection).xyz;
+
+	// calculate diffuse and spec
+    vec4 diffuse = calculateDiffuse(normalWorldSpace, uLightColor, lightDirection);
+    vec4 specular = calculateSpecular(normalWorldSpace, uLightColor, lightDirection);
+
+	// apply ambients and calculate final color
+    vec4 lighting = diffuse + specular + vec4(uMaterialAmbientColor, 0.0f) + uLightAmbient;
+    vec4 finalColor = lighting * texture( textureSampler0, v2f_texcoord );
+
+	//if (specular.r == 0.0f && specular.g == 0.0f && specular.b == 0.0f)
+	{
+	//	out_color = vec4(1.0f,0,0,0);
+	}
+	//else
+	{
+		out_color = finalColor;
+	}
 }
