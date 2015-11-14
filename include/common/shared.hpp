@@ -5,7 +5,8 @@
 #pragma once
 
 // uncomment to enable mmgr memory leak detection
-//#define AGN_ENABLE_MEMORYLEAK_DETECTION
+// TODO: find a way to not compile the obj file --> disabling this define still compiles the obj and leaks are still detected somehow? :/
+#define AGN_ENABLE_MEMORYLEAK_DETECTION
 
 // stl
 #include <iostream>

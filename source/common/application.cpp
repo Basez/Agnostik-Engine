@@ -148,10 +148,11 @@ void AGN::Application::updateMeshShaderProperties(float a_deltaTime)
 	// TODO: Abstract this, currently very much hardcoded
 	unsigned char buffer[64] = {0};
 
+	static const int milliSecondsPerRotation = 10000;
 	auto now = std::chrono::system_clock::now().time_since_epoch();
-	int32_t milliseconds = static_cast<int32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(now).count() % 5000);
+	int32_t milliseconds = static_cast<int32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(now).count() % milliSecondsPerRotation);
 
-	rotationY = (static_cast<float>(milliseconds) / 5000.0f) * 360.0f;
+	rotationY = (static_cast<float>(milliseconds) / static_cast<float>(milliSecondsPerRotation)) * 360.0f;
 	
 	const vec3 lightDirectionNorm = glm::rotate(normalize(vec3(0.5f, 1.0f, 0.5f)), glm::radians(rotationY), vec3(0, 1, 0));
 	//const vec3 lightDirectionNorm = glm::rotate(normalize(vec3(0.0f, 1.0f, 0.0f)), glm::radians(rotationY), vec3(0, 1, 0));

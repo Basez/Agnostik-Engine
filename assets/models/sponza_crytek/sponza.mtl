@@ -96,8 +96,7 @@ newmtl bricks
 	map_Ka sponza_crytek/spnza_bricks_a_diff.png
 	map_Kd sponza_crytek/spnza_bricks_a_diff.png
 	map_Ks sponza_crytek/spnza_bricks_a_spec.png
-	map_Kn sponza_crytek/spnza_bricks_a_diff.png
-	bump sponza_crytek/spnza_bricks_a_bump.png
+	map_Kn sponza_crytek/spnza_bricks_a_bump.png
 
 newmtl arch
 	Ns 10.0000
@@ -128,6 +127,7 @@ newmtl ceiling
 	map_Ka sponza_crytek/sponza_ceiling_a_diff.png
 	map_Kd sponza_crytek/sponza_ceiling_a_diff.png
 	map_Ks sponza_crytek/sponza_ceiling_a_spec.png
+	map_Kn sponza_crytek/sponza_ceiling_a_bump.png
 
 newmtl column_a
 	Ns 10.0000
@@ -160,6 +160,7 @@ newmtl floor
 	map_Ka sponza_crytek/sponza_floor_a_diff.png
 	map_Kd sponza_crytek/sponza_floor_a_diff.png
 	map_Ks sponza_crytek/sponza_floor_a_spec.png
+	map_Kn sponza_crytek/sponza_floor_a_bump.png
 
 newmtl column_c
 	Ns 10.0000
