@@ -25,7 +25,6 @@ namespace AGN
 		static const int MAX_UNIFORM_NAME = 128;
 
 	private:
-
 		const uint16_t m_aId;				
 		const uint32_t m_glProgramId;
 		class IShader* m_shaders[6];

@@ -62,8 +62,6 @@ AGN::ShaderPipelineGL::ShaderPipelineGL(const uint32_t a_glprogramId, ShaderPipe
 		constantBuffer->uniformProperty = uniformCount;
 
 		// get uniform properties
-
-
 		int32_t* uniformIds = new int32_t[uniformCount];
 		int32_t* uniformOffsets = new int32_t[uniformCount];
 		glGetActiveUniformBlockiv(m_glProgramId, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, uniformIds);
@@ -179,7 +177,12 @@ void AGN::ShaderPipelineGL::setConstantBufferData(const EShaderType a_shader, co
 	ConstantBufferGL* uniformConstantBuffer = getUniformConstantBufferByName(a_name);
 
 	// upload buffer
-	glNamedBufferData(uniformConstantBuffer->uboHandle, uniformConstantBuffer->size, a_data, GL_DYNAMIC_DRAW);
+	//glNamedBufferData(uniformConstantBuffer->uboHandle, uniformConstantBuffer->size, a_data, GL_DYNAMIC_DRAW);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, uniformConstantBuffer->uboHandle);
+	glBufferData(GL_UNIFORM_BUFFER, uniformConstantBuffer->size, a_data, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
 }
 
 bool AGN::ShaderPipelineGL::hasConstantBuffer(const EShaderType a_shader, const char* a_name)
