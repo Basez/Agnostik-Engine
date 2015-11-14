@@ -28,7 +28,7 @@ namespace AGN
 		virtual void warning(const char *a_warning, ...) = 0;
 		virtual void error(const char *a_error, ...) = 0;
 
-		static const int MAX_LOG_BUFFER = 1024;
+		static const int MAX_LOG_BUFFER = 2048;
 	};
 }
 

@@ -1,11 +1,15 @@
 // mesh.pix
 #version 420 core
 
-in vec4 v2f_positionWS;
-in vec4 v2f_normalWS; 	// Surface normal in world space.
-in vec4 v2f_tangentWS;
-in vec4 v2f_bitangentWS;
+in vec3 v2f_positionWS;
+in vec3 v2f_normalWS; 	// Surface normal in world space.
+in vec3 v2f_tangentWS;
+in vec3 v2f_bitangentWS;
 in vec2 v2f_texcoord;
+
+uniform sampler2D diffuseSampler;
+uniform sampler2D normalSampler;
+uniform sampler2D specularSampler;
 
 layout(binding = 0) uniform LightSettings
 {
@@ -19,14 +23,15 @@ layout(binding = 1) uniform MaterialProperties
 {
 	uniform vec3 uMaterialDiffuseColor;
 	uniform float uMaterialTransparency;
-
+	//
 	uniform vec3 uMaterialAmbientColor;
 	float uMaterialSpecularPower;
-
+	//
+	bool uMaterialHasDiffuse;
+	bool uMaterialHasNormalMap;
+	bool uMaterialHasSpecularMap;
 	//uniform vec3 uMaterialSpecularColor; // TODO:	
 };
-
-uniform sampler2D textureSampler0;	// Diffuse
 
 layout (location=0) out vec4 out_color;
 
@@ -37,9 +42,9 @@ vec4 calculateDiffuse(vec3 a_normal, vec4 a_lightColor, vec3 a_lightDirection)
 	return clamp(diffuse,0.0f,1.0f);
 }
 
-vec4 calculateSpecular(vec3 a_normal, vec4 a_lightColor, vec3 a_lightDirection)
+vec4 calculateSpecular(vec3 a_normal, vec4 a_lightColor, vec3 a_lightDirection, float a_specularIntensity)
 {
-    vec3 directionToEye = normalize(uEyePosition.xyz - v2f_positionWS.xyz);
+    vec3 directionToEye = normalize(uEyePosition.xyz - v2f_positionWS);
     vec4 materialSpecularColor = vec4(1, 1, 1, 1); // TODO!!!!!!!!!
 
 	// Phong lighting.
@@ -51,29 +56,57 @@ vec4 calculateSpecular(vec3 a_normal, vec4 a_lightColor, vec3 a_lightDirection)
     //vec3 NdotH = max(0, dot(a_normal, H));
  
 	vec4 specular = pow(RdotV, uMaterialSpecularPower) * a_lightColor * materialSpecularColor;
-	return clamp(specular,0.0f,1.0f);
+	return clamp(specular * a_specularIntensity,0.0f,1.0f);
+}
+
+float calculateSpecularIntensity()
+{
+	if (uMaterialHasSpecularMap) return texture(specularSampler, v2f_texcoord).r + texture(specularSampler, v2f_texcoord).g + texture(specularSampler, v2f_texcoord).b;
+	else return 1.0f;
+}
+
+vec3 calculateNormal()
+{
+	if (uMaterialHasNormalMap)
+	{
+		// get normal from normalmap
+		vec3 texNormal = texture(normalSampler, v2f_texcoord).rgb;
+	
+		// move from 0to1 --> -1 to 1
+		texNormal = (texNormal * 2.0f) - 1.0f;
+		 
+		mat3 tangentBinormalNormalMatrix = transpose(mat3(normalize(v2f_tangentWS), normalize(v2f_bitangentWS), normalize(v2f_normalWS)));
+		vec3 bumpedNormal = normalize(texNormal) * tangentBinormalNormalMatrix; 
+
+		return bumpedNormal;
+	}
+	return normalize(v2f_normalWS);
 }
 
 void main()
 {
-	// get texture color
-    vec3 normalWorldSpace = normalize(v2f_normalWS).xyz;
-	vec3 lightDirection = normalize(uLightDirection).xyz;
+	vec4 textureColor = vec4(0,0,0,0);
+	if (uMaterialHasDiffuse) textureColor = texture(diffuseSampler, v2f_texcoord);
+	else textureColor = vec4(uMaterialDiffuseColor, 0.0f);
+	
+	float specularIntensity = calculateSpecularIntensity();
+	vec3 normal = calculateNormal();
+	vec3 lightDirectionNorm = normalize(uLightDirection).xyz;
 
-	// calculate diffuse and spec
-    vec4 diffuse = calculateDiffuse(normalWorldSpace, uLightColor, lightDirection);
-    vec4 specular = calculateSpecular(normalWorldSpace, uLightColor, lightDirection);
+	// calculate lighting
+	vec4 diffuseLightFactor = calculateDiffuse(normal, uLightColor, lightDirectionNorm);
+	vec4 specularLightFactor = calculateSpecular(normal, uLightColor, lightDirectionNorm, specularIntensity);
+	vec4 ambientLightFactor = uLightAmbient;
 
-	// apply ambients and calculate final color
-    vec4 lighting = diffuse + specular + vec4(uMaterialAmbientColor, 0.0f) + uLightAmbient;
-    vec4 finalColor = lighting * texture( textureSampler0, v2f_texcoord );
+	// calculate final color
+	vec4 lighting = diffuseLightFactor + specularLightFactor + ambientLightFactor;
+	vec4 finalColor = textureColor * lighting;
 
-	//if (specular.r == 0.0f && specular.g == 0.0f && specular.b == 0.0f)
-	{
-	//	out_color = vec4(1.0f,0,0,0);
-	}
-	//else
-	{
-		out_color = finalColor;
-	}
+	// display spec mapping
+	// TODO: Turn on with render option, this is really cool!
+	//if (specularIntensity <= 0.33f) out_color = vec4(0,0,1,0);
+	//else if (specularIntensity > 0.33f && specularIntensity <= 0.66f)  out_color = vec4(0,1,0,0);
+	//else out_color = vec4(1,0,0,0);
+	
+	out_color = finalColor;
 }

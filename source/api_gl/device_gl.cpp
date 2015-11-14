@@ -44,7 +44,7 @@ AGN::IMesh* AGN::DeviceGL::createMesh(const uint16_t a_aId, AGN::MeshData* a_mes
 {
 	// upload the data to the GL Driver and GFX card
 	uint32_t vao = -1;
-	const uint8_t vboCount = 4;
+	const uint8_t vboCount = 6;
 	uint32_t *vbos = new uint32_t[vboCount]();
 
 	glGenVertexArrays(1, &vao);
@@ -63,10 +63,20 @@ AGN::IMesh* AGN::DeviceGL::createMesh(const uint16_t a_aId, AGN::MeshData* a_mes
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[2]);
 	glBufferData(GL_ARRAY_BUFFER, a_meshData->textureCoords.size() * sizeof(vec2), a_meshData->textureCoords.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(static_cast<int>(MeshGL::EAMeshGLAttribute::MESH_TEXCOORD_ATTRIBUTE), 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+	glVertexAttribPointer(static_cast<int>(MeshGL::EAMeshGLAttribute::MESH_TEXCOORD_ATTRIBUTE), 2, GL_FLOAT, GL_TRUE, 0, BUFFER_OFFSET(0));
 	glEnableVertexAttribArray(static_cast<int>(MeshGL::EAMeshGLAttribute::MESH_TEXCOORD_ATTRIBUTE));
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[3]);
+	glBindBuffer(GL_ARRAY_BUFFER, vbos[3]);
+	glBufferData(GL_ARRAY_BUFFER, a_meshData->tangents.size() * sizeof(vec3), a_meshData->tangents.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(static_cast<int>(MeshGL::EAMeshGLAttribute::MESH_TANGENT_ATTRIBUTE), 3, GL_FLOAT, GL_TRUE, 0, BUFFER_OFFSET(0));
+	glEnableVertexAttribArray(static_cast<int>(MeshGL::EAMeshGLAttribute::MESH_TANGENT_ATTRIBUTE));
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbos[4]);
+	glBufferData(GL_ARRAY_BUFFER, a_meshData->bitangents.size() * sizeof(vec3), a_meshData->bitangents.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(static_cast<int>(MeshGL::EAMeshGLAttribute::MESH_BITANGENT_ATTRIBUTE), 3, GL_FLOAT, GL_TRUE, 0, BUFFER_OFFSET(0));
+	glEnableVertexAttribArray(static_cast<int>(MeshGL::EAMeshGLAttribute::MESH_BITANGENT_ATTRIBUTE));
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[5]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, a_meshData->indicies.size() * sizeof(uint32_t), a_meshData->indicies.data(), GL_STATIC_DRAW);
 
 	// unbind because we are done

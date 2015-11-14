@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <imgui/imgui.h>
+#include <ctime> // used for keeping all running instances the same (usefull for comparing)
 
 // memory leak detection on windows debug builds
 #if defined(_WIN32) && defined(AGN_DEBUG) && defined(AGN_ENABLE_MEMORYLEAK_DETECTION)
@@ -39,12 +40,23 @@ AGN::Application& g_application = appTemp;
 
 using namespace glm;
 
+static float rotationY = 0.0f;
+
 AGN::Application::Application()
 	: m_meshShaderPipeline(nullptr)
 	, m_skyboxShaderPipeline(nullptr)
 	, m_sceneIndex(0)
 	, m_sortEntityDrawCalls(true)
 {
+	//time_t actual_time = time(0);
+	//int64_t time = static_cast<int64_t>(actual_time);
+	//rotationY = static_cast<float>(time);
+
+	//g_log.debug("secondsInt: %i", secondsInt);
+
+	//std::time_t end_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	//std::cout << "finished computation at " << std::ctime(&end_time);
+
 
 }
 
@@ -136,10 +148,13 @@ void AGN::Application::updateMeshShaderProperties(float a_deltaTime)
 	// TODO: Abstract this, currently very much hardcoded
 	unsigned char buffer[64] = {0};
 
-	static float rotationY = 0.0f;
-	rotationY += a_deltaTime * 45.0f;
+	auto now = std::chrono::system_clock::now().time_since_epoch();
+	int32_t milliseconds = static_cast<int32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(now).count() % 5000);
+
+	rotationY = (static_cast<float>(milliseconds) / 5000.0f) * 360.0f;
 	
 	const vec3 lightDirectionNorm = glm::rotate(normalize(vec3(0.5f, 1.0f, 0.5f)), glm::radians(rotationY), vec3(0, 1, 0));
+	//const vec3 lightDirectionNorm = glm::rotate(normalize(vec3(0.0f, 1.0f, 0.0f)), glm::radians(rotationY), vec3(0, 1, 0));
 
 	//g_log.debug("lightDirectionNorm: x:%f - y:%f - z:%f", lightDirectionNorm.x, lightDirectionNorm.y, lightDirectionNorm.z);
 
@@ -190,6 +205,11 @@ void AGN::Application::renderGUI()
 		ImGui::Separator();
 		ImGui::Text("Stats");
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+		if (ImGui::Button("Reset lights"))
+		{
+			rotationY = 270.0f;
+		}
 	}
 	ImGui::End();
 

@@ -381,6 +381,7 @@ void AGN::RendererDX11::drawEntity(DrawCommand& a_command)
 			uint8_t* buffer = new uint8_t[materialBuffer->size]; // TODO: optimize
 			memset(buffer, 0, materialBuffer->size);
 
+			// TODO: super similar to DX11, abstract this!
 			ConstantBufferPropertyDX11* transparency = materialBuffer->getPropertyByName("materialTransparency");
 			ConstantBufferPropertyDX11* diffuse = materialBuffer->getPropertyByName("materialDiffuseColor");
 			ConstantBufferPropertyDX11* ambient = materialBuffer->getPropertyByName("materialAmbientColor");
@@ -417,10 +418,16 @@ void AGN::RendererDX11::drawEntity(DrawCommand& a_command)
 		// prepare Vertex input data (MVP)
 		mat4 modelMatrix = glm::make_mat4(data.modelMatrixArray); 		// retrieve model matrix from array in struct
 		mat4 mvp = m_vp * modelMatrix;
+		//mat4 inverseTranspose = glm::inverseTranspose(modelMatrix);
+		
+		// TODO: User Constant buffer info reflection pls
+		//ConstantBufferDX11* bufferInfo = aDx11VertexShader->getConstantBufferByName("PerObject");
 
+		//modelInverseTransposeWorldMatrix
 		unsigned char buffer[128] = { 0 };
-		memcpy(buffer, glm::value_ptr(mvp), sizeof(mvp));
-		memcpy(buffer + sizeof(mvp), glm::value_ptr(modelMatrix), sizeof(modelMatrix));
+		memcpy(buffer + 0, glm::value_ptr(mvp), sizeof(mvp));
+		memcpy(buffer + 64, glm::value_ptr(modelMatrix), sizeof(modelMatrix));
+		//memcpy(buffer + 128, glm::value_ptr(inverseTranspose), sizeof(inverseTranspose));
 
 		aDx11VertexShader->setConstantBufferData("PerObject", &buffer, sizeof(buffer));
 

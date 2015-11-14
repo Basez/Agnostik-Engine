@@ -117,7 +117,6 @@ void AGN::SceneManager::loadCrytekSponza()
 	skyboxMaterial.diffuseTexture->setTextureParams((unsigned int)ETextureRenderFlags::USE_CLAMP);
 	skyboxMeshCollection.getMeshList()[0]->setMaterial(&skyboxMaterial); // TODO: change to getByName!
 
-																		 // create entities
 	Entity* sponzaEntity = new Entity();
 	sponzaEntity->setMeshCollection(&sponzaMeshCollection);
 	sponzaEntity->setPosition(vec3(0, 0, 0));
@@ -165,10 +164,6 @@ void AGN::SceneManager::loadSibenik()
 	// load meshes
 	MeshCollection& sibenikMeshCollection = resourceManager.loadMeshCollection("sibenik/sibenik.obj");
 	MeshCollection& skyboxMeshCollection = resourceManager.loadMeshCollection("skybox_fixed.obj");
-
-	// create materials
-	Material& testMaterial = resourceManager.createMaterial("test_material");
-	testMaterial.diffuseTexture = &resourceManager.loadTexture("test.png", ETextureType::TEXTURE_2D);
 
 	Material& skyboxMaterial = resourceManager.createMaterial("skybox_material");
 	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", ETextureType::TEXTURE_2D);
@@ -228,10 +223,10 @@ void AGN::SceneManager::loadSuzannaCrate()
 	m_entities.push_back(crateEntity);
 
 	// suzanne
-	//Entity* suzanneEntity = new Entity();
-	//suzanneEntity->setMeshCollection(&suzanneMeshCollection);
-	//suzanneEntity->setPosition(vec3(0, 0, 0));
-	//m_entities.push_back(suzanneEntity);
+	Entity* suzanneEntity = new Entity();
+	suzanneEntity->setMeshCollection(&suzanneMeshCollection);
+	suzanneEntity->setPosition(vec3(0, 0, 0));
+	m_entities.push_back(suzanneEntity);
 
 	/*
 	// create crate entities

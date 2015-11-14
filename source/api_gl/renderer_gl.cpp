@@ -117,15 +117,24 @@ void AGN::RendererGL::drawEntity(DrawCommand* a_command)
 	if (m_boundMaterial == nullptr || m_boundMaterial->getAId() != material->getAId())
 	{
 		TextureGL* diffuse = dynamic_cast<TextureGL*>(material->diffuseTexture);
-		TextureGL* normal = dynamic_cast<TextureGL*>(material->normalTexture);		// TODO:
-		TextureGL* specular = dynamic_cast<TextureGL*>(material->specularTexture);	// TODO:
+		TextureGL* normal = dynamic_cast<TextureGL*>(material->normalTexture);
+		TextureGL* specular = dynamic_cast<TextureGL*>(material->specularTexture);
+
+		const bool hasDiffuse = diffuse != nullptr;
+		const bool hasNormal = normal != nullptr;
+		const bool hasSpecular = specular != nullptr;
 
 		// TODO: refactor
 		//uint32_t texturesToBind[3] = { m_textureDiffuse, m_textureNormal, m_textureSpecular };
-		if (diffuse != nullptr)
 		{
-			TextureGL* texturesToBind[1] = { diffuse };
-			bindTexturesToShader(shaderPipeline->getGlProgramId(), 1, texturesToBind);
+			TextureGL* texturesToBind[3] = { nullptr, nullptr, nullptr };
+			static const char* const names[3] = { "diffuseSampler", "normalSampler", "specularSampler" };
+			
+			if (hasDiffuse) texturesToBind[0] = diffuse; 
+			if (hasNormal) texturesToBind[1] = normal;
+			if (hasSpecular) texturesToBind[2] = specular;
+			
+			bindTexturesToShader(shaderPipeline->getGlProgramId(), 3, texturesToBind, names);
 		}
 	
 		if (shaderPipeline->hasConstantBuffer(EShaderType::PixelShader,"MaterialProperties"))
@@ -136,16 +145,22 @@ void AGN::RendererGL::drawEntity(DrawCommand* a_command)
 			uint8_t* buffer = new uint8_t[bufferSize]; // TODO: optimize with memory pool
 			memset(buffer, 0, bufferSize);
 			
+			// TODO: super similar to DX11, abstract this!
 			ConstantBufferPropertyGL* uTransparency = uniformConstantBuffer->getPropertyByName("uMaterialTransparency");
 			ConstantBufferPropertyGL* uDiffuse = uniformConstantBuffer->getPropertyByName("uMaterialDiffuseColor");
 			ConstantBufferPropertyGL* uAmbient = uniformConstantBuffer->getPropertyByName("uMaterialAmbientColor");
 			ConstantBufferPropertyGL* uSpecularPower = uniformConstantBuffer->getPropertyByName("uMaterialSpecularPower");
+			ConstantBufferPropertyGL* hasDiffuseProp = uniformConstantBuffer->getPropertyByName("uMaterialHasDiffuse");
+			ConstantBufferPropertyGL* hasNormalProp = uniformConstantBuffer->getPropertyByName("uMaterialHasNormalMap");
+			ConstantBufferPropertyGL* hasSpecularProp = uniformConstantBuffer->getPropertyByName("uMaterialHasSpecularMap");
 
 			memcpy(buffer + uTransparency->offset, &material->transparency, sizeof(material->transparency));
 			memcpy(buffer + uDiffuse->offset, glm::value_ptr(material->diffuseColor), sizeof(material->diffuseColor));
 			memcpy(buffer + uAmbient->offset, glm::value_ptr(material->ambientColor), sizeof(material->ambientColor));
 			memcpy(buffer + uSpecularPower->offset, &material->specularPower, sizeof(material->specularPower));
-
+			memcpy(buffer + hasDiffuseProp->offset, &hasDiffuse, sizeof(hasDiffuse));
+			memcpy(buffer + hasNormalProp->offset, &hasNormal, sizeof(hasNormal));
+			memcpy(buffer + hasSpecularProp->offset, &hasSpecular, sizeof(hasSpecular));
 
 			shaderPipeline->setConstantBufferData(EShaderType::PixelShader, "MaterialProperties", buffer, uniformConstantBuffer->size);
 
@@ -187,37 +202,50 @@ void AGN::RendererGL::drawEntity(DrawCommand* a_command)
 
 }
 
-void AGN::RendererGL::bindTexturesToShader(uint32_t a_shaderProgram, uint32_t a_textureCount, TextureGL** a_textureArray)
+void AGN::RendererGL::bindTexturesToShader(uint32_t a_shaderProgram, uint32_t a_textureCount, TextureGL** a_textureArray, const char* const *a_uniformArray)
 {
 	if (a_textureCount > 32)
 	{
 		g_log.error("Max textures to bind to a shader is 32!");
+		assert(false);
 		return;
 	}
 
 	// bind them one by one
 	for (unsigned int i = 0; i < a_textureCount; i++)
 	{
-		if (a_textureArray[i]->getGlId() == uint32_t(-1))
+		if (a_textureArray[i] != nullptr)
 		{
-			g_log.error("one of the textures is invalid (-1)");
-			return;
+			if (a_textureArray[i]->getGlId() == uint32_t(-1))
+			{
+				g_log.error("one of the textures is invalid (-1)");
+				assert(false);
+				return;
+			}
+
+			uint32_t uniformSampler = glGetUniformLocation(a_shaderProgram, a_uniformArray[i]);
+
+			if (uniformSampler == (unsigned int)(-1))
+			{
+				g_log.error("could not find uniform texture sampler with the name: %s", a_uniformArray[i]);
+				assert(false);
+				return;
+			}
+
+			GLenum glType = a_textureArray[i]->getGlType();
+
+			glActiveTexture(GL_TEXTURE0 + i);
+			glBindTexture(glType, a_textureArray[i]->getGlId());
+			glUniform1i(uniformSampler, i);
 		}
-
-		std::string samplerName = std::string("textureSampler").append(std::to_string(i));
-		uint32_t uniformSampler = glGetUniformLocation(a_shaderProgram, samplerName.c_str());
-
-		if (uniformSampler == (unsigned int)(-1))
+		else
 		{
-			g_log.error("could not find uniform texture sampler with the name: %s", samplerName.c_str());
-			return;
+			// TODO: unbind?
+			//glActiveTexture(GL_TEXTURE0 + i);
+			//glBindTexture(GL_TEXTURE_2D, 0);
+			//g_log.warning("Test texture unbinding");
 		}
 		
-		GLenum glType = a_textureArray[i]->getGlType();
-
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(glType, a_textureArray[i]->getGlId());
-		glUniform1i(uniformSampler, i);
 	}
 }
 
