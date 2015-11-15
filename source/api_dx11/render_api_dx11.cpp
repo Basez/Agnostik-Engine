@@ -84,6 +84,16 @@ void AGN::RenderAPIDX11::enableVSync(bool a_value)
 	m_vSync = a_value;
 }
 
+void AGN::RenderAPIDX11::enableNormalMapping(bool a_value)
+{
+	m_renderer->enableNormalMapping(a_value);
+}
+
+void AGN::RenderAPIDX11::enableSpecularMapping(bool a_value)
+{
+	m_renderer->enableSpecularMapping(a_value);
+}
+
 void AGN::RenderAPIDX11::handleEvents(bool& a_doQuit)
 {
 	a_doQuit = false;

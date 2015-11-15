@@ -48,6 +48,8 @@ AGN::RendererDX11::RendererDX11(RenderAPIDX11& a_renderAPIReference, DeviceDX11&
 	, m_boundMesh(nullptr)
 	, m_boundMaterial(nullptr)
 	, m_boundShaderPipeline(nullptr)
+	, m_doNormalMapping(true)
+	, m_doSpecularMapping(true)
 {
 }
 
@@ -359,8 +361,8 @@ void AGN::RendererDX11::drawEntity(DrawCommand& a_command)
 		TextureDX11* specular = dynamic_cast<TextureDX11*>(material->specularTexture);
 
 		const bool hasDiffuse = diffuse != nullptr;
-		const bool hasNormal = normal != nullptr;
-		const bool hasSpecular = specular != nullptr;
+		const bool hasNormal = (normal != nullptr && m_doNormalMapping);
+		const bool hasSpecular = (specular != nullptr && m_doSpecularMapping);
 
 		// bind textures to shader
 		{

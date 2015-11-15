@@ -17,6 +17,7 @@ namespace AGN
 		void update(float a_deltaTime) override;
 		void render(ImDrawData* draw_data);
 		bool isEnabled() override { return m_isEnabled; }
+		void setEnabled(bool a_value) override { m_isEnabled = a_value; }
 
 	private:
 	

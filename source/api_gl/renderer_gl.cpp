@@ -33,6 +33,8 @@ static const vec4 g_black(0);
 
 AGN::RendererGL::RendererGL()
 	: m_currentCamera(nullptr)
+	, m_doNormalMapping(true)
+	, m_doSpecularMapping(true)
 {
 
 }
@@ -121,8 +123,8 @@ void AGN::RendererGL::drawEntity(DrawCommand* a_command)
 		TextureGL* specular = dynamic_cast<TextureGL*>(material->specularTexture);
 
 		const bool hasDiffuse = diffuse != nullptr;
-		const bool hasNormal = normal != nullptr;
-		const bool hasSpecular = specular != nullptr;
+		const bool hasNormal = (normal != nullptr && m_doNormalMapping);
+		const bool hasSpecular = (specular != nullptr && m_doSpecularMapping);
 
 		// TODO: refactor
 		//uint32_t texturesToBind[3] = { m_textureDiffuse, m_textureNormal, m_textureSpecular };

@@ -218,6 +218,16 @@ void AGN::RenderAPIGL::enableVSync(bool a_value)
 	}
 }
 
+void AGN::RenderAPIGL::enableNormalMapping(bool a_value)
+{
+	m_renderer->enableNormalMapping(a_value);
+}
+
+void AGN::RenderAPIGL::enableSpecularMapping(bool a_value)
+{
+	m_renderer->enableSpecularMapping(a_value);
+}
+
 void AGN::RenderAPIGL::handleEvents(bool& a_doQuit)
 {
 	a_doQuit = false;

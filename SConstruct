@@ -65,7 +65,8 @@ if env.GetOption('clean'):
 	for f in listAllFilesWithExtention('.', '.pdb'): Execute(Delete(f, must_exist=0))
 	for f in listAllFilesWithExtention('.', '.vcxproj'): Execute(Delete(f, must_exist=0))
 	for f in listAllFilesWithExtention('.', '.filters'): Execute(Delete(f, must_exist=0))
-	for f in listAllFilesWithExtention('.', '.exe'): Execute(Delete(f, must_exist=0))	
+	for f in listAllFilesWithExtention('.', '.exe'): Execute(Delete(f, must_exist=0))
+	for f in listAllFilesWithExtention('.', '.log'): Execute(Delete(f, must_exist=0))
 	# delete shaders and other folders
 	Execute(Delete('shaders/output_dx11', must_exist=0))
 	Execute(Delete('shaders/output_gl/', must_exist=0))
@@ -74,9 +75,7 @@ if env.GetOption('clean'):
 	Execute(Delete('project_files/obj/', must_exist=0))
 	Execute(Delete('project_files/release/', must_exist=0))
 	Execute(Delete('project_files/.vs/', must_exist=0))
-	
-	
-	
+	Execute(Delete('project_files/imgui.ini', must_exist=0))
 	
 	
 	

@@ -88,6 +88,8 @@ void AGN::Application::run(IRenderAPI* a_renderAPI)
 
 	m_renderAPI->getRenderer().setCamera(m_sceneManager->getCurrentCamera());
 
+	m_renderAPI->getImGui().setEnabled(g_configManager.getConfigPropertyAsBool("show_gui"));
+
 	bool doQuit = false;
 	while (!doQuit)
 	{
@@ -177,7 +179,9 @@ void AGN::Application::renderGUI()
 {
 	static int32_t selectedSceneIndex = 0;
 	static bool enableVsync = g_configManager.getConfigPropertyAsBool("vsync");
-	
+	static bool enableNormalMapping = true;
+	static bool enableSpecularMapping = true;
+
 	ImGui::Begin("Config Menu", nullptr, ImGuiWindowFlags_NoSavedSettings);
 	{
 		// Select scene part
@@ -202,15 +206,21 @@ void AGN::Application::renderGUI()
 		// sort draw commands
 		ImGui::Checkbox("Sort mesh draw calls", &m_sortEntityDrawCalls);
 
-		// FPS and other stats
+		// normalmapping checkbox & functionality
+		bool prevNormalMapping = enableNormalMapping;
+		ImGui::Checkbox("Enable Normal Mapping", &enableNormalMapping);
+		if (prevNormalMapping != enableNormalMapping) m_renderAPI->enableNormalMapping(enableNormalMapping);
+
+		// specmapping checkbox & functionality
+		bool prevSpecMapping = enableSpecularMapping;
+		ImGui::Checkbox("Enable Specular Mapping", &enableSpecularMapping);
+		if (prevSpecMapping != enableSpecularMapping) m_renderAPI->enableSpecularMapping(enableSpecularMapping);
+
 		ImGui::Separator();
 		ImGui::Text("Stats");
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
-		if (ImGui::Button("Reset lights"))
-		{
-			rotationY = 270.0f;
-		}
+
 	}
 	ImGui::End();
 

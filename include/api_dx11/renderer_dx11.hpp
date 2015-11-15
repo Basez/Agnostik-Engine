@@ -23,6 +23,8 @@ namespace AGN
 		void render(class DrawCommander& a_drawCommander) override;
 		void setCamera(class Camera* a_camera) override { m_currentCamera = a_camera; }
 		void onWindowUpdated(glm::ivec2 a_dimensions) override;
+		void enableSpecularMapping(bool a_value) { m_doSpecularMapping = a_value; }
+		void enableNormalMapping(bool a_value) { m_doNormalMapping = a_value; }
 
 	private:
 		void drawEntity(struct DrawCommand& a_command);
@@ -48,6 +50,7 @@ namespace AGN
 		ID3D11RasterizerState* m_d3dRasterizerState;		// Define the functionality of the rasterizer stage.
 		ID3D11BlendState* m_d3dDefaultblendState;
 		D3D11_VIEWPORT* m_viewport;
-
+		bool m_doNormalMapping;
+		bool m_doSpecularMapping;
 	};
 }

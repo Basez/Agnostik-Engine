@@ -13,16 +13,18 @@ namespace AGN
 		~RenderAPIDX11() override;
 
 		bool init() override;
-		void enableVSync(bool a_value) override;
-		virtual bool getVSync() { return m_vSync; }
 		void handleEvents(bool& a_doQuit) override;
 		void updateWindowState() override;
 		void logLiveObjects() override;
 
+		void enableVSync(bool a_value) override;
+		void enableNormalMapping(bool a_value) override;
+		void enableSpecularMapping(bool a_value) override;
 		virtual class IWindow& getWindow() override;
 		virtual class IDevice& getDevice() override;
 		virtual class IRenderer& getRenderer() override;
 		virtual class IImGui& getImGui() override;
+		virtual bool getVSync() { return m_vSync; }
 
 	private:
 		bool m_initialized;

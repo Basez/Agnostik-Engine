@@ -12,6 +12,9 @@ namespace AGN
 
 		bool init() override;
 		void enableVSync(bool a_value) override;
+		void enableNormalMapping(bool a_value) override;
+		void enableSpecularMapping(bool a_value) override;
+
 		bool getVSync() override { return m_vSync; }
 		void handleEvents(bool& a_doQuit) override;
 		void updateWindowState() override;

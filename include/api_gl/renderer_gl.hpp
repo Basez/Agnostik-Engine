@@ -13,6 +13,8 @@ namespace AGN
 		bool init();
 		void render(class DrawCommander& a_drawCommander) override;
 		void setCamera(class Camera* a_camera) override { m_currentCamera = a_camera; }
+		void enableSpecularMapping(bool a_value) { m_doSpecularMapping = a_value; }
+		void enableNormalMapping(bool a_value) { m_doNormalMapping = a_value; }
 
 	private:
 		void drawEntity(struct DrawCommand* a_command);
@@ -21,10 +23,10 @@ namespace AGN
 
 		class Camera* m_currentCamera;
 		glm::mat4 m_vp;
-
 		class MeshGL* m_boundMesh;
 		class Material* m_boundMaterial;
 		class ShaderPipelineGL* m_boundShaderPipeline;
-
+		bool m_doNormalMapping;
+		bool m_doSpecularMapping;
 	};
 }
