@@ -5,6 +5,15 @@
 #include <d3d11_1.h>
 #include <d3dcompiler.h>
 #include <string.h>
+#include <comdef.h>		// TODO: remove used for error checking
+
+
+static void logHResultData(HRESULT a_hr)
+{
+	_com_error error(a_hr);
+	g_log.debug("HRESULT Message: %s", error.ErrorMessage());
+	g_log.debug("HRESULT Description: %s", error.Description());
+}
 
 // memory leak detection on windows debug builds
 #if defined(_WIN32) && defined(AGN_DEBUG) && defined(AGN_ENABLE_MEMORYLEAK_DETECTION)
@@ -18,9 +27,11 @@
 #include "shader_pipeline_dx11.hpp"
 #include "window_dx11.hpp"
 #include "config_manager.hpp"
+#include "render_api_dx11.hpp"
 
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb/stb_image_resize.h"
+
 
 using namespace glm;
 
@@ -31,6 +42,8 @@ AGN::DeviceDX11::DeviceDX11()
 	, m_d3d11SwapChain(nullptr)
 	, m_d3dDebug(nullptr)
 	, m_debugUDA(nullptr)
+	, m_MSAALevel(1)
+	, m_MSAAQuality(0)
 {
 
 }
@@ -54,74 +67,21 @@ bool AGN::DeviceDX11::init(class WindowDX11* a_window)
 	assert(m_window);
 	assert(m_window->getWindowHandle());
 
-	DXGI_SWAP_CHAIN_DESC swapChainDesc;
-	memset(&swapChainDesc, 0, sizeof(DXGI_SWAP_CHAIN_DESC));
+	// initialize device without AA enabled (so we can query it)
+	cleanAndInitializeDevice(1, 0);
 
-	bool vsync = g_configManager.getConfigPropertyAsBool("vsync");
+	glm::ivec2 maxSampleQuality = getMaxMSAASampleQuality();
 
-	swapChainDesc.BufferCount = 1;												// the number of buffers in the swap chain
-	swapChainDesc.BufferDesc.Width = static_cast<unsigned int>(m_window->getDimensions().x);
-	swapChainDesc.BufferDesc.Height = static_cast<unsigned int>(m_window->getDimensions().y);
-	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;				// pixel format of the display in this case: a 4-component 32-bit unsigned normalized integer format that supports 8 bits per channel including alpha
-	swapChainDesc.BufferDesc.RefreshRate = queryRefreshRate(vsync);				// refresh rate in hertz, 0/1 to specify an unbounded refresh rate.
-	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;				// describes the surface usage and CPU access options for the back buffer in this case: Use the surface or resource as an output render target.
-	swapChainDesc.OutputWindow = m_window->getWindowHandle();
-	swapChainDesc.SampleDesc.Count = 8;
-	swapChainDesc.SampleDesc.Quality = 1;
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;						// describes options for handling the contents of the presentation buffer after presenting a surface
-	swapChainDesc.Windowed = TRUE;												// output is in windowed mode.
-
-	UINT createDeviceFlags = 0;
-#if AGN_DEBUG
-	createDeviceFlags = D3D11_CREATE_DEVICE_DEBUG;
-#endif
-
-	// These are the feature levels that we will accept.
-	//  The device will be created with the highest feature level (first in array) that is supported by the end-user’s hardware.
-	D3D_FEATURE_LEVEL featureLevels[] =
+	// initialize with AA enabled
+	if (maxSampleQuality.x != 1)
 	{
-		D3D_FEATURE_LEVEL_11_1,
-		D3D_FEATURE_LEVEL_11_0
-	};
-
-	// This will be the feature level that 
-	// is used to create our device and swap chain.
-	D3D_FEATURE_LEVEL featureLevel;
-
-	HRESULT hr = D3D11CreateDeviceAndSwapChain(
-		nullptr,					// video adapter to use when creating a device // nullptr == default
-		D3D_DRIVER_TYPE_HARDWARE,	// The D3D driver which implements the device.
-		nullptr,					// handle to a DLL that implements a software rasterizer
-		createDeviceFlags,
-		featureLevels,				// determine the order of feature levels to attempt to create.
-		_countof(featureLevels),
-		D3D11_SDK_VERSION,			// SDK version
-		&swapChainDesc,
-		&m_d3d11SwapChain,			// swap chain description which was created earlier.
-		&m_d3d11Device,				// ID3D11Device object that represents the device created.
-		&featureLevel,				// the first element in an array of feature levels supported by the device.
-		&m_d3d11DeviceContext);
-
-	// if failed, initialize DX_11_0 instead of DX_11_1
-	if (hr == E_INVALIDARG)
-	{
-		hr = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE,
-			nullptr, createDeviceFlags, &featureLevels[1], _countof(featureLevels) - 1,
-			D3D11_SDK_VERSION, &swapChainDesc, &m_d3d11SwapChain, &m_d3d11Device, &featureLevel,
-			&m_d3d11DeviceContext);
-
-		// failed again?
-		if (FAILED(hr))
-		{
-			g_log.error("Failed to create D3D11 Device And Swap Chain");
-			assert(false);
-			return false;
-		}
+		cleanAndInitializeDevice(maxSampleQuality.x, maxSampleQuality.y);
+		g_log.debug("MSAA enabled with sample size of %i and a quality of %i", maxSampleQuality.x, maxSampleQuality.y);
 	}
-
-	// get multisample levels
-	UINT qualityLevels = 0;
-	m_d3d11Device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, 8, &qualityLevels);
+	else
+	{
+		g_log.warning("MSAA not available on this device...");
+	}
 
 	// get debug interface
 #ifdef AGN_DEBUG
@@ -153,11 +113,136 @@ bool AGN::DeviceDX11::init(class WindowDX11* a_window)
 	if (FAILED(m_d3d11DeviceContext->QueryInterface(IID_PPV_ARGS(&m_debugUDA))))
 	{
 		g_log.error("Failure getting debugUDA");
+		assert(false);
 		return false;
 	}
 #endif
 
 	return true;
+}
+
+void AGN::DeviceDX11::cleanAndInitializeDevice(int a_MSAALevel, int a_MSAAQuality)
+{
+	safeRelease(m_d3d11Device);
+	safeRelease(m_d3d11DeviceContext);
+	safeRelease(m_d3d11SwapChain);
+
+	m_MSAALevel = a_MSAALevel;
+	m_MSAAQuality = a_MSAAQuality;
+
+	DXGI_SWAP_CHAIN_DESC swapChainDesc;
+	memset(&swapChainDesc, 0, sizeof(DXGI_SWAP_CHAIN_DESC));
+
+	bool vsync = g_configManager.getConfigPropertyAsBool("vsync");
+
+	swapChainDesc.BufferCount = 2;												// the number of buffers in the swap chain
+	swapChainDesc.BufferDesc.Width = static_cast<unsigned int>(m_window->getDimensions().x);
+	swapChainDesc.BufferDesc.Height = static_cast<unsigned int>(m_window->getDimensions().y);
+	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;				// pixel format of the display in this case: a 4-component 32-bit unsigned normalized integer format that supports 8 bits per channel including alpha
+	swapChainDesc.BufferDesc.RefreshRate = queryRefreshRate(vsync);				// refresh rate in hertz, 0/1 to specify an unbounded refresh rate.
+	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;				// describes the surface usage and CPU access options for the back buffer in this case: Use the surface or resource as an output render target.
+	swapChainDesc.OutputWindow = m_window->getWindowHandle();
+	swapChainDesc.SampleDesc.Count = a_MSAALevel;
+	swapChainDesc.SampleDesc.Quality = a_MSAAQuality;
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;						// describes options for handling the contents of the presentation buffer after presenting a surface
+	swapChainDesc.Windowed = TRUE;												// output is in windowed mode.
+
+	UINT createDeviceFlags = 0;
+#if AGN_DEBUG
+	createDeviceFlags = D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
+	// These are the feature levels that we will accept.
+	//  The device will be created with the highest feature level (first in array) that is supported by the end-user’s hardware.
+	D3D_FEATURE_LEVEL featureLevels[] =
+	{
+		D3D_FEATURE_LEVEL_11_1,
+		D3D_FEATURE_LEVEL_11_0,
+		D3D_FEATURE_LEVEL_10_1,
+		D3D_FEATURE_LEVEL_10_0,
+		D3D_FEATURE_LEVEL_9_3,
+		D3D_FEATURE_LEVEL_9_2,
+		D3D_FEATURE_LEVEL_9_1
+	};
+
+	// This will be the feature level that 
+	// is used to create our device and swap chain.
+	D3D_FEATURE_LEVEL featureLevel;
+
+	HRESULT hr = D3D11CreateDeviceAndSwapChain(
+		nullptr,					// video adapter to use when creating a device // nullptr == default
+		D3D_DRIVER_TYPE_HARDWARE,	// The D3D driver which implements the device.
+		nullptr,					// handle to a DLL that implements a software rasterizer
+		createDeviceFlags,
+		featureLevels,				// determine the order of feature levels to attempt to create.
+		_countof(featureLevels),
+		D3D11_SDK_VERSION,			// SDK version
+		&swapChainDesc,
+		&m_d3d11SwapChain,			// swap chain description which was created earlier.
+		&m_d3d11Device,				// ID3D11Device object that represents the device created.
+		&featureLevel,				// the first element in an array of feature levels supported by the device.
+		&m_d3d11DeviceContext);
+
+	// if failed, initialize DX_11_0 instead of DX_11_1
+	if (FAILED(hr))
+	{
+		logHResultData(hr);
+
+		g_log.debug("E_INVALIDARG when creating Device and Swap chain, Lets try that again with a lower API");
+
+		hr = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE,
+			nullptr, createDeviceFlags, &featureLevels[1], _countof(featureLevels) - 1,
+			D3D11_SDK_VERSION, &swapChainDesc, &m_d3d11SwapChain, &m_d3d11Device, &featureLevel,
+			&m_d3d11DeviceContext);
+
+		// failed again?
+		if (FAILED(hr))
+		{
+			g_log.error("Failed to create D3D11 Device And Swap Chain");
+			logHResultData(hr);
+
+			assert(false);
+		}
+		else
+		{
+			g_log.info("Created DX11_0 context");
+		}
+	}
+	else
+	{
+		g_log.info("Created DX11_1 context");
+	}
+	
+}
+
+
+glm::ivec2 AGN::DeviceDX11::getMaxMSAASampleQuality()
+{
+	std::vector<ivec2> levels;
+	levels.push_back(ivec2(1, 0)); // NO MSAA
+
+	for (UINT sampleCount = 1; sampleCount <= D3D11_MAX_MULTISAMPLE_SAMPLE_COUNT; sampleCount++)
+	{
+		UINT maxQualityLevel;
+		HRESULT hr = m_d3d11Device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, sampleCount, &maxQualityLevel);
+
+		if (hr != S_OK)
+		{
+			g_log.debug("CheckMultisampleQualityLevels failure");
+			assert(false);
+		}
+
+		if (maxQualityLevel > 0) maxQualityLevel--;
+		if (maxQualityLevel > 0)
+		{
+			g_log.debug("MSAA %u supported with %u quality levels", sampleCount, maxQualityLevel);
+			levels.push_back(ivec2(sampleCount, maxQualityLevel));
+		}
+		
+	}
+
+
+	return levels[levels.size()-1];
 }
 
 void AGN::DeviceDX11::onWindowUpdated(glm::ivec2 a_dimensions)
@@ -330,7 +415,6 @@ AGN::ITexture* AGN::DeviceDX11::createTexture(const uint16_t a_aId, AGN::Texture
 	textureDesc.CPUAccessFlags = 0; // D3D11_CPU_ACCESS_WRITE;
 	textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
-	
 	std::vector<D3D11_SUBRESOURCE_DATA> resourceDataList;
 	// add data for the first mipmap (level 0)
 	D3D11_SUBRESOURCE_DATA resourceData;
@@ -682,3 +766,4 @@ void AGN::DeviceDX11::endDebugEvent()
 	if (m_debugUDA) m_debugUDA->EndEvent();
 #endif
 }
+

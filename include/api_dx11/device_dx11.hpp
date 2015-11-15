@@ -38,13 +38,21 @@ namespace AGN
 		void setDebugMarker(const std::string& a_markerName);
 		void endDebugEvent();
 
+		uint32_t getMSAALevel() { return m_MSAALevel; }
+		uint32_t getMSAAQuality() { return m_MSAAQuality; }
+
 	private:
+		void cleanAndInitializeDevice(int a_numSamples, int a_quality);
+		glm::ivec2 getMaxMSAASampleQuality();
 		class WindowDX11* m_window;
 		ID3D11Device* m_d3d11Device;
 		ID3D11DeviceContext* m_d3d11DeviceContext;
 		IDXGISwapChain* m_d3d11SwapChain;
 		ID3D11Debug* m_d3dDebug;
 		ID3DUserDefinedAnnotation* m_debugUDA;
+
+		uint32_t m_MSAALevel;
+		uint32_t m_MSAAQuality;
 	};
 }
 

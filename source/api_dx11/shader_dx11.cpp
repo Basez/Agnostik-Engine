@@ -90,6 +90,7 @@ AGN::ShaderDX11::ShaderDX11(DeviceDX11& a_deviceReference, const uint16_t a_aId,
 			for (unsigned j = 0; j < bufferDescription.Variables; ++j)
 			{
 				ConstantBufferPropertyDX11* constantBufferProperty = new ConstantBufferPropertyDX11();
+				memset(constantBufferProperty, 0, sizeof(ConstantBufferPropertyDX11));
 
 				// get variable description 
 				D3D11_SHADER_VARIABLE_DESC variableDesc;
@@ -224,10 +225,10 @@ void AGN::ShaderDX11::getInputLayoutDesc(D3D11_INPUT_ELEMENT_DESC*& out_inputLay
 
 		m_shaderReflection->GetInputParameterDesc(i, &paramDesc);
 
-		g_log.debug("-- Found Input parameter:");
-		g_log.debug("SemanticName: %s", paramDesc.SemanticName);
-		g_log.debug("Register: %u", paramDesc.Register);
-		g_log.debug("ComponentType: %u", (uint32_t)paramDesc.ComponentType);
+		//g_log.debug("-- Found Input parameter:");
+		//g_log.debug("SemanticName: %s", paramDesc.SemanticName);
+		//g_log.debug("Register: %u", paramDesc.Register);
+		//g_log.debug("ComponentType: %u", (uint32_t)paramDesc.ComponentType);
 
 		out_inputLayouts[i].SemanticName = paramDesc.SemanticName;
 		out_inputLayouts[i].SemanticIndex = paramDesc.SemanticIndex;

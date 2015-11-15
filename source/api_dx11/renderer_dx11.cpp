@@ -113,8 +113,8 @@ bool AGN::RendererDX11::init()
 	depthStencilBufferDesc.Width = clientWidth;
 	depthStencilBufferDesc.Height = clientHeight;
 	depthStencilBufferDesc.MipLevels = 1;									// The maximum number of mipmap levels in the texture // 1 for a multisampled texture; or 0 to generate a full set of subtextures.
-	depthStencilBufferDesc.SampleDesc.Count = 8;							// multisampling parameters for the texture. 
-	depthStencilBufferDesc.SampleDesc.Quality = 1;							// multisampling parameters for the texture. 
+	depthStencilBufferDesc.SampleDesc.Count = m_deviceReference.getMSAALevel();	// multisampling parameters for the texture. 
+	depthStencilBufferDesc.SampleDesc.Quality = m_deviceReference.getMSAAQuality();// multisampling parameters for the texture. 
 	depthStencilBufferDesc.Usage = D3D11_USAGE_DEFAULT;						// w the texture is to be read from and written to
 
 	hr = d3d11Device->CreateTexture2D(
@@ -556,8 +556,8 @@ void AGN::RendererDX11::onWindowUpdated(glm::ivec2 a_dimensions)
 	depthStencilBufferDesc.Width = a_dimensions.x;
 	depthStencilBufferDesc.Height = a_dimensions.y;
 	depthStencilBufferDesc.MipLevels = 1;									// The maximum number of mipmap levels in the texture // 1 for a multisampled texture; or 0 to generate a full set of subtextures.
-	depthStencilBufferDesc.SampleDesc.Count = 8;							// multisampling parameters for the texture. 
-	depthStencilBufferDesc.SampleDesc.Quality = 1;							// multisampling parameters for the texture. 
+	depthStencilBufferDesc.SampleDesc.Count = m_deviceReference.getMSAALevel();	// multisampling parameters for the texture. 
+	depthStencilBufferDesc.SampleDesc.Quality = m_deviceReference.getMSAAQuality();// multisampling parameters for the texture. 
 	depthStencilBufferDesc.Usage = D3D11_USAGE_DEFAULT;						// w the texture is to be read from and written to
 
 	hr = m_deviceReference.getD3D11Device()->CreateTexture2D(&depthStencilBufferDesc, nullptr, &m_d3dDepthStencilBuffer);
