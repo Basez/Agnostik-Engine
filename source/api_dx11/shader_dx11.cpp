@@ -289,13 +289,15 @@ void AGN::ShaderDX11::getSamplerLayoutDesc(D3D11_SAMPLER_DESC*& out_samplerLayou
 			out_count = 1; // Hardcoded to 1, only 1 sampler is supported at the moment
 			out_samplerLayoutDecs = new D3D11_SAMPLER_DESC[out_count];
 			memset(out_samplerLayoutDecs, 0, sizeof(D3D11_SAMPLER_DESC) * out_count);
-
-			out_samplerLayoutDecs[0].Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+			
+			//out_samplerLayoutDecs[0].Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+			//out_samplerLayoutDecs[0].Filter = D3D11_FILTER_COMPARISON_ANISOTROPIC;
+			out_samplerLayoutDecs[0].Filter = D3D11_FILTER_ANISOTROPIC;
 			out_samplerLayoutDecs[0].AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 			out_samplerLayoutDecs[0].AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 			out_samplerLayoutDecs[0].AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 			out_samplerLayoutDecs[0].MipLODBias = 0.0f;
-			out_samplerLayoutDecs[0].MaxAnisotropy = 1;
+			out_samplerLayoutDecs[0].MaxAnisotropy = D3D11_DEFAULT_MAX_ANISOTROPY;
 			out_samplerLayoutDecs[0].ComparisonFunc = D3D11_COMPARISON_ALWAYS;
 			out_samplerLayoutDecs[0].BorderColor[0] = 0;
 			out_samplerLayoutDecs[0].BorderColor[1] = 0;
@@ -303,7 +305,7 @@ void AGN::ShaderDX11::getSamplerLayoutDesc(D3D11_SAMPLER_DESC*& out_samplerLayou
 			out_samplerLayoutDecs[0].BorderColor[3] = 0;
 			out_samplerLayoutDecs[0].MinLOD = 0;
 			out_samplerLayoutDecs[0].MaxLOD = D3D11_FLOAT32_MAX;
-
+			
 			return;
 		}
 	}

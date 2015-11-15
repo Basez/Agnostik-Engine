@@ -105,6 +105,18 @@ AGN::ITexture* AGN::DeviceGL::createTexture(const uint16_t a_aId, AGN::TextureDa
 		glGenTextures(1, &textureID);    // get new texture ID
 		glBindTexture(glType, textureID);
 		glTexImage2D(glType, 0, GL_RGBA, a_textureData->width, a_textureData->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, a_textureData->buffer);
+		//glTexStorage2D(glType, 1, GL_RGBA8, a_textureData->width, a_textureData->height);
+		//glTexSubImage2D(glType, 0, 0, 0, a_textureData->width, a_textureData->height, GL_RGBA, GL_UNSIGNED_BYTE, a_textureData->buffer);
+
+		// max/minification
+		//glTexParameteri(glType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		//glTexParameteri(glType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+		// anisotropic filtering
+		float maxAnisotropy = 0.0f;
+		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy);
+		glTexParameterf(glType, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy);
+
 		glBindTexture(glType, 0);
 	}
 	else

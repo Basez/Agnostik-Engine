@@ -56,6 +56,7 @@ bool AGN::DeviceDX11::init(class WindowDX11* a_window)
 
 	bool vsync = g_configManager.getConfigPropertyAsBool("vsync");
 
+
 	swapChainDesc.BufferCount = 1;												// the number of buffers in the swap chain
 	swapChainDesc.BufferDesc.Width = static_cast<unsigned int>(m_window->getDimensions().x);
 	swapChainDesc.BufferDesc.Height = static_cast<unsigned int>(m_window->getDimensions().y);
@@ -63,8 +64,8 @@ bool AGN::DeviceDX11::init(class WindowDX11* a_window)
 	swapChainDesc.BufferDesc.RefreshRate = queryRefreshRate(vsync);				// refresh rate in hertz, 0/1 to specify an unbounded refresh rate.
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;				// describes the surface usage and CPU access options for the back buffer in this case: Use the surface or resource as an output render target.
 	swapChainDesc.OutputWindow = m_window->getWindowHandle();
-	swapChainDesc.SampleDesc.Count = 1;
-	swapChainDesc.SampleDesc.Quality = 0;
+	swapChainDesc.SampleDesc.Count = 8;
+	swapChainDesc.SampleDesc.Quality = 1;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;						// describes options for handling the contents of the presentation buffer after presenting a surface
 	swapChainDesc.Windowed = TRUE;												// output is in windowed mode.
 
@@ -111,21 +112,26 @@ bool AGN::DeviceDX11::init(class WindowDX11* a_window)
 		if (FAILED(hr))
 		{
 			g_log.error("Failed to create D3D11 Device And Swap Chain");
+			assert(false);
 			return false;
 		}
 	}
 
+	// get multisample levels
+	UINT qualityLevels = 0;
+	m_d3d11Device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, 8, &qualityLevels);
+
 	// get debug interface
+#ifdef AGN_DEBUG
+
 	m_d3dDebug = nullptr;
 	if (SUCCEEDED(m_d3d11Device->QueryInterface(__uuidof(ID3D11Debug), (void**)&m_d3dDebug)))
 	{
 		ID3D11InfoQueue *d3dInfoQueue = nullptr;
 		if (SUCCEEDED(m_d3dDebug->QueryInterface(__uuidof(ID3D11InfoQueue), (void**)&d3dInfoQueue)))
 		{
-#ifdef AGN_DEBUG
 			d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
 			d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
-#endif
 
 			D3D11_MESSAGE_ID hide[] =
 			{
@@ -147,6 +153,7 @@ bool AGN::DeviceDX11::init(class WindowDX11* a_window)
 		g_log.error("Failure getting debugUDA");
 		return false;
 	}
+#endif
 
 	return true;
 }
@@ -331,6 +338,7 @@ AGN::ITexture* AGN::DeviceDX11::createTexture(const uint16_t a_aId, AGN::Texture
 	if (FAILED(hr))
 	{
 		g_log.error("Failed to create Texture: %s", relativePath);
+		assert(false);
 		return nullptr;
 	}
 

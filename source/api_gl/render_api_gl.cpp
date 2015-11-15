@@ -96,7 +96,7 @@ bool AGN::RenderAPIGL::initOpenGL()
 
 	// anti aliasing
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
 
 	// create window
 	glm::ivec2 resolution;
@@ -110,6 +110,7 @@ bool AGN::RenderAPIGL::initOpenGL()
 	glClearDepth(1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+
 
 	AGN::RenderAPIGL::getOpenGLErrors();
 
