@@ -290,9 +290,9 @@ void AGN::ShaderDX11::getSamplerLayoutDesc(D3D11_SAMPLER_DESC*& out_samplerLayou
 			out_samplerLayoutDecs = new D3D11_SAMPLER_DESC[out_count];
 			memset(out_samplerLayoutDecs, 0, sizeof(D3D11_SAMPLER_DESC) * out_count);
 			
-			//out_samplerLayoutDecs[0].Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-			//out_samplerLayoutDecs[0].Filter = D3D11_FILTER_COMPARISON_ANISOTROPIC;
 			out_samplerLayoutDecs[0].Filter = D3D11_FILTER_ANISOTROPIC;
+			//out_samplerLayoutDecs[0].Filter = D3D11_FILTER_COMPARISON_ANISOTROPIC;
+			//out_samplerLayoutDecs[0].Filter = D3D11_FILTER_MIN_MAG_MIP_
 			out_samplerLayoutDecs[0].AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 			out_samplerLayoutDecs[0].AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 			out_samplerLayoutDecs[0].AddressW = D3D11_TEXTURE_ADDRESS_WRAP;

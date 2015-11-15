@@ -14,7 +14,6 @@ namespace AGN
 		static uint32_t getGlTypeByTextureType(ETextureType a_type);
 		void pullBuffer();
 		void pushBuffer();
-		void setTextureParams(unsigned int a_flags = 0) override;
 
 		//void readProperties();
 

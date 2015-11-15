@@ -17,7 +17,6 @@ AGN::TextureGL::TextureGL(const uint16_t a_id, TextureData* a_textureData, uint3
 	, m_glId(a_glId)
 {
 	m_glType = TextureGL::getGlTypeByTextureType(a_textureData->type);
-	setTextureParams(a_textureData->flags);
 
 	// upload to gpu
 	if (m_textureData->buffer != nullptr) pushBuffer();
@@ -31,48 +30,6 @@ AGN::TextureGL::~TextureGL()
 std::string AGN::TextureGL::getRelativePath()
 {
 	return m_textureData->relativePath;
-}
-
-void AGN::TextureGL::setTextureParams(unsigned int a_flags)
-{
-	glBindTexture(m_glType, m_glId);
-
-	// set parameters
-	if (a_flags & (int)ETextureRenderFlags::USE_NEAREST_NEIGBOR)
-	{
-		glTexParameteri(m_glType, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(m_glType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	}
-	else if (a_flags & (int)ETextureRenderFlags::USE_MIP_MAPS)
-	{
-		g_log.error("TODO: implement mip maps support for atexture_gl.cpp");
-
-		// generate mip maps
-		gluBuild2DMipmaps(m_glType, GL_RGBA, m_textureData->width, m_textureData->height, GL_RGBA, GL_UNSIGNED_BYTE, NULL/*a_image.pixels*/);	// TODO:!!!!!!!!!!!!!!
-		glTexParameteri(m_glType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(m_glType, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	}
-	else
-	{
-		// DEFAULT IS LINEAR
-		glTexParameteri(m_glType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(m_glType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	}
-	if (a_flags & (int)ETextureRenderFlags::USE_CLAMP)
-	{
-		glTexParameteri(m_glType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(m_glType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	}
-	else
-	{
-		// DEFAULT IS REPEAT
-		glTexParameteri(m_glType, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(m_glType, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	}
-
-	glBindTexture(m_glType, 0);
-
-	AGN::RenderAPIGL::getOpenGLErrors();
 }
 
 // pull buffer data from GPU into CPU
@@ -97,6 +54,7 @@ void AGN::TextureGL::pullBuffer()
 
 // generates a new texture on the GPU memory with the currently stored pixeldata
 // TODO: use glTexSubImage2D instead, should be faster?
+// TODO: not sure if we are going to restore this functionality as it is notoriously slow, better to regenerate the whole texture from scratch!
 void AGN::TextureGL::pushBuffer()
 {
 	if (m_textureData->buffer == nullptr)
@@ -104,11 +62,11 @@ void AGN::TextureGL::pushBuffer()
 		g_log.error("Cannot push buffer of this texture, because the buffer is null!");
 	}
 
-	glBindTexture(m_glType, m_glId);
-	glTexImage2D(m_glType, 0, GL_RGBA, m_textureData->width, m_textureData->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_textureData->buffer);
-	glBindTexture(m_glType, 0);
+	//glBindTexture(m_glType, m_glId);
+	//glTexImage2D(m_glType, 0, GL_RGBA, m_textureData->width, m_textureData->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_textureData->buffer);
+	//glBindTexture(m_glType, 0);
 
-	AGN::RenderAPIGL::getOpenGLErrors();
+	//AGN::RenderAPIGL::getOpenGLErrors();
 }
 
 uint32_t AGN::TextureGL::getGlTypeByTextureType(ETextureType a_type)

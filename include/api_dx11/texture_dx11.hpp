@@ -14,7 +14,6 @@ namespace AGN
 		~TextureDX11() override;
 		
 		std::string getRelativePath() override;
-		void setTextureParams(unsigned int a_flags = 0) override;
 		uint16_t getId() override { return m_aId; }
 
 		ID3D11Texture2D* getTextureHandle() { return m_textureHandle; }

@@ -113,8 +113,7 @@ void AGN::SceneManager::loadCrytekSponza()
 	testMaterial.diffuseTexture = &resourceManager.loadTexture("test.png", ETextureType::TEXTURE_2D);
 
 	Material& skyboxMaterial = resourceManager.createMaterial("skybox_material");
-	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", ETextureType::TEXTURE_2D);
-	skyboxMaterial.diffuseTexture->setTextureParams((unsigned int)ETextureRenderFlags::USE_CLAMP);
+	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", ETextureType::TEXTURE_2D, (unsigned int)ETextureRenderFlags::USE_CLAMP);
 	skyboxMeshCollection.getMeshList()[0]->setMaterial(&skyboxMaterial); // TODO: change to getByName!
 
 	Entity* sponzaEntity = new Entity();
@@ -141,8 +140,7 @@ void AGN::SceneManager::loadSponza()
 	testMaterial.diffuseTexture = &resourceManager.loadTexture("test.png", ETextureType::TEXTURE_2D);
 
 	Material& skyboxMaterial = resourceManager.createMaterial("skybox_material");
-	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", ETextureType::TEXTURE_2D);
-	skyboxMaterial.diffuseTexture->setTextureParams((unsigned int)ETextureRenderFlags::USE_CLAMP);
+	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", ETextureType::TEXTURE_2D, (unsigned int)ETextureRenderFlags::USE_CLAMP);
 	skyboxMeshCollection.getMeshList()[0]->setMaterial(&skyboxMaterial); // TODO: change to getByName!
 
 	// create entities
@@ -166,8 +164,7 @@ void AGN::SceneManager::loadSibenik()
 	MeshCollection& skyboxMeshCollection = resourceManager.loadMeshCollection("skybox_fixed.obj");
 
 	Material& skyboxMaterial = resourceManager.createMaterial("skybox_material");
-	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", ETextureType::TEXTURE_2D);
-	skyboxMaterial.diffuseTexture->setTextureParams((unsigned int)ETextureRenderFlags::USE_CLAMP);
+	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", ETextureType::TEXTURE_2D, (unsigned int)ETextureRenderFlags::USE_CLAMP);
 	skyboxMeshCollection.getMeshList()[0]->setMaterial(&skyboxMaterial); // TODO: change to getByName!
 
 	// create entities
@@ -197,7 +194,7 @@ void AGN::SceneManager::loadSuzannaCrate()
 	testMaterial.specularPower = 200.0f;
 
 	Material& skyboxMaterial = resourceManager.createMaterial("skybox_material");
-	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", ETextureType::TEXTURE_2D);
+	skyboxMaterial.diffuseTexture = &resourceManager.loadTexture("skybox/full2.png", ETextureType::TEXTURE_2D, (unsigned int)ETextureRenderFlags::USE_CLAMP);
 
 	suzanneMeshCollection.getMeshList()[0]->setMaterial(&testMaterial); // TODO: change to getByName!
 	skyboxMeshCollection.getMeshList()[0]->setMaterial(&skyboxMaterial); // TODO: change to getByName!

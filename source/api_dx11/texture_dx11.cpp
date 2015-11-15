@@ -28,10 +28,3 @@ std::string AGN::TextureDX11::getRelativePath()
 {
 	return m_textureData->relativePath;
 }
-
-void AGN::TextureDX11::setTextureParams(unsigned int a_flags)
-{
-	// TODO:
-}
-
-

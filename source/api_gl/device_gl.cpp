@@ -102,15 +102,50 @@ AGN::ITexture* AGN::DeviceGL::createTexture(const uint16_t a_aId, AGN::TextureDa
 	// generate GL texture
 	if (glType == GL_TEXTURE_2D)
 	{
-		glGenTextures(1, &textureID);    // get new texture ID
-		glBindTexture(glType, textureID);
-		glTexImage2D(glType, 0, GL_RGBA, a_textureData->width, a_textureData->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, a_textureData->buffer);
-		//glTexStorage2D(glType, 1, GL_RGBA8, a_textureData->width, a_textureData->height);
-		//glTexSubImage2D(glType, 0, 0, 0, a_textureData->width, a_textureData->height, GL_RGBA, GL_UNSIGNED_BYTE, a_textureData->buffer);
+		// get max mipmap level
+		const int maxResolution = max(a_textureData->width, a_textureData->height);
+		const int numMipmaps = static_cast<int>(floor(log2((float)maxResolution)));
 
-		// max/minification
-		//glTexParameteri(glType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		//glTexParameteri(glType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		// generate texture with mipmaps
+		glGenTextures(1, &textureID);
+		glBindTexture(glType, textureID);
+		glTexStorage2D(glType, numMipmaps, GL_RGBA8, a_textureData->width, a_textureData->height);
+		glTexSubImage2D(glType, 0, 0, 0, a_textureData->width, a_textureData->height, GL_RGBA, GL_UNSIGNED_BYTE, a_textureData->buffer);
+		glGenerateMipmap(glType);  //Generate num_mipmaps number of mipmaps here.
+
+		AGN::RenderAPIGL::getOpenGLErrors();
+
+		// set parameters
+		if (a_textureData->flags & (int)ETextureRenderFlags::USE_NEAREST_NEIGBOR)
+		{
+			glTexParameteri(glType, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(glType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		}
+		else if (a_textureData->flags & (int)ETextureRenderFlags::USE_LINEAR)
+		{
+			glTexParameteri(glType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(glType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		}
+		else
+		{
+			// DEFAULT IS MIPMAPS
+			glTexParameteri(glType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(glType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		}
+
+		if (a_textureData->flags & (int)ETextureRenderFlags::USE_CLAMP)
+		{
+			glTexParameteri(glType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(glType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		}
+		else
+		{
+			// DEFAULT IS REPEAT
+			glTexParameteri(glType, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(glType, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		}
+
+		AGN::RenderAPIGL::getOpenGLErrors();
 
 		// anisotropic filtering
 		float maxAnisotropy = 0.0f;

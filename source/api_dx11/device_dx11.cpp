@@ -19,6 +19,9 @@
 #include "window_dx11.hpp"
 #include "config_manager.hpp"
 
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
+#include "stb/stb_image_resize.h"
+
 using namespace glm;
 
 AGN::DeviceDX11::DeviceDX11()
@@ -55,7 +58,6 @@ bool AGN::DeviceDX11::init(class WindowDX11* a_window)
 	memset(&swapChainDesc, 0, sizeof(DXGI_SWAP_CHAIN_DESC));
 
 	bool vsync = g_configManager.getConfigPropertyAsBool("vsync");
-
 
 	swapChainDesc.BufferCount = 1;												// the number of buffers in the swap chain
 	swapChainDesc.BufferDesc.Width = static_cast<unsigned int>(m_window->getDimensions().x);
@@ -317,23 +319,63 @@ AGN::ITexture* AGN::DeviceDX11::createTexture(const uint16_t a_aId, AGN::Texture
 
 	textureDesc.Width = a_textureData->width;
 	textureDesc.Height = a_textureData->height;
-	textureDesc.MipLevels = textureDesc.ArraySize = 1;
+	//textureDesc.MipLevels = 1;
+	textureDesc.MipLevels = 0;
+	textureDesc.ArraySize = 1;
 	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;			// DXGI_FORMAT_R8G8B8A8_UNORM DXGI_FORMAT_R8G8B8A8_TYPELESS DXGI_FORMAT_R8G8B8A8_UINT
 	textureDesc.SampleDesc.Count = 1;
-	//textureDesc.SampleDesc.Quality = 0;
+	textureDesc.SampleDesc.Quality = 0;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT; //  D3D11_USAGE_DYNAMIC
-	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE; //D3D11_BIND_DECODER | D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	textureDesc.CPUAccessFlags = 0; // D3D11_CPU_ACCESS_WRITE;
-	textureDesc.MiscFlags = 0;
+	textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
+	
+	std::vector<D3D11_SUBRESOURCE_DATA> resourceDataList;
+	// add data for the first mipmap (level 0)
 	D3D11_SUBRESOURCE_DATA resourceData;
 	memset(&resourceData, 0, sizeof(D3D11_SUBRESOURCE_DATA));
-
 	resourceData.pSysMem = a_textureData->buffer;
 	resourceData.SysMemPitch = a_textureData->width * 4;									// pitch in bytes
 	resourceData.SysMemSlicePitch = a_textureData->height * resourceData.SysMemPitch;	// pitch * slice (total memsize)
+	resourceDataList.push_back(resourceData);
 
-	HRESULT hr = m_d3d11Device->CreateTexture2D(&textureDesc, &resourceData, &textureHandle);
+	// generate mipmaps with stb_image
+	int currentWidth = a_textureData->width;
+	int currentHeight = a_textureData->height;
+	int prevWidth = 0;
+	int preHeight = 0;
+	do
+	{
+		D3D11_SUBRESOURCE_DATA resourceData;
+		memset(&resourceData, 0, sizeof(D3D11_SUBRESOURCE_DATA));
+
+		// resize to new level
+		prevWidth = currentWidth;
+		preHeight = currentHeight;
+		currentWidth = max(currentWidth / 2, 1);
+		currentHeight = max(currentHeight / 2, 1);
+		
+		// allocate memory for new mipmap
+		resourceData.pSysMem = new uint8_t[4 * currentWidth * currentHeight];
+		resourceData.SysMemPitch = currentWidth * 4;									// pitch in bytes
+		resourceData.SysMemSlicePitch = currentHeight * resourceData.SysMemPitch;	// pitch * slice (total memsize)
+
+		// resize
+		unsigned char* prevBuffer = (unsigned char*)resourceDataList[resourceDataList.size() - 1].pSysMem;
+		int success = stbir_resize_uint8(prevBuffer, prevWidth, preHeight, 0, (unsigned char*)resourceData.pSysMem, currentWidth, currentHeight, 0, 4);
+
+		if (!success)
+		{
+			g_log.error("Failed to resize mipmap");
+			assert(success);
+		}
+		
+		resourceDataList.push_back(resourceData);
+
+	} while ((currentWidth > 1) || (currentHeight > 1));
+
+	HRESULT hr = m_d3d11Device->CreateTexture2D(&textureDesc, &resourceDataList[0], &textureHandle);
 
 	if (FAILED(hr))
 	{
@@ -356,8 +398,8 @@ AGN::ITexture* AGN::DeviceDX11::createTexture(const uint16_t a_aId, AGN::Texture
 
 	SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
 	SRVDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	SRVDesc.Texture2D.MipLevels = 1;
 	SRVDesc.Texture2D.MostDetailedMip = 0;
+	SRVDesc.Texture2D.MipLevels = -1;
 
 	hr = m_d3d11Device->CreateShaderResourceView(textureHandle, &SRVDesc, &shaderResourceView);
 
@@ -371,7 +413,13 @@ AGN::ITexture* AGN::DeviceDX11::createTexture(const uint16_t a_aId, AGN::Texture
 	D3D11_SET_DEBUG_NAME(textureHandle, "Texture handle (" + a_textureData->relativePath + ")");
 	D3D11_SET_DEBUG_NAME(shaderResourceView, "Shader Resource View (" + a_textureData->relativePath + ")");
 
-	// create agnostik texture holding the info.
+	// clean mipmap data!
+	for (uint32_t i = 1; i < resourceDataList.size(); i++)
+	{
+		delete[] resourceDataList[i].pSysMem;
+	}
+
+	// create agnostik texture holding the data
 	TextureDX11* texture = new TextureDX11(a_aId, a_textureData, textureHandle, shaderResourceView);
 
 	return dynamic_cast<ITexture*>(texture);

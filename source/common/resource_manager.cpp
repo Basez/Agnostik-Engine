@@ -278,7 +278,7 @@ AGN::MeshCollection& AGN::ResourceManager::loadMeshCollection(std::string a_rela
 	return *meshCollection;
 }
 
-AGN::ITexture& AGN::ResourceManager::loadTexture(std::string a_relativePath, ETextureType a_textureType)
+AGN::ITexture& AGN::ResourceManager::loadTexture(std::string a_relativePath, ETextureType a_textureType, unsigned int a_textureRenderFlags)
 {
 	// check if it exists
 	for (unsigned int i = 0; i < m_loadedTextures.size(); i++)
@@ -293,6 +293,7 @@ AGN::ITexture& AGN::ResourceManager::loadTexture(std::string a_relativePath, ETe
 	TextureData* textureData = new TextureData();
 	textureData->relativePath = a_relativePath;
 	textureData->type = a_textureType;
+	textureData->flags = a_textureRenderFlags;
 
 	// get full path
 	string fullPath = g_configManager.getConfigProperty("path_textures").append(a_relativePath);

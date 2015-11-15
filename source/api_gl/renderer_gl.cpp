@@ -239,9 +239,6 @@ void AGN::RendererGL::bindTexturesToShader(uint32_t a_shaderProgram, uint32_t a_
 			glActiveTexture(GL_TEXTURE0 + i);
 			glBindTexture(glType, a_textureArray[i]->getGlId());
 			glUniform1i(uniformSampler, i);
-
-			glTexParameteri(glType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(glType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		}
 		else
 		{
