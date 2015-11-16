@@ -54,7 +54,7 @@ std::string AGN::OSUtils::getDirectoryOfPath(std::string a_path)
 	int lsIndex = (int)pathAsString.find_last_of("\\\\");
 	if (lsIndex != -1) return pathAsString.substr(0, lsIndex).c_str();
 
-	g_log.error("cant get directory of path: %s --> weird format", a_path.c_str());
+	//g_log.error("cant get directory of path: %s --> weird format", a_path.c_str());
 
 	return "";
 }
@@ -117,7 +117,7 @@ std::string AGN::OSUtils::findFile(std::string a_file, std::string a_startFolder
 	}
 	else
 	{
-		g_log.error("error opening folder: %s", a_startFolder.c_str());
+		//g_log.error("error opening folder: %s", a_startFolder.c_str());
 		return "";
 	}
 

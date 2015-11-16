@@ -111,7 +111,7 @@ void AGN::RendererGL::drawEntity(DrawCommand* a_command)
 	// different shader? 
 	if (m_boundShaderPipeline == nullptr || m_boundShaderPipeline->getAId() != shaderPipeline->getAId())
 	{
-		shaderPipeline->bind();
+		glUseProgram(shaderPipeline->getGlProgramId());
 		m_boundShaderPipeline = shaderPipeline;
 	}
 

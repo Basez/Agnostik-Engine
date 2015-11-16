@@ -55,19 +55,19 @@ void AGN::SceneManager::loadScene(int16_t a_index)
 	switch (a_index)
 	{
 	case 0:
-		loadCrytekSponza();
+		loadSuzannaCrate();
 		break;
 
 	case 1:
-		loadSponza();
+		loadCrytekSponza();
 		break;
 
 	case 2:
-		loadSibenik();
+		loadSponza();
 		break;
 
 	case 3:
-		loadSuzannaCrate();
+		loadSibenik();
 		break;
 
 	case 4:
@@ -102,6 +102,7 @@ void AGN::SceneManager::update(float a_deltaTime)
 
 void AGN::SceneManager::loadCrytekSponza()
 {
+	g_log.info("Loading Crytek Sponza can take up to 10 seconds, please bear with me....");
 	ResourceManager& resourceManager = g_application.getResourceManager();
 
 	m_cameraController->reset(vec3(9.0f, 7.96f, -0.60f), vec2(-15.0f, 90.0f));

@@ -191,7 +191,7 @@ void AGN::ImGuiGL::render(ImDrawData* draw_data)
 	if (last_enable_depth_test) glEnable(GL_DEPTH_TEST); else glDisable(GL_DEPTH_TEST);
 	if (last_enable_scissor_test) glEnable(GL_SCISSOR_TEST); else glDisable(GL_SCISSOR_TEST);
 	glViewport(last_viewport[0], last_viewport[1], (GLsizei)last_viewport[2], (GLsizei)last_viewport[3]);
-	
+
 	AGN::RenderAPIGL::getOpenGLErrors();
 }
 

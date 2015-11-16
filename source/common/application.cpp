@@ -186,7 +186,7 @@ void AGN::Application::renderGUI()
 	{
 		// Select scene part
 		ImGui::Text("Select Scene:");
-		const char* sceneNames[] = { "Crytek Sponza", "Original Sponza", "Sibenik", "SuzannaCrate", "Empty" };
+		const char* sceneNames[] = { "SuzannaCrate", "Crytek Sponza", "Original Sponza", "Sibenik", "Empty" };
 		ImGui::Combo("", &selectedSceneIndex, sceneNames, (int)(sizeof(sceneNames) / sizeof(*sceneNames)));
 		if (ImGui::Button("Load"))
 		{

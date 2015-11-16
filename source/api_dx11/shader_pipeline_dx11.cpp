@@ -54,11 +54,6 @@ class AGN::IShader* AGN::ShaderPipelineDX11::getShader(const AGN::EShaderType a_
 	return nullptr;
 }
 
-void AGN::ShaderPipelineDX11::bind()
-{
-	// TODO: remove this along with its OGL counterpart
-}
-
 void AGN::ShaderPipelineDX11::setConstantBufferData(const EShaderType a_shaderType, const char* a_name, void* a_data, size_t a_dataSize)
 {
 	ShaderDX11* shaderDX11 = dynamic_cast<ShaderDX11*>(getShader(a_shaderType));

@@ -13,7 +13,6 @@ namespace AGN
 
 		class IShader* getShader(const EShaderType a_type) override;
 		uint16_t getAId() { return m_aId; }
-		void bind() override;
 		void setConstantBufferData(const EShaderType a_shader, const char* a_name, void* a_data, size_t a_dataSize) override;
 		virtual bool hasConstantBuffer(const EShaderType a_shader, const char* a_name) override;
 

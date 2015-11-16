@@ -110,7 +110,7 @@ bool AGN::RenderAPIGL::initOpenGL()
 	glClearDepth(1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-
+	
 
 	AGN::RenderAPIGL::getOpenGLErrors();
 

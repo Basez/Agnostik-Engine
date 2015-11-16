@@ -141,20 +141,6 @@ AGN::IShader* AGN::ShaderPipelineGL::getShader(const EShaderType a_type)
 	return nullptr;
 }
 
-void AGN::ShaderPipelineGL::bind()
-{
-	glUseProgram(m_glProgramId);
-
-	// TODO: do this based on if its a per object/perframe/per application Constant buffer???
-	for (unsigned int i = 0; i < m_constantBuffers.size(); i++)
-	{
-		// bind & upload buffer
-		glBindBuffer(GL_UNIFORM_BUFFER, m_constantBuffers[i]->uboHandle);
-	}
-
-	AGN::RenderAPIGL::getOpenGLErrors();
-}
-
 int32_t AGN::ShaderPipelineGL::getUniformIdByName(const char* a_name)
 {
 	int32_t uniformID = glGetUniformLocation(m_glProgramId, a_name);
@@ -182,7 +168,6 @@ void AGN::ShaderPipelineGL::setConstantBufferData(const EShaderType a_shader, co
 	glBindBuffer(GL_UNIFORM_BUFFER, uniformConstantBuffer->uboHandle);
 	glBufferData(GL_UNIFORM_BUFFER, uniformConstantBuffer->size, a_data, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
 }
 
 bool AGN::ShaderPipelineGL::hasConstantBuffer(const EShaderType a_shader, const char* a_name)

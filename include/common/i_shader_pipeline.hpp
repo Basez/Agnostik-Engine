@@ -11,7 +11,6 @@ namespace AGN
 		virtual class IShader* getShader(const EShaderType a_type) = 0;
 
 		virtual uint16_t getAId() = 0;
-		virtual void bind() = 0;
 		virtual void setConstantBufferData(const EShaderType a_shader, const char* a_name, void* a_data, size_t a_dataSize) = 0;
 		virtual bool hasConstantBuffer(const EShaderType a_shader, const char* a_name) = 0;
 
@@ -31,7 +30,7 @@ namespace AGN
 
 		uint16_t aId;					// required
 		class IShader* vertexShader;	// required
-		class IShader* pixelShader;	// required
+		class IShader* pixelShader;		// required
 		class IShader* hullShader;
 		class IShader* domainShader;
 		class IShader* geometryShader;
