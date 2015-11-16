@@ -39,7 +39,7 @@ AGN::SceneManager::~SceneManager()
 
 void AGN::SceneManager::init()
 {
-	m_camera = new Camera(vec3(0, 0.5f, 1.5f), quat(vec3(glm::radians(-10.0f),0,0)));
+	m_camera = new Camera(vec3(), quat());
 	m_camera->setProjectionRH(60.0f, 0.1f, 10000.0f);
 
 	// create camera controller
@@ -104,6 +104,8 @@ void AGN::SceneManager::loadCrytekSponza()
 {
 	ResourceManager& resourceManager = g_application.getResourceManager();
 
+	m_cameraController->reset(vec3(9.0f, 7.96f, -0.60f), vec2(-15.0f, 90.0f));
+
 	// load meshes
 	MeshCollection& sponzaMeshCollection = resourceManager.loadMeshCollection("sponza_crytek/sponza.obj", 0 , 0.012f);
 	MeshCollection& skyboxMeshCollection = resourceManager.loadMeshCollection("skybox_fixed.obj");
@@ -130,6 +132,8 @@ void AGN::SceneManager::loadCrytekSponza()
 void AGN::SceneManager::loadSponza()
 {
 	ResourceManager& resourceManager = g_application.getResourceManager();
+
+	m_cameraController->reset(vec3(-8.6f, 7.7f, 0.0f), vec2(-15.0f, -90.0f));
 
 	// load meshes
 	MeshCollection& sponzaMeshCollection = resourceManager.loadMeshCollection("sponza/sponza.obj");
@@ -159,6 +163,8 @@ void AGN::SceneManager::loadSibenik()
 {
 	ResourceManager& resourceManager = g_application.getResourceManager();
 
+	m_cameraController->reset(vec3(-17.35f, 1.55f, -0.09f), vec2(-15.0f, -90.0f));
+
 	// load meshes
 	MeshCollection& sibenikMeshCollection = resourceManager.loadMeshCollection("sibenik/sibenik.obj");
 	MeshCollection& skyboxMeshCollection = resourceManager.loadMeshCollection("skybox_fixed.obj");
@@ -182,6 +188,8 @@ void AGN::SceneManager::loadSibenik()
 void AGN::SceneManager::loadSuzannaCrate()
 {
 	ResourceManager& resourceManager = g_application.getResourceManager();
+
+	m_cameraController->reset(vec3(13.0f, 10.0f, 22.0f), vec2(-15.0f, 0.0f));
 
 	MeshCollection& crateMeshCollection = resourceManager.loadMeshCollection("crate.dae");
 	MeshCollection& suzanneMeshCollection = resourceManager.loadMeshCollection("suzanne_hi_res.obj");
@@ -213,26 +221,26 @@ void AGN::SceneManager::loadSuzannaCrate()
 	m_entities.push_back(triangleEntity);
 	
 	// crate
-	Entity* crateEntity = new Entity();
-	crateEntity->setMeshCollection(&crateMeshCollection);
-	crateEntity->setPosition(vec3(0));
-	crateEntity->setRotation(quat(glm::rotate(45.0f, 1.0f, 0.0f, 0.0f)));
-	m_entities.push_back(crateEntity);
+	//Entity* crateEntity = new Entity();
+	//crateEntity->setMeshCollection(&crateMeshCollection);
+	//crateEntity->setPosition(vec3(0));
+	//crateEntity->setRotation(quat(glm::rotate(45.0f, 1.0f, 0.0f, 0.0f)));
+	//m_entities.push_back(crateEntity);
+	//
+	//// suzanne
+	//Entity* suzanneEntity = new Entity();
+	//suzanneEntity->setMeshCollection(&suzanneMeshCollection);
+	//suzanneEntity->setPosition(vec3(0, 0, 0));
+	//m_entities.push_back(suzanneEntity);
 
-	// suzanne
-	Entity* suzanneEntity = new Entity();
-	suzanneEntity->setMeshCollection(&suzanneMeshCollection);
-	suzanneEntity->setPosition(vec3(0, 0, 0));
-	m_entities.push_back(suzanneEntity);
-
-	/*
+	
 	// create crate entities
 	int index = 0;
-	for (int x = 0; x < 2; x++)
+	for (int x = 0; x < 10; x++)
 	{
 		for (int y = 0; y < 1; y++)
 		{
-			for (int z = 0; z < 4; z++)
+			for (int z = 0; z < 100; z++)
 			{
 				// interchange crates & suzannes (worst case scenario in terms of sorting/nosorting)
 				if ((++index % 2) == 1)
@@ -240,7 +248,7 @@ void AGN::SceneManager::loadSuzannaCrate()
 					// crate
 					Entity* crateEntity = new Entity();
 					crateEntity->setMeshCollection(&crateMeshCollection);
-					crateEntity->setPosition(vec3(x * 2, y * 2, z * -2));
+					crateEntity->setPosition(vec3(x * 3, y * 3, z * -3));
 					m_entities.push_back(crateEntity);
 				}
 				else
@@ -248,12 +256,12 @@ void AGN::SceneManager::loadSuzannaCrate()
 					// suzanne
 					Entity* suzanneEntity = new Entity();
 					suzanneEntity->setMeshCollection(&suzanneMeshCollection);
-					suzanneEntity->setPosition(vec3(x * 2, y * 2, z * -2));
+					suzanneEntity->setPosition(vec3(x * 3, y * 3, z * -3));
 					m_entities.push_back(suzanneEntity);
 				}
 			}
 		}
-	}*/
+	}
 }
 
 void AGN::SceneManager::loadEmpty()

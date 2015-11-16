@@ -13,9 +13,7 @@
 using namespace glm;
 
 AGN::Camera::Camera(glm::vec3 a_initialPosition, glm::quat a_initialRotation)
-	: m_initialPosition(a_initialPosition)
-	, m_initialRotation(a_initialRotation)
-	, m_position(a_initialPosition)
+	: m_position(a_initialPosition)
 	, m_rotation(a_initialRotation)
 	, m_viewMatrix(glm::mat4())
 	, m_projectionMatrix(glm::mat4())
@@ -29,10 +27,10 @@ AGN::Camera::~Camera()
 	// nothing to delete
 }
 
-void AGN::Camera::reset()
+void AGN::Camera::reset(glm::vec3 a_position, glm::quat a_rotation)
 {
-	m_position = m_initialPosition;
-	m_rotation = m_initialRotation;
+	m_position = a_position;
+	m_rotation = a_rotation;
 	m_hasChangedFlag = true;
 }
 

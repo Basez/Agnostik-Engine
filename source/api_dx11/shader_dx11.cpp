@@ -6,7 +6,6 @@
 #endif
 
 #include "shader_dx11.hpp"
-#include "error_utils_dx11.hpp"
 #include "shader_pipeline_dx11.hpp"
 #include "device_dx11.hpp"
 
@@ -55,7 +54,7 @@ AGN::ShaderDX11::ShaderDX11(DeviceDX11& a_deviceReference, const uint16_t a_aId,
 			memcpy(&bufferDescription, &constantBufferDescriptions[i], sizeof(D3D11_SHADER_BUFFER_DESC)); // TODO: refactor :/
 
 			// Get name
-			memcpy(&constantBuffer->name, bufferDescription.Name, ShaderDX11::MAX_UNIFORM_NAME);
+			memcpy(constantBuffer->name, bufferDescription.Name, sizeof(char) * strlen(bufferDescription.Name));
 			
 			// Get Size
 			constantBuffer->size = bufferDescription.Size;
@@ -96,8 +95,8 @@ AGN::ShaderDX11::ShaderDX11(DeviceDX11& a_deviceReference, const uint16_t a_aId,
 				D3D11_SHADER_VARIABLE_DESC variableDesc;
 				memset(&variableDesc, 0, sizeof(D3D11_SHADER_VARIABLE_DESC));
 				bufferReflection->GetVariableByIndex(j)->GetDesc(&variableDesc);
-				
-				memcpy(&constantBufferProperty->name, variableDesc.Name, ShaderDX11::MAX_UNIFORM_NAME);
+								
+				memcpy(constantBufferProperty->name, variableDesc.Name, sizeof(char) * strlen(variableDesc.Name));
 				constantBufferProperty->offset = variableDesc.StartOffset;
 				constantBufferProperty->size = variableDesc.Size;
 		

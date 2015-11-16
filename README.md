@@ -18,6 +18,7 @@ TODO:
 
 # Installation Guide Windows
 
+- Install Visual C++ Redistributable for Visual Studio 2015: https://www.microsoft.com/en-us/download/details.aspx?id=48145
 - Download & run Cygwin64 package manager;
 	- Include all g++ (C++ only) compilers during the installation process; they are located under DEVIL
 	- Click continue and let it install the packages. 

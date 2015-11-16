@@ -11,7 +11,7 @@ namespace AGN
 		~CameraController();
 
 		void update(float a_deltaTime);
-		void reset();
+		void reset(glm::vec3 a_position, glm::vec2 a_xyRot);
 		void onMouse(int button, int state, int x, int y);
 		void setMovementSpeed(float a_slow, float a_normal, float a_fast);
 		void onMouseMotion(int a_mouseX, int a_mouseY) override;

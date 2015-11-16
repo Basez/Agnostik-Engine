@@ -39,10 +39,15 @@ void AGN::CameraController::setMovementSpeed(float a_slow, float a_normal, float
 	m_fastMovementSpeed = a_fast;
 }
 
-void AGN::CameraController::reset()
+void AGN::CameraController::reset(glm::vec3 a_position, glm::vec2 a_xyRot)
 {
-	m_camera.reset();
-	m_xyRotation = vec2(0.0f, 0.0f);
+	m_xyRotation = glm::vec2(glm::radians(a_xyRot.x), glm::radians(a_xyRot.y));
+
+	quat rotation = quat();
+	rotation = glm::rotate(rotation, m_xyRotation.y, vec3(0, 1, 0));
+	rotation = glm::rotate(rotation, m_xyRotation.x, vec3(1, 0, 0));
+
+	m_camera.reset(a_position, rotation);
 }
 
 void AGN::CameraController::update(float a_deltaTime)

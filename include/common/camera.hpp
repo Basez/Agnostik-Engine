@@ -8,7 +8,7 @@ namespace AGN
 		Camera(glm::vec3 a_initialPosition = glm::vec3(), glm::quat a_initialRotation = glm::quat());
 		~Camera();
 
-		void reset();
+		void reset(glm::vec3 a_position, glm::quat a_rotation);
 		void applyViewMatrix();
 		void translate(glm::vec3& a_addedPosition);
 
@@ -28,9 +28,6 @@ namespace AGN
 
 	private:
 		void updateViewMatrix();
-
-		glm::vec3 m_initialPosition;
-		glm::quat m_initialRotation;
 
 		glm::vec3 m_position;
 		glm::quat m_rotation;
