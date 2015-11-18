@@ -232,12 +232,15 @@ glm::ivec2 AGN::DeviceDX11::getMaxMSAASampleQuality()
 			assert(false);
 		}
 
-		if (maxQualityLevel > 0) maxQualityLevel--;
 		if (maxQualityLevel > 0)
 		{
-			g_log.debug("MSAA %u supported with %u quality levels", sampleCount, maxQualityLevel);
-			levels.push_back(ivec2(sampleCount, maxQualityLevel));
+			g_log.info("MSAA %u supported with %u quality levels", sampleCount, maxQualityLevel);
+			levels.push_back(ivec2(sampleCount, maxQualityLevel-1));
 		}
+		//else
+		//{
+			//g_log.debug("MSAA %u NOT supported because it has %u quality levels", sampleCount, maxQualityLevel);
+		//}
 		
 	}
 
@@ -720,7 +723,7 @@ void AGN::DeviceDX11::logLiveObjects()
 }
 
 // TODO: Document
-// TODO: Reference: http://seanmiddleditch.com/direct3d-11-debug-api-tricks/
+// Reference: http://seanmiddleditch.com/direct3d-11-debug-api-tricks/
 void AGN::DeviceDX11::beginDebugEvent(const std::string& a_eventName)
 {
 #ifdef AGN_DEBUG
@@ -739,7 +742,7 @@ void AGN::DeviceDX11::beginDebugEvent(const std::string& a_eventName)
 }
 
 // TODO: Document
-// TODO: Reference: http://seanmiddleditch.com/direct3d-11-debug-api-tricks/
+// Reference: http://seanmiddleditch.com/direct3d-11-debug-api-tricks/
 void AGN::DeviceDX11::setDebugMarker(const std::string& a_markerName)
 {
 #ifdef AGN_DEBUG
@@ -759,7 +762,7 @@ void AGN::DeviceDX11::setDebugMarker(const std::string& a_markerName)
 }
 
 // TODO: Document
-// TODO: Reference: http://seanmiddleditch.com/direct3d-11-debug-api-tricks/
+// Reference: http://seanmiddleditch.com/direct3d-11-debug-api-tricks/
 void AGN::DeviceDX11::endDebugEvent()
 {
 #ifdef AGN_DEBUG

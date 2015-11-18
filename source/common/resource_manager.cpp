@@ -114,7 +114,7 @@ AGN::MeshCollection& AGN::ResourceManager::loadMeshCollection(std::string a_rela
 	flags |= aiProcess_JoinIdenticalVertices;	// Joins identical vertex data sets within all meshes
 	flags |= aiProcess_Triangulate;				// triangulate the mesh
 	flags |= aiProcess_CalcTangentSpace;		// calculate tangents & bitangents
-	flags |= aiProcess_GenNormals;		// calculate normals
+	flags |= aiProcess_GenNormals;				// calculate normals
 	flags |= aiProcess_OptimizeMeshes;			// reduce the number of meshes, thus number of drawcalls
 	flags |= aiProcess_OptimizeGraph;			// optimize the scene hierarchy, combine groups etc
 	flags |= aiProcess_FlipUVs;					// Flip UV's // TODO: dependent on GFX API?

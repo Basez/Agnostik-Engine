@@ -19,8 +19,7 @@ static const int MINIMUM_WINDOW_SIZE_Y = 36;
 // accessor for global window procedure callback function
 static AGN::WindowDX11* g_window = nullptr;
 
-// process messages sent to the window.
-LRESULT CALLBACK AGN::windowProcedureCallback(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT __stdcall AGN::windowProcedureCallback(HWND hwnd, unsigned int message, WPARAM wParam, LPARAM lParam)
 {
 	// TODO: refactor?
 	return g_window->onWindowEvent(hwnd, message, wParam, lParam);
@@ -85,7 +84,7 @@ AGN::WindowDX11::~WindowDX11()
 	UnregisterClass(m_applicationName.c_str(), GetModuleHandle(nullptr));
 }
 
-LRESULT CALLBACK AGN::WindowDX11::onWindowEvent(HWND a_hwnd, UINT a_message, WPARAM a_wParam, LPARAM a_lParam)
+LRESULT __stdcall AGN::WindowDX11::onWindowEvent(HWND a_hwnd, unsigned int a_message, WPARAM a_wParam, LPARAM a_lParam)
 {
 	PAINTSTRUCT paintStruct;
 	HDC hDC;
@@ -158,7 +157,6 @@ LRESULT CALLBACK AGN::WindowDX11::onWindowEvent(HWND a_hwnd, UINT a_message, WPA
 		//g_log.debug("dx11ScanCode: %i, agnScanKey: %u", dx11ScanCode, (uint16_t)agnScanKey);
 
 		g_input.registerHold(agnScanKey, true);
-
 
 		//KeyEventArgs keyEventArgs(key, c, KeyEventArgs::Pressed, shift, control, alt);
 		//pWindow->OnKeyPressed(keyEventArgs);

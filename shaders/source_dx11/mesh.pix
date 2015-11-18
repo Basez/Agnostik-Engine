@@ -76,13 +76,14 @@ float3 CalculateNormal(InputData IN)
 	{
 		// bump mapping
 		float3 texNormal = normalTexture.Sample(SampleType, IN.uv).rgb;
-
+		
 		// move from 0to1 --> -1 to 1
 		texNormal = (texNormal * 2.0f) - 1.0f;
 
+		texNormal.y = -texNormal.y; // swap y for reverse normal maps
+
 		float3x3 tangentBinormalNormalMatrix = float3x3( normalize( IN.tangentWS ), normalize( IN.biTangentWS ), normalize( IN.normalWS ) );
 		float3 bumpedNormal = mul( normalize( texNormal ), tangentBinormalNormalMatrix ); 
-	
 		return bumpedNormal;
 	}
 	else

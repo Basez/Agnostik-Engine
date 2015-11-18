@@ -6,11 +6,10 @@
 // fwd declare
 // TODO: review if these are smart fwd declares as they are pretty much ripped from a windows header
 typedef struct HWND__ *HWND;
-#define CALLBACK __stdcall
+//#define CALLBACK __stdcall
 typedef LONG_PTR LRESULT;
 typedef UINT_PTR WPARAM;
 typedef LONG_PTR LPARAM;
-typedef unsigned int UINT;
 
 
 namespace AGN
@@ -38,7 +37,7 @@ namespace AGN
 		std::string m_applicationName;
 
 		// TODO: check if friend function is necessary
-		LRESULT CALLBACK onWindowEvent(HWND a_hwnd, UINT a_message, WPARAM a_wParam, LPARAM a_lParam);
-		friend LRESULT CALLBACK windowProcedureCallback(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+		LRESULT __stdcall onWindowEvent(HWND a_hwnd, unsigned int a_message, WPARAM a_wParam, LPARAM a_lParam);
+		friend LRESULT __stdcall windowProcedureCallback(HWND hwnd, unsigned int message, WPARAM wParam, LPARAM lParam);
 	};
 }

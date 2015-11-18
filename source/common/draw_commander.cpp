@@ -29,7 +29,7 @@ AGN::DrawCommander::~DrawCommander()
 	clearCommands();
 }
 
-AGN::DrawCommand& AGN::DrawCommander::addDrawCommand(AGN::EDrawCommandType a_type, uint64_t a_sortKey) // TODO: key as argument?
+AGN::DrawCommand& AGN::DrawCommander::addDrawCommand(AGN::EDrawCommandType a_type, uint64_t a_sortKey)
 {
 	// TODO: use pooling?
 	DrawCommand* drawCommandMesh = new DrawCommand(a_sortKey, a_type);
@@ -46,7 +46,6 @@ void AGN::DrawCommander::sortCommandList()
 
 std::vector<AGN::DrawCommand*> AGN::DrawCommander::getSortedDrawCommands()
 {
-	// TODO: Check if sorted?
 	return m_drawCommands;
 }
 

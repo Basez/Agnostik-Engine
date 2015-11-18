@@ -92,7 +92,6 @@ void AGN::SceneManager::update(float a_deltaTime)
 	m_cameraController->update(a_deltaTime);
 
 	// let skybox entities follow the camera
-	// TODO: refactor this into something else?
 	for (unsigned int i = 0; i < m_skyboxEntities.size(); i++)
 	{
 		m_skyboxEntities[i]->setPosition(m_camera->getPosition());

@@ -1,6 +1,5 @@
 #pragma once
 #include "i_imgui.hpp"
-#include <imgui/imgui.h>	// TODO: refactor out later
 
 // fwd declare
 struct ID3D11Device;
@@ -14,6 +13,7 @@ struct ID3D11SamplerState;
 struct ID3D11ShaderResourceView;
 struct ID3D11RasterizerState;
 struct ID3D11BlendState;
+struct ImDrawData;
 
 namespace AGN
 {
@@ -24,7 +24,6 @@ namespace AGN
 		~ImGuiDX11() override;
 
 		void init(class RenderAPIDX11* a_api);
-		//void processEvent(SDL_Event* a_event);
 		void shutdown() override;
 		void update(float a_deltaTime) override;
 		void render(ImDrawData* draw_data);

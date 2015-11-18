@@ -75,6 +75,9 @@ vec3 calculateNormal()
 		// move from 0to1 --> -1 to 1
 		texNormal = (texNormal * 2.0f) - 1.0f;
 		 
+		// swap y for reverse normal maps
+		texNormal.y = -texNormal.y; 
+
 		mat3 tangentBinormalNormalMatrix = transpose(mat3(normalize(v2f_tangentWS), normalize(v2f_bitangentWS), normalize(v2f_normalWS)));
 		vec3 bumpedNormal = normalize(texNormal) * tangentBinormalNormalMatrix; 
 

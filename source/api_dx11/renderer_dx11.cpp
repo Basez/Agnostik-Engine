@@ -405,7 +405,6 @@ void AGN::RendererDX11::drawEntity(DrawCommand& a_command)
 			delete[] buffer; // TODO: optimize
 
 		}
-
 	}
 
 	// set vertex shader data (different per object
@@ -424,7 +423,7 @@ void AGN::RendererDX11::drawEntity(DrawCommand& a_command)
 		
 		// TODO: User Constant buffer info reflection pls
 		//ConstantBufferDX11* bufferInfo = aDx11VertexShader->getConstantBufferByName("PerObject");
-
+		
 		//modelInverseTransposeWorldMatrix
 		unsigned char buffer[128] = { 0 };
 		memcpy(buffer + 0, glm::value_ptr(mvp), sizeof(mvp));
@@ -474,7 +473,6 @@ void AGN::RendererDX11::clearBuffer(DrawCommand& a_command)
 
 /*
 	Set the stages that do not change each frame
-	// TODO: perhaps change these up to stages that do not change at all ever and each frame?
 */
 void AGN::RendererDX11::setStaticStages()
 {
