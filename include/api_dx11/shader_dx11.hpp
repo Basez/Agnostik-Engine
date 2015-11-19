@@ -69,7 +69,7 @@ namespace AGN
 		uint32_t size;
 		int32_t bindpoint;
 		ID3D11Buffer* d3dhandle;
-
+		uint8_t* buffer;
 		
 		std::vector<struct ConstantBufferPropertyDX11*> propertyList;
 	};

@@ -378,11 +378,7 @@ void AGN::RendererDX11::drawEntity(DrawCommand& a_command)
 		if (shaderPipeline->hasConstantBuffer(EShaderType::PixelShader, "MaterialProperties"))
 		{
 			ConstantBufferDX11* materialBuffer = shaderPipeline->getConstantBufferByName(EShaderType::PixelShader, "MaterialProperties");
-
-			// TODO: get buffer offset, this is hardcoded
-			uint8_t* buffer = new uint8_t[materialBuffer->size]; // TODO: optimize
-			memset(buffer, 0, materialBuffer->size);
-
+			
 			// TODO: super similar to DX11, abstract this!
 			ConstantBufferPropertyDX11* transparency = materialBuffer->getPropertyByName("materialTransparency");
 			ConstantBufferPropertyDX11* diffuse = materialBuffer->getPropertyByName("materialDiffuseColor");
@@ -392,18 +388,16 @@ void AGN::RendererDX11::drawEntity(DrawCommand& a_command)
 			ConstantBufferPropertyDX11* hasNormalProp = materialBuffer->getPropertyByName("materialHasNormalMap");
 			ConstantBufferPropertyDX11* hasSpecularProp = materialBuffer->getPropertyByName("materialHasSpecularMap");
 
-			memcpy(buffer + transparency->offset, &material->transparency, sizeof(material->transparency));
-			memcpy(buffer + diffuse->offset, glm::value_ptr(material->diffuseColor), sizeof(material->diffuseColor));
-			memcpy(buffer + ambient->offset, glm::value_ptr(material->ambientColor), sizeof(material->ambientColor));
-			memcpy(buffer + specularPower->offset, &material->specularPower, sizeof(material->specularPower));
-			memcpy(buffer + hasDiffuseProp->offset, &hasDiffuse, sizeof(hasDiffuse));
-			memcpy(buffer + hasNormalProp->offset, &hasNormal, sizeof(hasNormal));
-			memcpy(buffer + hasSpecularProp->offset, &hasSpecular, sizeof(hasSpecular));
+			memcpy(materialBuffer->buffer + transparency->offset, &material->transparency, sizeof(material->transparency));
+			memcpy(materialBuffer->buffer + diffuse->offset, glm::value_ptr(material->diffuseColor), sizeof(material->diffuseColor));
+			memcpy(materialBuffer->buffer + ambient->offset, glm::value_ptr(material->ambientColor), sizeof(material->ambientColor));
+			memcpy(materialBuffer->buffer + specularPower->offset, &material->specularPower, sizeof(material->specularPower));
+			memcpy(materialBuffer->buffer + hasDiffuseProp->offset, &hasDiffuse, sizeof(hasDiffuse));
+			memcpy(materialBuffer->buffer + hasNormalProp->offset, &hasNormal, sizeof(hasNormal));
+			memcpy(materialBuffer->buffer + hasSpecularProp->offset, &hasSpecular, sizeof(hasSpecular));
 
-			shaderPipeline->setConstantBufferData(EShaderType::PixelShader, "MaterialProperties", buffer, sizeof(buffer));
-
-			delete[] buffer; // TODO: optimize
-
+			// TODO: abstract using similar interface
+			shaderPipeline->setConstantBufferData(EShaderType::PixelShader, "MaterialProperties", materialBuffer->buffer, sizeof(materialBuffer->buffer));
 		}
 	}
 
@@ -419,18 +413,17 @@ void AGN::RendererDX11::drawEntity(DrawCommand& a_command)
 		// prepare Vertex input data (MVP)
 		mat4 modelMatrix = glm::make_mat4(data.modelMatrixArray); 		// retrieve model matrix from array in struct
 		mat4 mvp = m_vp * modelMatrix;
-		//mat4 inverseTranspose = glm::inverseTranspose(modelMatrix);
 		
 		// TODO: User Constant buffer info reflection pls
-		//ConstantBufferDX11* bufferInfo = aDx11VertexShader->getConstantBufferByName("PerObject");
+		ConstantBufferDX11* perObjectBuffer = aDx11VertexShader->getConstantBufferByName("PerObject");
 		
-		//modelInverseTransposeWorldMatrix
-		unsigned char buffer[128] = { 0 };
-		memcpy(buffer + 0, glm::value_ptr(mvp), sizeof(mvp));
-		memcpy(buffer + 64, glm::value_ptr(modelMatrix), sizeof(modelMatrix));
-		//memcpy(buffer + 128, glm::value_ptr(inverseTranspose), sizeof(inverseTranspose));
+		ConstantBufferPropertyDX11* mvpProperty = perObjectBuffer->getPropertyByName("modelViewProjectionMatrix");
+		ConstantBufferPropertyDX11* modelProperty = perObjectBuffer->getPropertyByName("modelMatrix");
 
-		aDx11VertexShader->setConstantBufferData("PerObject", &buffer, sizeof(buffer));
+		memcpy(perObjectBuffer->buffer + mvpProperty->offset, glm::value_ptr(mvp), sizeof(mvp));
+		memcpy(perObjectBuffer->buffer + modelProperty->offset, glm::value_ptr(modelMatrix), sizeof(modelMatrix));
+
+		aDx11VertexShader->setConstantBufferData("PerObject", perObjectBuffer->buffer, perObjectBuffer->size);
 
 		const int numConstBuffers = aDx11VertexShader->getNumConstantBuffers();
 		if (numConstBuffers > 0)

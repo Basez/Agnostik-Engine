@@ -59,6 +59,10 @@ AGN::ShaderDX11::ShaderDX11(DeviceDX11& a_deviceReference, const uint16_t a_aId,
 			// Get Size
 			constantBuffer->size = bufferDescription.Size;
 
+			// Create CPU-side buffer
+			constantBuffer->buffer = new uint8_t[constantBuffer->size];
+			memset(constantBuffer->buffer, 0, constantBuffer->size);
+
 			// Get bind point
 			for (uint16_t k = 0; k < m_shaderReflectionDesc->BoundResources; ++k)
 			{
@@ -152,7 +156,8 @@ AGN::ShaderDX11::~ShaderDX11()
 
 		safeRelease(constantBuffer->d3dhandle);
 
-		// delete struct itself
+		delete[] constantBuffer->buffer;
+
 		delete constantBuffer;
 		m_constantBuffers.erase(m_constantBuffers.begin());
 	}

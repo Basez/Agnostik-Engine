@@ -65,7 +65,7 @@ if env.GetOption('clean'):
 	for f in listAllFilesWithExtention('.', '.pdb'): Execute(Delete(f, must_exist=0))
 	for f in listAllFilesWithExtention('.', '.vcxproj'): Execute(Delete(f, must_exist=0))
 	for f in listAllFilesWithExtention('.', '.filters'): Execute(Delete(f, must_exist=0))
-	for f in listAllFilesWithExtention('.', '.exe'): Execute(Delete(f, must_exist=0))
+	for f in listAllFilesWithExtention('build', '.exe'): Execute(Delete(f, must_exist=0))
 	for f in listAllFilesWithExtention('.', '.log'): Execute(Delete(f, must_exist=0))
 	# delete shaders and other folders
 	Execute(Delete('shaders/output_dx11', must_exist=0))

@@ -141,32 +141,26 @@ void AGN::RendererGL::drawEntity(DrawCommand* a_command)
 	
 		if (shaderPipeline->hasConstantBuffer(EShaderType::PixelShader,"MaterialProperties"))
 		{
-			ConstantBufferGL* uniformConstantBuffer = shaderPipeline->getUniformConstantBufferByName("MaterialProperties");
-
-			const size_t bufferSize = uniformConstantBuffer->size;
-			uint8_t* buffer = new uint8_t[bufferSize]; // TODO: optimize with memory pool
-			memset(buffer, 0, bufferSize);
+			ConstantBufferGL* constantBuffer = shaderPipeline->getConstantBufferByName("MaterialProperties");
 			
 			// TODO: super similar to DX11, abstract this!
-			ConstantBufferPropertyGL* uTransparency = uniformConstantBuffer->getPropertyByName("uMaterialTransparency");
-			ConstantBufferPropertyGL* uDiffuse = uniformConstantBuffer->getPropertyByName("uMaterialDiffuseColor");
-			ConstantBufferPropertyGL* uAmbient = uniformConstantBuffer->getPropertyByName("uMaterialAmbientColor");
-			ConstantBufferPropertyGL* uSpecularPower = uniformConstantBuffer->getPropertyByName("uMaterialSpecularPower");
-			ConstantBufferPropertyGL* hasDiffuseProp = uniformConstantBuffer->getPropertyByName("uMaterialHasDiffuse");
-			ConstantBufferPropertyGL* hasNormalProp = uniformConstantBuffer->getPropertyByName("uMaterialHasNormalMap");
-			ConstantBufferPropertyGL* hasSpecularProp = uniformConstantBuffer->getPropertyByName("uMaterialHasSpecularMap");
+			ConstantBufferPropertyGL* uTransparency = constantBuffer->getPropertyByName("uMaterialTransparency");
+			ConstantBufferPropertyGL* uDiffuse = constantBuffer->getPropertyByName("uMaterialDiffuseColor");
+			ConstantBufferPropertyGL* uAmbient = constantBuffer->getPropertyByName("uMaterialAmbientColor");
+			ConstantBufferPropertyGL* uSpecularPower = constantBuffer->getPropertyByName("uMaterialSpecularPower");
+			ConstantBufferPropertyGL* hasDiffuseProp = constantBuffer->getPropertyByName("uMaterialHasDiffuse");
+			ConstantBufferPropertyGL* hasNormalProp = constantBuffer->getPropertyByName("uMaterialHasNormalMap");
+			ConstantBufferPropertyGL* hasSpecularProp = constantBuffer->getPropertyByName("uMaterialHasSpecularMap");
 
-			memcpy(buffer + uTransparency->offset, &material->transparency, sizeof(material->transparency));
-			memcpy(buffer + uDiffuse->offset, glm::value_ptr(material->diffuseColor), sizeof(material->diffuseColor));
-			memcpy(buffer + uAmbient->offset, glm::value_ptr(material->ambientColor), sizeof(material->ambientColor));
-			memcpy(buffer + uSpecularPower->offset, &material->specularPower, sizeof(material->specularPower));
-			memcpy(buffer + hasDiffuseProp->offset, &hasDiffuse, sizeof(hasDiffuse));
-			memcpy(buffer + hasNormalProp->offset, &hasNormal, sizeof(hasNormal));
-			memcpy(buffer + hasSpecularProp->offset, &hasSpecular, sizeof(hasSpecular));
+			memcpy(constantBuffer->buffer + uTransparency->offset, &material->transparency, sizeof(material->transparency));
+			memcpy(constantBuffer->buffer + uDiffuse->offset, glm::value_ptr(material->diffuseColor), sizeof(material->diffuseColor));
+			memcpy(constantBuffer->buffer + uAmbient->offset, glm::value_ptr(material->ambientColor), sizeof(material->ambientColor));
+			memcpy(constantBuffer->buffer + uSpecularPower->offset, &material->specularPower, sizeof(material->specularPower));
+			memcpy(constantBuffer->buffer + hasDiffuseProp->offset, &hasDiffuse, sizeof(hasDiffuse));
+			memcpy(constantBuffer->buffer + hasNormalProp->offset, &hasNormal, sizeof(hasNormal));
+			memcpy(constantBuffer->buffer + hasSpecularProp->offset, &hasSpecular, sizeof(hasSpecular));
 
-			shaderPipeline->setConstantBufferData(EShaderType::PixelShader, "MaterialProperties", buffer, uniformConstantBuffer->size);
-
-			delete[] buffer; // TODO: optimize with memory pool
+			shaderPipeline->setConstantBufferData(EShaderType::PixelShader, "MaterialProperties", constantBuffer->buffer, constantBuffer->size);
 		}
 
 		m_boundMaterial = material;

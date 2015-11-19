@@ -19,7 +19,7 @@ namespace AGN
 		uint32_t getGlProgramId() { return m_glProgramId; }
 		int32_t getUniformIdByName(const char* a_name);
 		bool hasUniform(const char* a_name);
-		struct ConstantBufferGL* getUniformConstantBufferByName(const char* a_name);
+		struct ConstantBufferGL* getConstantBufferByName(const char* a_name);
 		
 		static const int MAX_UNIFORM_NAME = 128;
 
@@ -45,8 +45,9 @@ namespace AGN
 		int32_t index;
 		char name[ShaderPipelineGL::MAX_UNIFORM_NAME];
 		int32_t size;
-		uint32_t uboHandle;
+		uint32_t glID;
 		int32_t uniformProperty;
+		uint8_t* buffer;
 		std::vector<ConstantBufferPropertyGL*> propertyList;
 	};
 
