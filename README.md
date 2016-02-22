@@ -1,5 +1,5 @@
 # About Agnostik-Engine
-Agnostik is a platform agnostic stateless renderer which I made for my specialization project during the 3rd year of my study. It currently runs on Windows and Linux, using DirectX and OpenGL respectively. I am planning to port it to PS4 and Vulkan in the future.
+Agnostik is a platform agnostic stateless renderer which I made for my specialization project during the 3rd year of my study. It currently runs on Windows and Linux, using DirectX and OpenGL respectively. I am planning to port it to the PS4 and Vulkan in the future.
 
 It is currently still in development but you can follow my progress here :)
 

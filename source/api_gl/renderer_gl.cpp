@@ -66,7 +66,7 @@ void AGN::RendererGL::render(AGN::DrawCommander& a_drawCommander)
 	// pre-calculate matrices that we are going to re-use through the frame
 	m_vp = m_currentCamera->getProjectionMatrix() * m_currentCamera->getViewMatrix();
 
-	// loop through sorted draw commands & draw em
+	// loop through sorted draw commands & draw them sequentially
 	std::vector<DrawCommand*> list = a_drawCommander.getSortedDrawCommands();
 
 	for (unsigned int i = 0; i < list.size(); i++)
@@ -76,7 +76,6 @@ void AGN::RendererGL::render(AGN::DrawCommander& a_drawCommander)
 		switch (command->type)
 		{
 		case EDrawCommandType::ClearBuffer:
-			
 			float a, r, g, b;
 			PixelUtils::getRGBAFloat(command->data.clearBufferData.clearColor, r, g, b, a);
 			glClearColor(r, g, b, 1.0f);
@@ -98,7 +97,7 @@ void AGN::RendererGL::render(AGN::DrawCommander& a_drawCommander)
 		}
 	}
 
-	// TODO: totally whipe state?
+	// TODO: totally wipe/reset OGL state?
 }
 
 void AGN::RendererGL::drawEntity(DrawCommand* a_command)
@@ -108,7 +107,7 @@ void AGN::RendererGL::drawEntity(DrawCommand* a_command)
 	Material* material = dynamic_cast<Material*>(data.material);
 	ShaderPipelineGL* shaderPipeline = dynamic_cast<ShaderPipelineGL*>(data.shaderPipeline);
 	
-	// different shader? 
+	// different shader?
 	if (m_boundShaderPipeline == nullptr || m_boundShaderPipeline->getAId() != shaderPipeline->getAId())
 	{
 		glUseProgram(shaderPipeline->getGlProgramId());
@@ -127,7 +126,6 @@ void AGN::RendererGL::drawEntity(DrawCommand* a_command)
 		const bool hasSpecular = (specular != nullptr && m_doSpecularMapping);
 
 		// TODO: refactor
-		//uint32_t texturesToBind[3] = { m_textureDiffuse, m_textureNormal, m_textureSpecular };
 		{
 			TextureGL* texturesToBind[3] = { nullptr, nullptr, nullptr };
 			static const char* const names[3] = { "diffuseSampler", "normalSampler", "specularSampler" };

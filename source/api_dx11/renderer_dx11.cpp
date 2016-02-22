@@ -222,16 +222,9 @@ void AGN::RendererDX11::render(AGN::DrawCommander& a_drawCommander)
 	// pre-calculate matrices that we are going to re-use through the frame
 	m_vp = m_currentCamera->getProjectionMatrix() * m_currentCamera->getViewMatrix();
 
-	/*
-	g_log.debug("vp: %f - %f - %f - %f", m_vp[0][0], m_vp[0][1], m_vp[0][2], m_vp[0][3]);
-	g_log.debug("vp: %f - %f - %f - %f", m_vp[1][0], m_vp[1][1], m_vp[1][2], m_vp[1][3]);
-	g_log.debug("vp: %f - %f - %f - %f", m_vp[2][0], m_vp[2][1], m_vp[2][2], m_vp[2][3]);
-	g_log.debug("vp: %f - %f - %f - %f", m_vp[3][0], m_vp[3][1], m_vp[3][2], m_vp[3][3]);
-	*/
-
 	setStaticStages();
 
-	// loop through sorted draw commands & draw em
+	// loop through sorted draw commands & draw them sequentially
 	std::vector<DrawCommand*> list = a_drawCommander.getSortedDrawCommands();
 
 	for (unsigned int i = 0; i < list.size(); i++)
