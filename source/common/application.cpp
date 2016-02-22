@@ -28,8 +28,8 @@
 #include "camera.hpp"
 
 // shaders
-// TODO: make these shaders more cross-platform friendly.
-// TODO: Perhaps let the pre-build step figure it out or generate both types in the same file, with a special getter
+// TODO: make these shaders more cross platform friendly.
+// TODO: Perhaps let the pre-build step figure it out or generate both types in the same file, with a getter
 #include "shader_mesh_pix.hpp"
 #include "shader_mesh_vert.hpp"
 #include "shader_skybox_pix.hpp"
@@ -48,15 +48,6 @@ AGN::Application::Application()
 	, m_sceneIndex(0)
 	, m_sortEntityDrawCalls(true)
 {
-	//time_t actual_time = time(0);
-	//int64_t time = static_cast<int64_t>(actual_time);
-	//rotationY = static_cast<float>(time);
-
-	//g_log.debug("secondsInt: %i", secondsInt);
-
-	//std::time_t end_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	//std::cout << "finished computation at " << std::ctime(&end_time);
-
 
 }
 
@@ -99,7 +90,7 @@ void AGN::Application::run(IRenderAPI* a_renderAPI)
 			m_sceneManager->unloadScene();
 			m_resourceManager->unloadAll();
 
-			// load new stuff
+			// load new scene
 			m_resourceManager->loadDefaults();
 			loadShaders();
 			m_sceneManager->loadScene(m_sceneIndex);
@@ -133,7 +124,6 @@ void AGN::Application::update()
 	float deltaTime = timeDifference.count();
 	lastTime = currentTime;
 	
-	// limit deltatime
 	if (deltaTime > 1.0f) deltaTime = 1.0f;
 
 	// logic
@@ -145,8 +135,7 @@ void AGN::Application::update()
 
 void AGN::Application::updateMeshShaderProperties(float a_deltaTime)
 {
-	// change mesh light properties
-	// test code to update shader buffer
+	// change mesh light properties, test code to update shader buffer
 	// TODO: Abstract this, currently very much hardcoded
 	unsigned char buffer[64] = {0};
 
@@ -157,9 +146,6 @@ void AGN::Application::updateMeshShaderProperties(float a_deltaTime)
 	rotationY = (static_cast<float>(milliseconds) / static_cast<float>(milliSecondsPerRotation)) * 360.0f;
 	
 	const vec3 lightDirectionNorm = glm::rotate(normalize(vec3(0.5f, 1.0f, 0.5f)), glm::radians(rotationY), vec3(0, 1, 0));
-	//const vec3 lightDirectionNorm = glm::rotate(normalize(vec3(0.0f, 1.0f, 0.0f)), glm::radians(rotationY), vec3(0, 1, 0));
-
-	//g_log.debug("lightDirectionNorm: x:%f - y:%f - z:%f", lightDirectionNorm.x, lightDirectionNorm.y, lightDirectionNorm.z);
 
 	glm::vec4 lightDirection = glm::vec4(lightDirectionNorm, 0.0f);
 	glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f );
@@ -198,7 +184,7 @@ void AGN::Application::renderGUI()
 		ImGui::Separator();
 		ImGui::Text("Configuration Settings:");
 		
-		// vsync checkbox & functionality
+		// v-sync checkbox & functionality
 		bool prevEnableVsync = enableVsync;
 		ImGui::Checkbox("Enable VSync", &enableVsync);
 		if (prevEnableVsync != enableVsync) m_renderAPI->enableVSync(enableVsync);
@@ -206,12 +192,12 @@ void AGN::Application::renderGUI()
 		// sort draw commands
 		ImGui::Checkbox("Sort mesh draw calls", &m_sortEntityDrawCalls);
 
-		// normalmapping checkbox & functionality
+		// normal mapping checkbox & functionality
 		bool prevNormalMapping = enableNormalMapping;
 		ImGui::Checkbox("Enable Normal Mapping", &enableNormalMapping);
 		if (prevNormalMapping != enableNormalMapping) m_renderAPI->enableNormalMapping(enableNormalMapping);
 
-		// specmapping checkbox & functionality
+		// spec mapping checkbox & functionality
 		bool prevSpecMapping = enableSpecularMapping;
 		ImGui::Checkbox("Enable Specular Mapping", &enableSpecularMapping);
 		if (prevSpecMapping != enableSpecularMapping) m_renderAPI->enableSpecularMapping(enableSpecularMapping);
@@ -219,12 +205,10 @@ void AGN::Application::renderGUI()
 		ImGui::Separator();
 		ImGui::Text("Stats");
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
-
 	}
 	ImGui::End();
 
-	// uncomment to test out ImGui
+	// uncomment to test out ImGui features
 	//bool show_test_window = true;
 	//ImGui::ShowTestWindow(&show_test_window);
 }
@@ -264,7 +248,6 @@ void AGN::Application::createDrawQueue()
 	// TODO: make these static draw commands
 	// Swap buffer Draw command
 	{
-		// create sortkey
 		uint8_t renderPhase = (uint8_t)ERenderPhase::PostDraw;
 		uint8_t layer = 0;
 		uint8_t translucencyType = 0;

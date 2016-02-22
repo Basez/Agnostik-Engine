@@ -1,5 +1,6 @@
 # About Agnostik-Engine
-Agnostik is a Cross-platform Game Engine created as a specialization project by Bas van Zutphen.
+Agnostik is a platform agnostic stateless renderer which I made for my specialization project during the 3rd year of my study. It currently runs on Windows and Linux, using DirectX and OpenGL respectively. I am planning to port it to PS4 and Vulkan in the future.
+
 It is currently still in development but you can follow my progress here :)
 
 # Third-party Licenses / References
@@ -9,12 +10,6 @@ It is currently still in development but you can follow my progress here :)
 - Glew: http://glew.sourceforge.net/credits.html
 - stb: https://github.com/nothings/stb
 - MMGR: http://www.paulnettle.com/
-
-# Dependencies
-TODO:
-
-# Installation Guide Linux
-TODO:
 
 # Installation Guide Windows
 
@@ -40,3 +35,6 @@ After this is setup, simply navigate to the folder inside Cygwin64, and type "sc
 This will generate the debug & release build and if you are on windows (win64gl/win64dx) it will generate vs2013 project files.
 If you have a different Visual Studio version you can change those in the build scripts (located under /project_files).
 If you want to clean all the build output files, use the command scons -c to cleanup everything.
+
+# Installation Guide Linux
+TODO:
