@@ -27,7 +27,19 @@ It is currently still in development but you can follow my progress here :)
 - Add 'exec scons.bat "$@"' to it to be able to run scons from cygwin. check this link: http://www.scons.org/wiki/SConsAndCygwin. Also make sure scons.bat is inside the Python27 folder!
 - Now try the scons -v command, it should display the scons version if it was installed successfully 
 
+# Installation Guide Linux
+
+- Make sure G++ and Python 2.7 are installed
+- Download and extract scons 2.4.1 
+- Execute "sudo python setup.py install" in the extracted scons folder
+- type scons -v to confirm the installation was successful
+- Install these Dependencies (Through apt-get):
+	- libglew-dev
+	- libsdl2-dev
+	- libassimp-dev
+
 # How to build
+
 After following the installation guide, navigate to the repository where the config.ini file is located.
 Inside the config.ini file you can change certain properties of the build process and of the application itself. 
 Change the top property called 'buildname' to whichever build you wish to peform (choices are win64gl/linux64gl/win64dx, the names speak for themself)
@@ -36,5 +48,3 @@ This will generate the debug & release build and if you are on windows (win64gl/
 If you have a different Visual Studio version you can change those in the build scripts (located under /project_files).
 If you want to clean all the build output files, use the command scons -c to cleanup everything.
 
-# Installation Guide Linux
-TODO:
