@@ -79,6 +79,8 @@ void AGN::SceneManager::loadScene(int16_t a_index)
 		break;
 	}
 
+	g_log.info("Scene %d loaded complete", a_index);
+
 	m_currentSceneIndex = a_index;
 }
 

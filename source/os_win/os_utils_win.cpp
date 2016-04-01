@@ -5,6 +5,8 @@
 #include <dirent/dirent.h>
 #include <iostream>
 #include <fstream>
+#include <sys/stat.h>
+#include <algorithm>
 
 // memory leak detection on windows debug builds
 #if defined(_WIN32) && defined(AGN_DEBUG) && defined(AGN_ENABLE_MEMORYLEAK_DETECTION)
@@ -15,19 +17,19 @@
 
 using namespace std;
 
-int AGN::OSUtils::getLastlowFileChangeTime(std::string a_filename)
+uint32_t AGN::OSUtils::getLastlowFileChangeTime(const std::string& a_filename)
 {
 	WIN32_FIND_DATA findData;
 	HANDLE hHandle = FindFirstFile((LPCSTR)a_filename.c_str(), &findData);
 	int success = GetFileTime(hHandle, NULL, NULL, NULL);
 
-	return findData.ftLastWriteTime.dwLowDateTime;
+	return (uint32_t)findData.ftLastWriteTime.dwHighDateTime;
 }
 
 /**
 	Returns file size of given file in bytes
 */
-int AGN::OSUtils::getFileSizeBytes(std::string a_filename)
+uint32_t AGN::OSUtils::getFileSizeBytes(const std::string& a_filename)
 {
 	streampos fsize = 0;
 	ifstream file(a_filename, std::ios::binary);
@@ -37,13 +39,21 @@ int AGN::OSUtils::getFileSizeBytes(std::string a_filename)
 	fsize = file.tellg() - fsize;
 	file.close();
 
-	return (int)fsize;
+	return (uint32_t)fsize;
+}
+
+std::string AGN::OSUtils::getCanonicalPath(const std::string& a_path)
+{
+	// TODO: expand functionality, currently not a true canonical path
+	std::string canonical = a_path;
+	std::replace(canonical.begin(), canonical.end(), '/', '\\');
+	return canonical;
 }
 
 /**
 	Strips the given file path of its name and returns that directory
 */
-std::string AGN::OSUtils::getDirectoryOfPath(std::string a_path)
+std::string AGN::OSUtils::getDirectoryOfPath(const std::string& a_path)
 {
 	std::string pathAsString = a_path;
 
@@ -61,14 +71,15 @@ std::string AGN::OSUtils::getDirectoryOfPath(std::string a_path)
 
 /**
 	Returns the path 1 directory up
+	Note: Assumes paths are canonical
 */
-std::string AGN::OSUtils::getUpDirectory(std::string a_path)
+std::string AGN::OSUtils::getUpDirectory(const std::string& a_path)
 {
 	int index = (int)a_path.find_last_of("\\\\"); // find last 2 '\\' (final folder)
 	return a_path.substr(0, index).c_str();
 }
 
-std::string AGN::OSUtils::findFile(std::string a_file, std::string a_startFolder, int a_deepLevel, int a_upLevel)
+std::string AGN::OSUtils::findFile(const std::string& a_file, const std::string& a_startFolder, const int a_deepLevel, const int a_upLevel)
 {
 	DIR *dir;
 	struct dirent *ent;
@@ -146,7 +157,7 @@ std::string AGN::OSUtils::getCurrentFolder()
 	return string(buffer).substr(0, pos).c_str();
 }
 
-std::string AGN::OSUtils::getExecutableName(bool a_includeType)
+std::string AGN::OSUtils::getExecutableName(const bool a_includeType)
 {
 	char buffer[MAX_PATH];
 	GetModuleFileName(NULL, buffer, MAX_PATH);
@@ -160,3 +171,59 @@ std::string AGN::OSUtils::getExecutableName(bool a_includeType)
 
 	return nameWithoutType.c_str();
 }
+
+bool AGN::OSUtils::fileExists(const std::string& a_file)
+{
+		ifstream f(a_file.c_str());
+		if (f.good())
+		{
+				f.close();
+				return true;
+		}
+		f.close();
+		return false;
+}
+
+bool AGN::OSUtils::directoryExists(const std::string& a_path)
+{
+		struct stat info;
+
+		if (stat(a_path.c_str(), &info) != 0)
+		{
+				return false;
+		}
+		else if (info.st_mode & S_IFDIR)
+		{
+				return true;
+		}
+
+		return false;
+}
+
+/**
+	Recursively creates directories specified in the path by checking if they exist
+	Note: Maximum of 10 sub directories are allowed in a path (that have to be created)
+*/
+void AGN::OSUtils::createDirectory(const std::string& a_path)
+{
+	std::vector<std::string> directoriesToCreate;
+	std::string currentPath = a_path;
+	
+	// get all paths
+	while(1)
+	{
+		if (OSUtils::directoryExists(currentPath) || currentPath.length() == 0) break;
+
+		directoriesToCreate.push_back(currentPath);
+
+		currentPath = AGN::OSUtils::getUpDirectory(currentPath);
+
+		assert(directoriesToCreate.size() < 10); // safety check
+	}
+
+	for (int32_t i = (int32_t)directoriesToCreate.size() - 1; i >= 0; i--)
+	{
+		CreateDirectory(directoriesToCreate[i].c_str(), nullptr);
+	}
+}
+

@@ -4,6 +4,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <assimp/Exporter.hpp>
 
 // memory leak detection on windows debug builds
 #if defined(_WIN32) && defined(AGN_DEBUG) && defined(AGN_ENABLE_MEMORYLEAK_DETECTION)
@@ -107,32 +108,60 @@ AGN::MeshCollection& AGN::ResourceManager::loadMeshCollection(std::string a_rela
 		}
 	}
 
-	g_log.info("Loading Mesh: %s", a_relativePath.c_str());
+	// get full path & binary path
+	string fullPath = OSUtils::getCanonicalPath(g_configManager.getConfigProperty("path_models") + a_relativePath);
+	string fullPathBin = OSUtils::getCanonicalPath(g_configManager.getConfigProperty("path_models_bin") + a_relativePath.substr(0, a_relativePath.find_last_of(".")) + ".assbin");
 
-	unsigned int flags = additional_assimp_flags;
-	flags |= aiProcess_SortByPType;
-	flags |= aiProcess_JoinIdenticalVertices;	// Joins identical vertex data sets within all meshes
-	flags |= aiProcess_Triangulate;				// triangulate the mesh
-	flags |= aiProcess_CalcTangentSpace;		// calculate tangents & bitangents
-	flags |= aiProcess_GenNormals;				// calculate normals
-	flags |= aiProcess_OptimizeMeshes;			// reduce the number of meshes, thus number of drawcalls
-	flags |= aiProcess_OptimizeGraph;			// optimize the scene hierarchy, combine groups etc
-	flags |= aiProcess_FlipUVs;					// Flip UV's // TODO: dependent on GFX API?
-	//flags |= aiProcess_FixInfacingNormals;
-	//flags |= aiProcess_RemoveRedundantMaterials;
-	
-	
-		
-	//if (!a_rightHandCoordinates)
-	//{
-	//	flags |= aiProcess_FlipWindingOrder;
-	//}
+	// check if assbin binary is available
+	bool export2Bin = true;
+	if (OSUtils::fileExists(fullPathBin))
+	{
+		// file exists
+		uint32_t lastChange = OSUtils::getLastlowFileChangeTime(fullPath);
+		uint32_t lastChangeBin = OSUtils::getLastlowFileChangeTime(fullPathBin);
 
-	// get full path
-	string fullPath = g_configManager.getConfigProperty("path_models").append(a_relativePath);
+		// export file if its changed / out of date
+		export2Bin = lastChange > lastChangeBin;
+	}
 
+	const aiScene* scene = nullptr;
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(fullPath.c_str(), flags);
+	Assimp::Exporter exporter;
+	
+	if (export2Bin)
+	{
+		g_log.info("Loading Mesh: %s", fullPath.c_str());
+
+		// we do not have an older binary model or it doesnt exist at all
+		// load and parse the original model file
+		unsigned int flags = additional_assimp_flags;
+		flags |= aiProcess_SortByPType;
+		flags |= aiProcess_JoinIdenticalVertices;	// Joins identical vertex data sets within all meshes
+		flags |= aiProcess_Triangulate;						// triangulate the mesh
+		flags |= aiProcess_CalcTangentSpace;			// calculate tangents & bitangents
+		flags |= aiProcess_GenNormals;						// calculate normals
+		flags |= aiProcess_OptimizeMeshes;				// reduce the number of meshes, thus number of drawcalls
+		flags |= aiProcess_OptimizeGraph;					// optimize the scene hierarchy, combine groups etc
+		flags |= aiProcess_FlipUVs;								// Flip UV's // TODO: dependent on GFX API?
+
+		scene = importer.ReadFile(fullPath.c_str(), flags);
+			
+		// create directories if they do not exist yet			
+		OSUtils::createDirectory(OSUtils::getDirectoryOfPath(fullPathBin));
+
+		// export to modelsbin for quicker load times
+		if (exporter.Export(scene, "assbin", fullPathBin.c_str()) == aiReturn::aiReturn_FAILURE)
+		{
+			g_log.error("Failed exporting model '%s' to assbin", a_relativePath.c_str());
+		}
+	}
+	else
+	{
+		g_log.info("Loading Mesh: %s", fullPathBin.c_str());
+		// we have an up2date model binary. We can just load the binary and be done with it
+
+		scene = importer.ReadFile(fullPathBin.c_str(), 0);
+	}
 
 	// If the import failed, report it
 	if (!scene)
@@ -280,6 +309,8 @@ AGN::MeshCollection& AGN::ResourceManager::loadMeshCollection(std::string a_rela
 
 AGN::ITexture& AGN::ResourceManager::loadTexture(std::string a_relativePath, ETextureType a_textureType, unsigned int a_textureRenderFlags)
 {
+	g_log.info("Loading Texture: %s", a_relativePath.c_str());
+
 	// check if it exists
 	for (unsigned int i = 0; i < m_loadedTextures.size(); i++)
 	{
