@@ -76,6 +76,7 @@ if env.GetOption('clean'):
 	Execute(Delete('project_files/release/', must_exist=0))
 	Execute(Delete('project_files/.vs/', must_exist=0))
 	Execute(Delete('project_files/imgui.ini', must_exist=0))
+	Execute(Delete(os.getcwd() + configDict['path_models_bin'][0], must_exist=0)) # Deletes generated modelsbin folder
 	
 	
 	

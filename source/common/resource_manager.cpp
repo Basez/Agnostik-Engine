@@ -149,7 +149,7 @@ AGN::MeshCollection& AGN::ResourceManager::loadMeshCollection(std::string a_rela
 		// create directories if they do not exist yet			
 		OSUtils::createDirectory(OSUtils::getDirectoryOfPath(fullPathBin));
 
-		// export to modelsbin for quicker load times
+		// export to modelsbin for quicker load times later
 		if (exporter.Export(scene, "assbin", fullPathBin.c_str()) == aiReturn::aiReturn_FAILURE)
 		{
 			g_log.error("Failed exporting model '%s' to assbin", a_relativePath.c_str());
