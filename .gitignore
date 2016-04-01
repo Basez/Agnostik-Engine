@@ -22,3 +22,4 @@ shaders/output_gl/
 shaders/output_dx11/
 imgui.ini
 *.log
+libs/common/include/assimp/.editorconfig
