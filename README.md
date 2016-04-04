@@ -40,11 +40,7 @@ It is currently still in development but you can follow my progress here :)
 
 # How to build
 
-After following the installation guide, navigate to the repository where the config.ini file is located.
-Inside the config.ini file you can change certain properties of the build process and of the application itself. 
-Change the top property called 'buildname' to whichever build you wish to peform (choices are win64gl/linux64gl/win64dx, the names speak for themself)
-After this is setup, simply navigate to the folder inside Cygwin64, and type "scons".
-This will generate the debug & release build and if you are on windows (win64gl/win64dx) it will generate vs2013 project files.
-If you have a different Visual Studio version you can change those in the build scripts (located under /project_files).
-If you want to clean all the build output files, use the command scons -c to cleanup everything.
-
+In windows make sure you are in Cygwin. Navigate to the root directory of the project, its where the config.ini file is located.
+Inside the config.ini file you can change certain properties of the build process and of the engine itself. They both share this file.
+Type 'scons build=buildname' to generate a project (Windows Only) and build the engine, make sure you call this from the root directory.
+To see a list of possible builds / features, type "scons -h"
