@@ -3,7 +3,9 @@ import os
 Import('rootDir')
 buildname = 'win64gl'
 
-env = Environment(TARGET_ARCH='x86_64', platform = 'win32', MSVC_VERSION='14.0')
+env = Environment(	TARGET_ARCH='x86_64',
+					platform = 'win32',
+					MSVC_VERSION='14.0')
 Export('env')
 
 print "Executing MSVC SConscript..."
@@ -56,7 +58,10 @@ objsRelease += ['../genfiles/'+buildname+'/gen-build-release/' + buildEntrypoint
 releaseLibNames=['SDL2', 'SDL2main', 'glew32', 'OpenGL32', 'glu32', 'assimp']
 
 # create program
-applicationProgramRelease = envRelease.Program(source = objsRelease, target = "../build/"+buildname+"/agnostik_release", LIBS = releaseLibNames, LIBPATH = libPaths)
+applicationProgramRelease = envRelease.Program(	source = objsRelease,
+												target = "../build/"+buildname+"/agnostik_release",
+												LIBS = releaseLibNames,
+												LIBPATH = libPaths)
 
 ##############################################################################
 ### create debug env
@@ -88,22 +93,27 @@ objsDebug += ['../genfiles/'+buildname+'/gen-build-debug/' + buildEntrypoint]
 debugLibNames=['SDL2', 'SDL2main', 'glew32', 'OpenGL32', 'glu32', 'assimp']
 
 # create debug program
-applicationProgramDebug = envDebug.Program(source = objsDebug, target = "../build/"+buildname+"/agnostik_debug", LIBS = debugLibNames, LIBPATH = libPaths)
+applicationProgramDebug = envDebug.Program(	source = objsDebug,
+											target = "../build/"+buildname+"/agnostik_debug",
+											LIBS = debugLibNames,
+											LIBPATH = libPaths)
 
 ##############################################################################
 # generate msvs project  # MSVSProject OR MSVSSolution
-project = env.MSVSProject(target = 'agnostik_' + buildname + env['MSVSPROJECTSUFFIX'],
-                srcs = (Glob('../source/common/*.cpp', strings=True) +					## add all cpp files
-						Glob('../source/api_gl/*.cpp', strings=True) +
-						Glob('../source/os_win/*.cpp', strings=True) +
-						Glob('../source/'+ buildEntrypoint, strings=True)),
-                incs = (Glob('../include/common/*.hpp', strings=True) +					## add all hpp files
-						Glob('../include/api_gl/*.hpp', strings=True) +
-						Glob('../include/os_win/*.hpp', strings=True)),						
-				buildtarget = applicationProgramDebug + applicationProgramRelease,
-				variant = ['debug', 'release'],
-				runfile = ['../build/'+buildname+'/agnostik_debug', '../build/'+buildname+'/agnostik_release'])
-				
+project = env.MSVSProject(	target = 'agnostik_' + buildname + env['MSVSPROJECTSUFFIX'],
+							srcs = (Glob('../source/common/*.cpp', strings=True) +					## add all cpp files
+									Glob('../source/api_gl/*.cpp', strings=True) +
+									Glob('../source/os_win/*.cpp', strings=True) +
+									Glob('../source/'+ buildEntrypoint, strings=True)),
+							incs = (Glob('../include/common/*.hpp', strings=True) +					## add all hpp files
+									Glob('../include/api_gl/*.hpp', strings=True) +
+									Glob('../include/os_win/*.hpp', strings=True)),						
+							buildtarget = applicationProgramDebug + applicationProgramRelease,
+							variant = ['debug', 'release'],
+							runfile = ['../build/'+buildname+'/agnostik_debug', '../build/'+buildname+'/agnostik_release'])
+
+#ensures scons gets called with the correct build command from inside visual studio
+env['MSVSSCONS'] += ' build='+buildname		
 ##############################################################################
 
 Export('env')			# export var to scons main
