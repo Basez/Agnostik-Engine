@@ -174,30 +174,30 @@ std::string AGN::OSUtils::getExecutableName(const bool a_includeType)
 
 bool AGN::OSUtils::fileExists(const std::string& a_file)
 {
-		ifstream f(a_file.c_str());
-		if (f.good())
-		{
-				f.close();
-				return true;
-		}
-		f.close();
-		return false;
+	ifstream f(a_file.c_str());
+	if (f.good())
+	{
+			f.close();
+			return true;
+	}
+	f.close();
+	return false;
 }
 
 bool AGN::OSUtils::directoryExists(const std::string& a_path)
 {
-		struct stat info;
+	struct stat info;
 
-		if (stat(a_path.c_str(), &info) != 0)
-		{
-				return false;
-		}
-		else if (info.st_mode & S_IFDIR)
-		{
-				return true;
-		}
+	if (stat(a_path.c_str(), &info) != 0)
+	{
+			return false;
+	}
+	else if (info.st_mode & S_IFDIR)
+	{
+			return true;
+	}
 
-		return false;
+	return false;
 }
 
 /**
@@ -226,4 +226,3 @@ void AGN::OSUtils::createDirectory(const std::string& a_path)
 		CreateDirectory(directoriesToCreate[i].c_str(), nullptr);
 	}
 }
-

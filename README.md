@@ -36,7 +36,7 @@ It is currently still in development but you can follow my progress here :)
 - Install these Dependencies (Through apt-get):
 	- libglew-dev
 	- libsdl2-dev
-	- libassimp-dev
+- Download/build/install assimp 3.2 manually (since the package is out of date)
 
 # How to build
 
