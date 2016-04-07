@@ -98,7 +98,8 @@ elif buildName == 'linux64gl':
 	SConscript('project_files/SConscript_linux64gl')
 elif buildName == 'assets':	
 	print "platform: " + platformName 
-	SConscript('project_files/SConscript_assets')
+	# TODO: check platform and execute correct asset project
+	SConscript('project_files/SConscript_win64assets') 
 else:
 	print (" *** ERROR *** No build or other command was specified, please type 'scons -h' for more information")
 	Exit(0)
