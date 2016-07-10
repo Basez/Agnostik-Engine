@@ -24,3 +24,5 @@ imgui.ini
 *.log
 libs/common/include/assimp/.editorconfig
 assets/modelsbin/
+*.opendb
+*.db
